@@ -1,3 +1,0 @@
-this is only a test
-another line in a test
-yet another test
