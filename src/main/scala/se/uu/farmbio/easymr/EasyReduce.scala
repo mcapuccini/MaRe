@@ -54,7 +54,11 @@ object EasyReduce {
       inputFifo2.delete
       outputFifo.delete
       //Trim results and return
-      results.trim
+      if(params.trimComandOutput) {
+        results.trim
+      } else {
+        results 
+      }
     }
     
     //Save restult

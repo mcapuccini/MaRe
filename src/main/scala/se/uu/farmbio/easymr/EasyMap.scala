@@ -49,7 +49,11 @@ object EasyMap {
       inputFifo.delete
       outputFifo.delete
       //Trim results and return
-      results.trim
+      if(params.trimComandOutput) {
+        results.trim
+      } else {
+        results 
+      }
     }
     
     result.saveAsTextFile(params.outputPath)
