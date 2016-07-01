@@ -1,21 +1,20 @@
 package se.uu.farmbio.easymr
 
-import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
-case class MapParams(
+case class EasyMapParams(
     command: String = null,
+    trimComandOutput: Boolean = true,
     imageName: String = "ubuntu:14.04",
-    inputData: String = null,
-    outputData: String = null,
-    wholeFiles: Boolean = false,
-    fifoReadTimeout: Int = 1200,
+    inputPath: String = null,
+    outputPath: String = null,
+    fifoReadTimeout: Int = RunUtils.FIFO_READ_TIMEOUT,
     local: Boolean = false)
 
-object Map {
+object EasyMap {
   
-  def run(params: MapParams) = {
+  def run(params: EasyMapParams) = {
 
     //Start Spark context
     val conf = new SparkConf()
@@ -26,33 +25,34 @@ object Map {
     val sc = new SparkContext(conf)
     
     //Read input data
-    val data = if(params.wholeFiles) {
-      sc.wholeTextFiles(params.inputData)
-        .map(_._2)
-    } else {
-      sc.textFile(params.inputData)
-    }
+    val data = sc.textFile(params.inputPath)
     
     //Format command
     val toRun = params.command
-      .replaceAll("<input>", "/inputFifo/input")
-      .replaceAll("<output>", "/outputFifo/output")
+      .replaceAll("<input>", "/inputFifo")
+      .replaceAll("<output>", "/outputFifo")
 
     //Map data
     val result = data.map { record =>
+      //Make fifos
       val inputFifo = RunUtils.mkfifo("input")
       val outputFifo = RunUtils.mkfifo("output")
-      val dockerOpts = s"-v ${inputFifo.getParent}:/inputFifo " +
-        s"-v ${outputFifo.getParent}:/outputFifo"
+      //Write record to fifo
       RunUtils.writeToFifo(inputFifo, record)
+      //Run command in container
+      val dockerOpts = s"-v ${inputFifo.getAbsolutePath}:/inputFifo " +
+        s"-v ${outputFifo.getAbsolutePath}:/outputFifo"
       RunUtils.dockerRun(toRun, params.imageName, dockerOpts)
+      //Read result from fifo
       val results = RunUtils.readFromFifo(outputFifo, params.fifoReadTimeout)
+      //Delete the fifos
       inputFifo.delete
       outputFifo.delete
-      results
+      //Trim results and return
+      results.trim
     }
     
-    result.saveAsTextFile(params.outputData)
+    result.saveAsTextFile(params.outputPath)
     
     //Stop Spark context
     sc.stop

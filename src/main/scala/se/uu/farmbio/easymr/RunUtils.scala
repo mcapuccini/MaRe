@@ -8,19 +8,27 @@ import com.google.common.io.Files
 import sys.process._
 import org.apache.spark.Logging
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{ Failure, Success }
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
+import java.util.concurrent.Executors
+
 
 class RunException(msg: String) extends Exception(msg)
 
 object RunUtils extends Logging {
+  
+  val FIFO_READ_TIMEOUT = 1200
+  
+  implicit val ec = ExecutionContext.fromExecutor(
+      Executors.newFixedThreadPool(100))
 
   def writeToFifo(fifo: File, toWrite: String) = {
+    logInfo(s"writing to fifo: ${fifo.getAbsolutePath}")
     Future {
       new PrintWriter(fifo) {
-        append(toWrite)
+        write(toWrite)
         close
       }
     } onFailure {
@@ -29,7 +37,7 @@ object RunUtils extends Logging {
   }
 
   def readFromFifo(fifo: File, timeoutSec: Int) = {
-    logInfo("reading output from fifo...")
+    logInfo(s"reading output from fifo: ${fifo.getAbsolutePath}")
     val future = Future {
       Source.fromFile(fifo).mkString
     } 
@@ -48,10 +56,13 @@ object RunUtils extends Logging {
     tmpDir.deleteOnExit
     val fifoPath = tmpDir.getAbsolutePath + s"/$name"
     val future = command(Seq("mkfifo", fifoPath), asynch = false)
-    new File(fifoPath)
+    val fifo = new File(fifoPath)
+    fifo.deleteOnExit
+    fifo
   }
 
   def command(cmd: Seq[String], asynch: Boolean = true) = {
+    logInfo(s"executing command: ${cmd.mkString(" ")}")
     val future = Future {
       cmd ! ProcessLogger(
         (o: String) => logInfo(o),
