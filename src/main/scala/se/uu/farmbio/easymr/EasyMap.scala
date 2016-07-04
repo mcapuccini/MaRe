@@ -18,7 +18,7 @@ object EasyMap {
 
     //Start Spark context
     val conf = new SparkConf()
-      .setAppName(s"Reduce: ${params.command}")
+      .setAppName(s"Map: ${params.command}")
     if (params.local) {
       conf.setMaster("local[*]")
     }
