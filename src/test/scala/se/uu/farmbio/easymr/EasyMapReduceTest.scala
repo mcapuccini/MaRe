@@ -93,14 +93,51 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
 
     Seq("dna.txt", "dna1.txt", "dna2.txt").foreach { input =>
       val reverseTest = Source.fromFile(
-          getClass.getResource("dna/" + input).getPath)
-          .getLines.map(_.reverse)
-      val outPath = tempDir.getAbsolutePath + s"/seq.rev/$input" 
+        getClass.getResource("dna/" + input).getPath)
+        .getLines.map(_.reverse)
+      val outPath = tempDir.getAbsolutePath + s"/seq.rev/$input"
       val reverseOut = Source.fromFile(
-          FilenameUtils.removeExtension(outPath) + ".rev")
-          .getLines
+        FilenameUtils.removeExtension(outPath) + ".rev")
+        .getLines
       assert(reverseTest.toSet == reverseOut.toSet)
     }
+
+  }
+
+  test("easy reduce, multiple inputs") {
+
+    //Make a test input from DNA
+    val sumDir = new File(tempDir.getAbsolutePath + "/sum")
+    sumDir.mkdir
+    val counts = Seq("dna.txt", "dna1.txt", "dna2.txt").map { input =>
+      Source.fromFile(
+        getClass.getResource("dna/" + input).getPath)
+        .getLines
+        .map(_.filter(n => n == 'g' || n == 'c').length)
+        .reduce(_+_)
+    }
+    counts.foreach { count =>
+      new PrintWriter(sumDir.getAbsolutePath + s"/${count}.txt") {
+        write(count.toString)
+        close
+      }
+    }
+    
+    val params = EasyReduceParams(
+      command = "expr $(cat <input:1>) + $(cat <input:2>) > <output>",
+      imageName = "ubuntu:14.04",
+      local = true,
+      inputPath = sumDir.getAbsolutePath,
+      outputPath = tempDir.getAbsolutePath + "/sum_whole.txt",
+      wholeFiles = true,
+      fifoReadTimeout = 30)
+    EasyReduce.run(params)
+    
+    val sc = new SparkContext(conf)
+    val sumOut = sc.textFile(tempDir.getAbsolutePath + "/sum_whole.txt").first
+    sc.stop
+
+    assert(sumOut.toInt == counts.reduce(_+_))
 
   }
 

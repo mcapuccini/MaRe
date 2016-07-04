@@ -10,6 +10,7 @@ case class EasyReduceParams(
   inputPath: String = null,
   outputPath: String = null,
   fifoReadTimeout: Int = RunUtils.FIFO_READ_TIMEOUT,
+  wholeFiles: Boolean = false,
   local: Boolean = false)
 
 object EasyReduce {
@@ -25,7 +26,12 @@ object EasyReduce {
     val sc = new SparkContext(conf)
 
     //Read input data
-    val data = sc.textFile(params.inputPath)
+    val data = if (params.wholeFiles) {
+      sc.wholeTextFiles(params.inputPath)
+        .map(_._2) //remove file name
+    } else {
+      sc.textFile(params.inputPath)
+    }
 
     //Format command
     val toRun = params.command
