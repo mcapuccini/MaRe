@@ -7,6 +7,7 @@ import org.apache.hadoop.mapred.lib.MultipleTextOutputFormat
 import org.apache.hadoop.io.NullWritable
 import java.io.File
 import org.apache.commons.io.FilenameUtils
+import scopt.OptionParser
 
 class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
   override def generateActualKey(key: Any, value: Any): Any =
@@ -117,6 +118,52 @@ object EasyMap {
       sc.textFile(inputPath)
         .map((inputPath, _))
     }
+  }
+  
+  def main(args: Array[String]) {
+    
+    val defaultParams = EasyMapParams()
+
+    val parser = new OptionParser[EasyMapParams]("Easy Map") {
+      head("EasyMap: map a distributed dataset using a command form a Docker container.")
+      opt[String]("command")
+        .required
+        .text("command to run inside the Docker container, e.g. rev <input> > <output>.")
+        .action((x, c) => c.copy(command = x))
+      opt[Unit]("noTrim")
+        .text("if set the command output will not get trimmed.")
+        .action((_, c) => c.copy(trimComandOutput = false))
+      opt[String]("imageName")
+        .text("Docker image name (default: \"ubuntu:14.04\")")
+        .action((x, c) => c.copy(imageName = x))
+      opt[String]("inputPath")
+        .required
+        .text("Dataset input path. Must be a directory if wholeFiles is set.")
+        .action((x, c) => c.copy(inputPath = x))
+      opt[String]("outputPath")
+        .required
+        .text("Result output path")
+        .action((x, c) => c.copy(outputPath = x))
+      opt[Int]("commandTimeout")
+        .text(s"execution timeout for the command, in sec. (default: ${RunUtils.FIFO_READ_TIMEOUT})")
+        .action((x, c) => c.copy(fifoReadTimeout = x))
+      opt[Unit]("wholeFiles")
+        .text("if set, multiple input files will be loaded from an input directory. The command will " +
+              "executed in parallel, on the whole files. In contrast, when this is not set "+
+              "the file/files in input is/are splitted line by line, and the command is executed in parallel "+
+              "on each line of the file")
+        .action((_, c) => c.copy(wholeFiles = true))
+      opt[Unit]("local")
+        .text("set to run in local mode (useful for testing purpose)")
+        .action((_, c) => c.copy(local = true))
+    }
+    
+    parser.parse(args, defaultParams).map { params =>
+      run(params)
+    } getOrElse {
+      sys.exit(1)
+    }
+    
   }
 
 }
