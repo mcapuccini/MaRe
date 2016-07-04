@@ -97,11 +97,11 @@ object EasyReduce {
         .action((x, c) => c.copy(imageName = x))
       opt[String]("inputPath")
         .required
-        .text("Dataset input path. Must be a directory if wholeFiles is set.")
+        .text("dataset input path. Must be a directory if wholeFiles is set.")
         .action((x, c) => c.copy(inputPath = x))
       opt[String]("outputPath")
         .required
-        .text("Result output path")
+        .text("result output path")
         .action((x, c) => c.copy(outputPath = x))
       opt[Int]("commandTimeout")
         .text(s"execution timeout for the command, in sec. (default: ${RunUtils.FIFO_READ_TIMEOUT})")
