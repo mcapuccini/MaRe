@@ -84,37 +84,36 @@ object EasyReduce {
 
     val parser = new OptionParser[EasyReduceParams]("EasyReduce") {
       head("EasyReduce: reduce a distributed dataset using a command from a Docker container.")
+      opt[String]("imageName")
+        .text("Docker image name (default: \"ubuntu:14.04\").")
+        .action((x, c) => c.copy(imageName = x))
       opt[String]("command")
         .required
-        .text("command to run inside the Docker container, " +
-          "e.g. sum $(cat <input:1>) + $(cat <input:2>) > <output>.")
+        .text("command to run inside the Docker container, e.g. rev <input> > <output>.")
         .action((x, c) => c.copy(command = x))
       opt[Unit]("noTrim")
         .text("if set the command output will not get trimmed.")
         .action((_, c) => c.copy(trimComandOutput = false))
-      opt[String]("imageName")
-        .text("Docker image name (default: \"ubuntu:14.04\")")
-        .action((x, c) => c.copy(imageName = x))
-      opt[String]("inputPath")
+      opt[Unit]("wholeFiles")
+        .text("if set, multiple input files will be loaded from an input directory. The command will " +
+              "executed in parallel, on the whole files. In contrast, when this is not set "+
+              "the file/files in input is/are splitted line by line, and the command is executed in parallel "+
+              "on each line of the file.")
+        .action((_, c) => c.copy(wholeFiles = true))
+      opt[Int]("commandTimeout")
+        .text(s"execution timeout for the command, in sec. (default: ${RunUtils.FIFO_READ_TIMEOUT}).")
+        .action((x, c) => c.copy(fifoReadTimeout = x))
+      opt[Unit]("local")
+        .text("set to run in local mode (useful for testing purpose).")
+        .action((_, c) => c.copy(local = true))
+      arg[String]("inputPath")
         .required
         .text("dataset input path. Must be a directory if wholeFiles is set.")
         .action((x, c) => c.copy(inputPath = x))
-      opt[String]("outputPath")
+      arg[String]("outputPath")
         .required
-        .text("result output path")
+        .text("result output path.")
         .action((x, c) => c.copy(outputPath = x))
-      opt[Int]("commandTimeout")
-        .text(s"execution timeout for the command, in sec. (default: ${RunUtils.FIFO_READ_TIMEOUT})")
-        .action((x, c) => c.copy(fifoReadTimeout = x))
-      opt[Unit]("wholeFiles")
-        .text("if set, multiple input files will be loaded from an input directory. The command will " +
-          "executed in parallel, on the whole files. In contrast, when this is not set " +
-          "the file/files in input is/are splitted line by line, and the command is executed in parallel " +
-          "on each line of the file")
-        .action((_, c) => c.copy(wholeFiles = true))
-      opt[Unit]("local")
-        .text("set to run in local mode (useful for testing purpose)")
-        .action((_, c) => c.copy(local = true))
     }
 
     parser.parse(args, defaultParams).map { params =>
