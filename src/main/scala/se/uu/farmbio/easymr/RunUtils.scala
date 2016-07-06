@@ -2,28 +2,36 @@ package se.uu.farmbio.easymr
 
 import java.io.File
 import java.io.PrintWriter
-import scala.collection.JavaConverters.seqAsJavaListConverter
-import scala.io.Source
-import com.google.common.io.Files
-import sys.process._
-import org.apache.spark.Logging
-import scala.concurrent.Future
-import scala.util.{ Failure, Success }
+import java.util.concurrent.ExecutorService
+
 import scala.concurrent.Await
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
-import java.util.concurrent.Executors
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.DurationInt
+import scala.io.Source
+import scala.sys.process.ProcessLogger
+import scala.sys.process.stringSeqToProcess
+import scala.util.Failure
+import scala.util.Success
+
+import org.apache.spark.Logging
+
+import com.google.common.io.Files
 
 
 class RunException(msg: String) extends Exception(msg)
 
-object RunUtils extends Logging {
+object RunUtils {
   
   val FIFO_READ_TIMEOUT = 1200
   
-  implicit val ec = ExecutionContext.fromExecutor(
-      Executors.newFixedThreadPool(100))
+}
 
+class RunUtils(val threadPool: ExecutorService) extends Logging {
+  
+  implicit val ec = ExecutionContext.fromExecutor(threadPool)
+  
   def writeToFifo(fifo: File, toWrite: String) = {
     logInfo(s"writing to fifo: ${fifo.getAbsolutePath}")
     Future {
@@ -32,7 +40,12 @@ object RunUtils extends Logging {
         close
       }
     } onComplete {
-      case Failure(e) => e.printStackTrace
+      case Failure(e) => {
+        logWarning(
+            s"exeption while writing to ${fifo.getAbsolutePath} \n" + 
+            e.getStackTraceString
+        )
+      }
       case Success(_) => logInfo(s"successfully wrote into ${fifo.getAbsolutePath}")
     }
   }
@@ -77,7 +90,12 @@ object RunUtils extends Logging {
           logInfo(s"successfully executed command: ${cmd.mkString(" ")}")
         }
       }
-      case Failure(e) => e.printStackTrace
+      case Failure(e) => {
+        logWarning(
+            s"exeption while running ${cmd.mkString(" ")} \n" + 
+            e.getStackTraceString
+        )
+      }
     }
     if (!asynch) {
       Await.ready(future, Duration.Inf)

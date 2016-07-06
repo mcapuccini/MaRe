@@ -1,12 +1,15 @@
 package se.uu.farmbio.easymr
 
+import java.util.concurrent.Executors
+
+import org.apache.commons.io.FilenameUtils
+import org.apache.hadoop.io.NullWritable
+import org.apache.hadoop.mapred.lib.MultipleTextOutputFormat
+import org.apache.spark.HashPartitioner
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import org.apache.spark.HashPartitioner
-import org.apache.hadoop.mapred.lib.MultipleTextOutputFormat
-import org.apache.hadoop.io.NullWritable
-import java.io.File
-import org.apache.commons.io.FilenameUtils
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
+
 import scopt.OptionParser
 
 class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
@@ -56,20 +59,25 @@ object EasyMap {
     //Map data
     val result = data.map {
       case (index, record) =>
+        //Init RunUtils
+        val threadPool = Executors.newFixedThreadPool(10)
+        val run = new RunUtils(threadPool)
         //Make fifos
-        val inputFifo = RunUtils.mkfifo("input")
-        val outputFifo = RunUtils.mkfifo("output")
+        val inputFifo = run.mkfifo("input")
+        val outputFifo = run.mkfifo("output")
         //Write record to fifo
-        RunUtils.writeToFifo(inputFifo, record)
+        run.writeToFifo(inputFifo, record)
         //Run command in container
         val dockerOpts = s"-v ${inputFifo.getAbsolutePath}:/inputFifo " +
           s"-v ${outputFifo.getAbsolutePath}:/outputFifo"
-        RunUtils.dockerRun(toRun, params.imageName, dockerOpts)
+        run.dockerRun(toRun, params.imageName, dockerOpts)
         //Read result from fifo
-        val results = RunUtils.readFromFifo(outputFifo, params.fifoReadTimeout)
+        val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         //Delete the fifos
         inputFifo.delete
         outputFifo.delete
+        //Shut down thread pool
+        threadPool.shutdown()
         //Trim results and return
         if (params.trimComandOutput) {
           (index, results.trim)
@@ -112,7 +120,7 @@ object EasyMap {
             val noExt = FilenameUtils.removeExtension(filename)
             val trimmedName = FilenameUtils.getBaseName(noExt)
             //Set trimmed name and index, with output extension
-            if(outExt != null && outExt.length > 0) {
+            if (outExt != null && outExt.length > 0) {
               (s"${trimmedName}.${outExt}", content)
             } else {
               (trimmedName, content)
@@ -123,9 +131,9 @@ object EasyMap {
         .map((inputPath, _))
     }
   }
-  
+
   def main(args: Array[String]) {
-    
+
     val defaultParams = EasyMapParams()
 
     val parser = new OptionParser[EasyMapParams]("Easy Map") {
@@ -142,9 +150,9 @@ object EasyMap {
         .action((_, c) => c.copy(trimComandOutput = false))
       opt[Unit]("wholeFiles")
         .text("if set, multiple input files will be loaded from an input directory. The command will " +
-              "executed in parallel, on the whole files. In contrast, when this is not set "+
-              "the file/files in input is/are splitted line by line, and the command is executed in parallel "+
-              "on each line of the file.")
+          "executed in parallel, on the whole files. In contrast, when this is not set " +
+          "the file/files in input is/are splitted line by line, and the command is executed in parallel " +
+          "on each line of the file.")
         .action((_, c) => c.copy(wholeFiles = true))
       opt[Int]("commandTimeout")
         .text(s"execution timeout for the command, in sec. (default: ${RunUtils.FIFO_READ_TIMEOUT}).")
@@ -161,13 +169,13 @@ object EasyMap {
         .text("result output path.")
         .action((x, c) => c.copy(outputPath = x))
     }
-    
+
     parser.parse(args, defaultParams).map { params =>
       run(params)
     } getOrElse {
       sys.exit(1)
     }
-    
+
   }
 
 }

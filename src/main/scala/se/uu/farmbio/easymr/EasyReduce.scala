@@ -1,7 +1,10 @@
 package se.uu.farmbio.easymr
 
-import org.apache.spark.SparkContext
+import java.util.concurrent.Executors
+
 import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+
 import scopt.OptionParser
 
 case class EasyReduceParams(
@@ -43,24 +46,29 @@ object EasyReduce {
     //Reduce data
     val result = data.reduce {
       case (record1, record2) =>
+        //Init RunUtils
+        val threadPool = Executors.newFixedThreadPool(10)
+        val run = new RunUtils(threadPool)
         //Make fifos
-        val inputFifo1 = RunUtils.mkfifo("input1")
-        val inputFifo2 = RunUtils.mkfifo("input2")
-        val outputFifo = RunUtils.mkfifo("output")
+        val inputFifo1 = run.mkfifo("input1")
+        val inputFifo2 = run.mkfifo("input2")
+        val outputFifo = run.mkfifo("output")
         //Write record to fifo
-        RunUtils.writeToFifo(inputFifo1, record1)
-        RunUtils.writeToFifo(inputFifo2, record2)
+        run.writeToFifo(inputFifo1, record1)
+        run.writeToFifo(inputFifo2, record2)
         //Run command in container
         val dockerOpts = s"-v ${inputFifo1.getAbsolutePath}:/inputFifo1 " +
           s"-v ${inputFifo2.getAbsolutePath}:/inputFifo2 " +
           s"-v ${outputFifo.getAbsolutePath}:/outputFifo"
-        RunUtils.dockerRun(toRun, params.imageName, dockerOpts)
+        run.dockerRun(toRun, params.imageName, dockerOpts)
         //Read result from fifo
-        val results = RunUtils.readFromFifo(outputFifo, params.fifoReadTimeout)
+        val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         //Delete the fifos
         inputFifo1.delete
         inputFifo2.delete
         outputFifo.delete
+        //Shut down thread pool
+        threadPool.shutdown()
         //Trim results and return
         if (params.trimComandOutput) {
           results.trim
