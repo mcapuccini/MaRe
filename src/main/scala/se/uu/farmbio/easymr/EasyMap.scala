@@ -1,7 +1,5 @@
 package se.uu.farmbio.easymr
 
-import java.util.concurrent.Executors
-
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.io.NullWritable
 import org.apache.hadoop.mapred.lib.MultipleTextOutputFormat
@@ -55,7 +53,7 @@ object EasyMap {
     val result = data.map {
       case (index, record) =>
         //Init RunUtils
-        val threadPool = Executors.newFixedThreadPool(10)
+        val threadPool = RunUtils.createThreadPool
         val run = new RunUtils(threadPool)
         //Make fifos
         val inputFifo = run.mkfifo("input")

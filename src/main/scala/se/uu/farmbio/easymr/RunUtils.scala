@@ -3,6 +3,11 @@ package se.uu.farmbio.easymr
 import java.io.File
 import java.io.PrintWriter
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy
+import java.util.concurrent.TimeUnit
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
@@ -25,6 +30,18 @@ class RunException(msg: String) extends Exception(msg)
 object RunUtils {
   
   val FIFO_READ_TIMEOUT = 1200
+  private val THREAD_POOL_SIZE = 10
+  
+  def createThreadPool = {
+    new ThreadPoolExecutor(
+        THREAD_POOL_SIZE, 
+        THREAD_POOL_SIZE, 
+        0L, 
+        TimeUnit.MILLISECONDS, 
+        new LinkedBlockingQueue[Runnable], 
+        Executors.defaultThreadFactory, 
+        new DiscardPolicy)
+  }
   
 }
 

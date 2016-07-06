@@ -1,7 +1,5 @@
 package se.uu.farmbio.easymr
 
-import java.util.concurrent.Executors
-
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
@@ -41,7 +39,7 @@ object EasyReduce {
     val result = data.reduce {
       case (record1, record2) =>
         //Init RunUtils
-        val threadPool = Executors.newFixedThreadPool(10)
+        val threadPool = RunUtils.createThreadPool
         val run = new RunUtils(threadPool)
         //Make fifos
         val inputFifo1 = run.mkfifo("input1")
