@@ -112,7 +112,11 @@ object EasyMap {
             val noExt = FilenameUtils.removeExtension(filename)
             val trimmedName = FilenameUtils.getBaseName(noExt)
             //Set trimmed name and index, with output extension
-            (s"${trimmedName}.${outExt}", content)
+            if(outExt != null && outExt.length > 0) {
+              (s"${trimmedName}.${outExt}", content)
+            } else {
+              (trimmedName, content)
+            }
         }
     } else {
       sc.textFile(inputPath)
