@@ -96,7 +96,7 @@ object EasyMap {
 
   }
 
-  private[easymr] def readInputData(
+  private def readInputData(
     sc: SparkContext,
     inputPath: String,
     outputPath: String,
