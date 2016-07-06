@@ -35,10 +35,9 @@ class RunUtils(val threadPool: ExecutorService) extends Logging {
   def writeToFifo(fifo: File, toWrite: String) = {
     logInfo(s"writing to fifo: ${fifo.getAbsolutePath}")
     Future {
-      new PrintWriter(fifo) {
-        write(toWrite)
-        close
-      }
+      val pw = new PrintWriter(fifo)
+      pw.write(toWrite)
+      pw.close
     } onComplete {
       case Failure(e) => {
         logWarning(
