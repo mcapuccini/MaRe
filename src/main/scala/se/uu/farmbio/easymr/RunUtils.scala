@@ -31,8 +31,9 @@ object RunUtils extends Logging {
         write(toWrite)
         close
       }
-    } onFailure {
-      case (e) => e.printStackTrace
+    } onComplete {
+      case Failure(e) => e.printStackTrace
+      case Success(_) => logInfo(s"successfully wrote into ${fifo.getAbsolutePath}")
     }
   }
 
