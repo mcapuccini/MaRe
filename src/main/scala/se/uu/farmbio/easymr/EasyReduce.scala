@@ -37,12 +37,6 @@ object EasyReduce {
       sc.textFile(params.inputPath)
     }
 
-    //Format command
-    val toRun = params.command
-      .replaceAll("<input:1>", "/inputFifo1")
-      .replaceAll("<input:2>", "/inputFifo2")
-      .replaceAll("<output>", "/outputFifo")
-
     //Reduce data
     val result = data.reduce {
       case (record1, record2) =>
@@ -57,10 +51,10 @@ object EasyReduce {
         run.writeToFifo(inputFifo1, record1)
         run.writeToFifo(inputFifo2, record2)
         //Run command in container
-        val dockerOpts = s"-v ${inputFifo1.getAbsolutePath}:/inputFifo1 " +
-          s"-v ${inputFifo2.getAbsolutePath}:/inputFifo2 " +
-          s"-v ${outputFifo.getAbsolutePath}:/outputFifo"
-        run.dockerRun(toRun, params.imageName, dockerOpts)
+        val dockerOpts = s"-v ${inputFifo1.getAbsolutePath}:/input1 " +
+          s"-v ${inputFifo2.getAbsolutePath}:/input2 " +
+          s"-v ${outputFifo.getAbsolutePath}:/output"
+        run.dockerRun(params.command, params.imageName, dockerOpts)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         //Delete the fifos

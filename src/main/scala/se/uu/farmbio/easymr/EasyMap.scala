@@ -51,11 +51,6 @@ object EasyMap {
       params.outputPath,
       params.wholeFiles)
 
-    //Format command
-    val toRun = params.command
-      .replaceAll("<input>", "/inputFifo")
-      .replaceAll("<output>", "/outputFifo")
-
     //Map data
     val result = data.map {
       case (index, record) =>
@@ -68,9 +63,9 @@ object EasyMap {
         //Write record to fifo
         run.writeToFifo(inputFifo, record)
         //Run command in container
-        val dockerOpts = s"-v ${inputFifo.getAbsolutePath}:/inputFifo " +
-          s"-v ${outputFifo.getAbsolutePath}:/outputFifo"
-        run.dockerRun(toRun, params.imageName, dockerOpts)
+        val dockerOpts = s"-v ${inputFifo.getAbsolutePath}:/input " +
+          s"-v ${outputFifo.getAbsolutePath}:/output"
+        run.dockerRun(params.command, params.imageName, dockerOpts)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         //Delete the fifos

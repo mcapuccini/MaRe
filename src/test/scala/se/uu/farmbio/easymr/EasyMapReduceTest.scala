@@ -28,7 +28,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
   test("easy map") {
 
     val params = EasyMapParams(
-      command = "rev <input> > <output>",
+      command = "rev /input > /output",
       imageName = "ubuntu:14.04",
       local = true,
       inputPath = getClass.getResource("dna/dna.txt").getPath,
@@ -60,7 +60,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
     }
 
     val params = EasyReduceParams(
-      command = "expr $(cat <input:1>) + $(cat <input:2>) > <output>",
+      command = "expr $(cat /input1) + $(cat /input2) > /output",
       imageName = "ubuntu:14.04",
       local = true,
       inputPath = tempDir.getAbsolutePath + "/count_by_line.txt",
@@ -82,7 +82,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
   test("easy map, multiple inputs") {
 
     val params = EasyMapParams(
-      command = "rev <input> > <output>",
+      command = "rev /input > /output",
       imageName = "ubuntu:14.04",
       local = true,
       inputPath = getClass.getResource("dna").getPath,
@@ -124,7 +124,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
     }
     
     val params = EasyReduceParams(
-      command = "expr $(cat <input:1>) + $(cat <input:2>) > <output>",
+      command = "expr $(cat /input1) + $(cat /input2) > /output",
       imageName = "ubuntu:14.04",
       local = true,
       inputPath = sumDir.getAbsolutePath,
