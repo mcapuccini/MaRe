@@ -12,6 +12,47 @@ EasyMapReduce comes as a Spark application that you can submit to an existing Sp
 You can download the latest build with all of the dependencies here:
 [download](http://pele.farmbio.uu.se/artifactory/libs-release/se/uu/farmbio/easymr/0.0.1/easymr-0.0.1-jar-with-dependencies.jar).
 
+### Example: DNA GC count
+DNA is a string written in a language of 4 characters: A,T,G,C. Counting how many times G and C occurr in the genome is a task that is often performed in genomics. In this example we use EasyMap and EasyReduce, form the EasyMapReduce package to perform this task in parallel. 
+
+First, we need submit EasyMap to the Spark cluster to count how many times G and C occurr in the file. For simplicity we run Spark in local mode in this example, we suggest you to do the same in your first experiments. 
+
+```
+spark-submit --class se.uu.farmbio.easymr.EasyMap \ 
+  --master local[*] \
+  easymr-0.0.1.jar \
+  --imageName ubuntu:14.04 \
+  --command "cat /input | fold -1 | grep [gc] | wc -l > /output" \
+  /path/to/dna.txt /results/foler/count_by_line.txt
+```
+
+*Notes*: 
+
+1. In each container a chunk of the DNA can be read form the `/input` file. This is why we "cat" the /input file in first place in the command
+
+2. The results are read bach in the cluster form the `/output` file. This is why we write the result to the /output file in the command
+
+3. Spark divides the input file (dna.txt) line by line, hence in the result file (count_by_line.txt) there will be the GC count for each line of the file, and not the total sum.
+
+Once we have the GC count line by line, we can use EasyReduce to sum all of the lines together, and the get the total GC count.
+
+```
+spark-submit --class se.uu.farmbio.easymr.EasyReduce \
+  --master local[*] \
+  easymr-0.0.1.jar \
+  --imageName ubuntu:14.04 \
+  --command 'expr $(cat /input1) + $(cat /input2) > /output' \
+  /results/foler/count_by_line.txt /results/foler/sum.txt
+```
+
+*Notes*: 
+
+1. The goal of a reduce task is to combine multiple chunks of the data together. I each container two splits of the data are available in the `/input1` and `/input2` file. Like in EasyMap the result needs to be written in `/output`
+
+2. For the final result to be correct, and in many case for the reduce task to succeed, the provided command needs to be associative and commutative. Please give a look [here](http://stackoverflow.com/questions/329423/parallelizing-the-reduce-in-mapreduce) for more details
+
+We suggest you to repeat this experiment yourself, using the example files in this [repository](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/resources/se/uu/farmbio/easymr/dna).
+
 ## EasyMap usage
 ```
 Usage: Easy Map [options] inputPath outputPath
