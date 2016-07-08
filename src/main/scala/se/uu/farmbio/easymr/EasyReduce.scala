@@ -89,7 +89,9 @@ object EasyReduce {
         .action((x, c) => c.copy(imageName = x))
       opt[String]("command")
         .required
-        .text("command to run inside the Docker container, e.g. 'expr sum $(cat /input1) + $(cat /input2) > /output'.")
+        .text("command to run inside the Docker container, " + 
+            "e.g. 'expr sum $(cat /input1) + $(cat /input2) > /output'. " +
+            "The command needs to be associative and commutative.")
         .action((x, c) => c.copy(command = x))
       opt[Unit]("noTrim")
         .text("if set the command output will not get trimmed.")
