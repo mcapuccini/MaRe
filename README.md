@@ -54,7 +54,7 @@ spark-submit --class se.uu.farmbio.easymr.EasyReduce \
 We suggest you to repeat this experiment yourself, using the example files in this [repository](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/resources/se/uu/farmbio/easymr/dna).
 
 ### Multiple input files and whole files
-In many scientific applications, instead of having a single big file, there are many smaller files that need to be processed by the command all together without being splitted line by line. If this is you use case please give a look to the --wholeFiles option in the usage sections. 
+In many scientific applications, instead of having a single big file, there are many smaller files that need to be processed by the command all together without being splitted line by line. If this is you use case please give a look to the `---wholeFiles` option in the usage sections. 
 
 ## EasyMap usage
 ```
