@@ -11,3 +11,54 @@ EasyMapReduce comes as a Spark application that you can submit to an existing Sp
 
 You can download the latest build with all of the dependencies here:
 [download](http://pele.farmbio.uu.se/artifactory/libs-release/se/uu/farmbio/easymr/0.0.1/easymr-0.0.1-jar-with-dependencies.jar).
+
+## EasyMap usage
+```
+Usage: Easy Map [options] inputPath outputPath
+
+  --imageName <value>
+        Docker image name (default: "ubuntu:14.04").
+  --command <value>
+        command to run inside the Docker container, e.g. 'rev /input > /output'.
+  --noTrim
+        if set the command output will not get trimmed.
+  --wholeFiles
+        if set, multiple input files will be loaded from an input directory. 
+        The command will executed in parallel, on the whole files. In contrast, 
+        when this is not set the file/files in input is/are splitted line by line, 
+        and the command is executed in parallel on each line of the file.
+  --commandTimeout <value>
+        execution timeout for the command, in sec. (default: 1200).
+  --local
+        set to run in local mode (useful for testing purpose).
+  inputPath
+        dataset input path. Must be a directory if wholeFiles is set.
+  outputPath
+        result output path.
+```
+
+## EasyReduce usage
+```
+Usage: EasyReduce [options] inputPath outputPath
+
+  --imageName <value>
+        Docker image name (default: "ubuntu:14.04").
+  --command <value>
+        command to run inside the Docker container, e.g. 'expr sum $(cat /input1) + $(cat /input2) > /output'. 
+        The command needs to be associative and commutative.
+  --noTrim
+        if set the command output will not get trimmed.
+  --wholeFiles
+        if set, multiple input files will be loaded from an input directory. 
+        The command will executed in parallel, on the whole files. In contrast, 
+        when this is not set the file/files in input is/are splitted line by line, 
+        and the command is executed in parallel on each line of the file.
+  --commandTimeout <value>
+        execution timeout for the command, in sec. (default: 1200).
+  --local
+        set to run in local mode (useful for testing purpose).
+  inputPath
+        dataset input path. Must be a directory if wholeFiles is set.
+  outputPath
+        result output path.
+```
