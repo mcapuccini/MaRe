@@ -89,7 +89,7 @@ object EasyReduce {
         .action((x, c) => c.copy(imageName = x))
       opt[String]("command")
         .required
-        .text("command to run inside the Docker container, e.g. rev <input> > <output>.")
+        .text("command to run inside the Docker container, e.g. 'expr sum $(cat /input1) + $(cat /input2) > /output'.")
         .action((x, c) => c.copy(command = x))
       opt[Unit]("noTrim")
         .text("if set the command output will not get trimmed.")
