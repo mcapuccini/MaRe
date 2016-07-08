@@ -3,12 +3,12 @@
 EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
 
 ## Table of contents
-- [What is EasyMapReduce](what-is-easymapreduce)
-- [Getting Started](gettign-started)
-  - [Example: DNA GC count](example-dna-gc-count)
-  - [Multiple input files and whole files](multiple-input-files-and-whole-files)
-- [EasyMap usage](easymap-usage)
-- [EasyReduce usage](easyreduce-usage)
+- [What is EasyMapReduce](#what-is-easymapreduce)
+- [Getting Started](#gettign-started)
+  - [Example: DNA GC count](#example-dna-gc-count)
+  - [Multiple input files and whole files](#multiple-input-files-and-whole-files)
+- [EasyMap usage](#easymap-usage)
+- [EasyReduce usage](#easyreduce-usage)
 
 ## What is EasyMapReduce
 
