@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
 import scopt.OptionParser
+import org.apache.spark.Logging
 
 case class EasyReduceParams(
   command: String = null,
@@ -15,7 +16,7 @@ case class EasyReduceParams(
   wholeFiles: Boolean = false,
   local: Boolean = false)
 
-object EasyReduce {
+object EasyReduce extends Logging {
 
   def run(params: EasyReduceParams) = {
 
@@ -49,12 +50,16 @@ object EasyReduce {
         run.writeToFifo(inputFifo1, record1)
         run.writeToFifo(inputFifo2, record2)
         //Run command in container
+        val t0 = System.currentTimeMillis
         val dockerOpts = s"-v ${inputFifo1.getAbsolutePath}:/input1 " +
           s"-v ${inputFifo2.getAbsolutePath}:/input2 " +
           s"-v ${outputFifo.getAbsolutePath}:/output"
         run.dockerRun(params.command, params.imageName, dockerOpts)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
+        val dockerTime = System.currentTimeMillis - t0
+        //Log serial time
+        logInfo(s"Docker ran in (millisec.): $dockerTime")
         //Delete the fifos
         inputFifo1.delete
         inputFifo2.delete

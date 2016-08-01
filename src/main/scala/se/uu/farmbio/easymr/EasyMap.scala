@@ -9,6 +9,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 import scopt.OptionParser
+import org.apache.spark.Logging
 
 class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
   override def generateActualKey(key: Any, value: Any): Any =
@@ -30,7 +31,7 @@ case class EasyMapParams(
   wholeFiles: Boolean = false,
   local: Boolean = false)
 
-object EasyMap {
+object EasyMap extends Logging {
 
   def run(params: EasyMapParams) = {
 
@@ -61,11 +62,15 @@ object EasyMap {
         //Write record to fifo
         run.writeToFifo(inputFifo, record)
         //Run command in container
+        val t0 = System.currentTimeMillis
         val dockerOpts = s"-v ${inputFifo.getAbsolutePath}:/input " +
           s"-v ${outputFifo.getAbsolutePath}:/output"
         run.dockerRun(params.command, params.imageName, dockerOpts)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
+        val dockerTime = System.currentTimeMillis - t0
+        //Log serial time
+        logInfo(s"Docker ran in (millisec.): $dockerTime")
         //Delete the fifos
         inputFifo.delete
         outputFifo.delete
