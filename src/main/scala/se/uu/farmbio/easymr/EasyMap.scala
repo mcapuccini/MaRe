@@ -23,7 +23,7 @@ class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
 
 case class EasyMapParams(
   command: String = null,
-  trimComandOutput: Boolean = true,
+  trimCommandOutput: Boolean = false,
   imageName: String = "ubuntu:14.04",
   inputPath: String = null,
   outputPath: String = null,
@@ -77,7 +77,7 @@ object EasyMap extends Logging {
         //Shut down thread pool
         threadPool.shutdown()
         //Trim results and return
-        if (params.trimComandOutput) {
+        if (params.trimCommandOutput) {
           (index, results.trim)
         } else {
           (index, results)
@@ -143,9 +143,9 @@ object EasyMap extends Logging {
         .required
         .text("command to run inside the Docker container, e.g. 'rev /input > /output'.")
         .action((x, c) => c.copy(command = x))
-      opt[Unit]("noTrim")
-        .text("if set the command output will not get trimmed.")
-        .action((_, c) => c.copy(trimComandOutput = false))
+      opt[Unit]("trimCommandOutput")
+        .text("if set the command output will get trimmed.")
+        .action((_, c) => c.copy(trimCommandOutput = true))
       opt[Unit]("wholeFiles")
         .text("if set, multiple input files will be loaded from an input directory. The command will " +
           "executed in parallel, on the whole files. In contrast, when this is not set " +

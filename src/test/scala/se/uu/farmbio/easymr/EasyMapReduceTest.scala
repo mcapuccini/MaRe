@@ -33,7 +33,8 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
       local = true,
       inputPath = getClass.getResource("dna/dna.txt").getPath,
       outputPath = tempDir.getAbsolutePath + "/rev.txt",
-      fifoReadTimeout = 30)
+      fifoReadTimeout = 30,
+      trimCommandOutput = true)
     EasyMap.run(params)
 
     val reverseTest = Source.fromFile(getClass.getResource("dna/dna.txt").getPath)
@@ -88,7 +89,8 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
       inputPath = getClass.getResource("dna").getPath,
       outputPath = tempDir.getAbsolutePath + "/seq.rev",
       wholeFiles = true,
-      fifoReadTimeout = 30)
+      fifoReadTimeout = 30,
+      trimCommandOutput = true)
     EasyMap.run(params)
 
     Seq("dna.txt", "dna1.txt", "dna2.txt").foreach { input =>
@@ -130,7 +132,8 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
       inputPath = sumDir.getAbsolutePath,
       outputPath = tempDir.getAbsolutePath + "/sum_whole.txt",
       wholeFiles = true,
-      fifoReadTimeout = 30)
+      fifoReadTimeout = 30,
+      trimCommandOutput = true)
     EasyReduce.run(params)
     
     val sc = new SparkContext(conf)
