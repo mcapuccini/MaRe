@@ -107,11 +107,15 @@ object EasyMap extends Logging {
     inputPath: String,
     outputPath: String,
     wholeFiles: Boolean) = {
+    val defaultParallelism = 
+      sc.getConf.get("spark.default.parallelism").toInt
     if (wholeFiles) {
       //Get output extension
       val outExt = FilenameUtils.getExtension(outputPath)
       //Load files
-      sc.wholeTextFiles(inputPath)
+      sc.wholeTextFiles(
+          inputPath, 
+          defaultParallelism)
         .map {
           case (filename, content) =>
             //Trim extension and path
@@ -125,7 +129,9 @@ object EasyMap extends Logging {
             }
         }
     } else {
-      sc.textFile(inputPath)
+      sc.textFile(
+          inputPath, 
+          defaultParallelism)
         .map((inputPath, _))
     }
   }

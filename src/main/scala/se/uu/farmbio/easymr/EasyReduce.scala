@@ -29,11 +29,15 @@ object EasyReduce extends Logging {
     val sc = new SparkContext(conf)
 
     //Read input data
+    val defaultParallelism = 
+      sc.getConf.get("spark.default.parallelism").toInt
     val data = if (params.wholeFiles) {
-      sc.wholeTextFiles(params.inputPath)
+      sc.wholeTextFiles(
+          params.inputPath, 
+          defaultParallelism)
         .map(_._2) //remove file name
     } else {
-      sc.textFile(params.inputPath)
+      sc.textFile(params.inputPath, defaultParallelism)
     }
 
     //Reduce data
