@@ -24,7 +24,8 @@ object EasyReduce extends Logging {
     val conf = new SparkConf()
       .setAppName(s"Reduce: ${params.command}")
     if (params.local) {
-      conf.setMaster("local[*]")
+      conf.setMaster("local[2]")
+      conf.set("spark.default.parallelism","2")
     }
     val sc = new SparkContext(conf)
 

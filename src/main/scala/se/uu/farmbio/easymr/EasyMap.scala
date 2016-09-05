@@ -39,7 +39,8 @@ object EasyMap extends Logging {
     val conf = new SparkConf()
       .setAppName(s"Map: ${params.command}")
     if (params.local) {
-      conf.setMaster("local[*]")
+      conf.setMaster("local[2]")
+      conf.set("spark.default.parallelism","2")
     }
     val sc = new SparkContext(conf)
 
@@ -129,9 +130,8 @@ object EasyMap extends Logging {
             }
         }
     } else {
-      sc.textFile(
-          inputPath, 
-          defaultParallelism)
+      sc.textFile(inputPath, 
+          sc.getConf.get("spark.default.parallelism").toInt)
         .map((inputPath, _))
     }
   }
