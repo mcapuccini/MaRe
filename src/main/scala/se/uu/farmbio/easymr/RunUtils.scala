@@ -77,8 +77,14 @@ class RunUtils(val threadPool: ExecutorService) extends Logging {
   def dockerRun(
     cmd: String,
     imageName: String,
-    dockerOpts: String) = {
-    command(s"docker run $dockerOpts $imageName sh -c ".split(" ") ++ Seq(cmd))
+    dockerOpts: String,
+    sudo: Boolean = false) = {
+    val toRun = s"docker run $dockerOpts $imageName sh -c ".split(" ") ++ Seq(cmd)
+    val sudoStr = if(sudo) {
+      command(Seq("sudo") ++ toRun)
+    } else {
+      command(toRun)
+    }
   }
 
   def mkfifo(name: String) = {

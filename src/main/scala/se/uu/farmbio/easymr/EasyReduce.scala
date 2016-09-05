@@ -14,7 +14,8 @@ case class EasyReduceParams(
   outputPath: String = null,
   fifoReadTimeout: Int = RunUtils.FIFO_READ_TIMEOUT,
   wholeFiles: Boolean = false,
-  local: Boolean = false)
+  local: Boolean = false,
+  dockerSudo: Boolean = false)
 
 object EasyReduce extends Logging {
 
@@ -59,7 +60,10 @@ object EasyReduce extends Logging {
         val dockerOpts = s"-v ${inputFifo1.getAbsolutePath}:/input1 " +
           s"-v ${inputFifo2.getAbsolutePath}:/input2 " +
           s"-v ${outputFifo.getAbsolutePath}:/output"
-        run.dockerRun(params.command, params.imageName, dockerOpts)
+        run.dockerRun(params.command, 
+            params.imageName, 
+            dockerOpts,
+            params.dockerSudo)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         val dockerTime = System.currentTimeMillis - t0
@@ -118,6 +122,9 @@ object EasyReduce extends Logging {
       opt[Unit]("local")
         .text("set to run in local mode (useful for testing purpose).")
         .action((_, c) => c.copy(local = true))
+      opt[Unit]("dockerSudo")
+        .text("set to run docker with passwordless sudo.")
+        .action((_, c) => c.copy(dockerSudo = true))
       arg[String]("inputPath")
         .required
         .text("dataset input path. Must be a directory if wholeFiles is set.")

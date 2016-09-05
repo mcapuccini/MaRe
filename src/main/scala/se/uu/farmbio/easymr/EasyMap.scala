@@ -29,7 +29,8 @@ case class EasyMapParams(
   outputPath: String = null,
   fifoReadTimeout: Int = RunUtils.FIFO_READ_TIMEOUT,
   wholeFiles: Boolean = false,
-  local: Boolean = false)
+  local: Boolean = false,
+  dockerSudo: Boolean = false)
 
 object EasyMap extends Logging {
 
@@ -40,7 +41,7 @@ object EasyMap extends Logging {
       .setAppName(s"Map: ${params.command}")
     if (params.local) {
       conf.setMaster("local[2]")
-      conf.set("spark.default.parallelism","2")
+      conf.set("spark.default.parallelism", "2")
     }
     val sc = new SparkContext(conf)
 
@@ -66,7 +67,10 @@ object EasyMap extends Logging {
         val t0 = System.currentTimeMillis
         val dockerOpts = s"-v ${inputFifo.getAbsolutePath}:/input " +
           s"-v ${outputFifo.getAbsolutePath}:/output"
-        run.dockerRun(params.command, params.imageName, dockerOpts)
+        run.dockerRun(params.command,
+          params.imageName,
+          dockerOpts,
+          params.dockerSudo)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         val dockerTime = System.currentTimeMillis - t0
@@ -108,15 +112,15 @@ object EasyMap extends Logging {
     inputPath: String,
     outputPath: String,
     wholeFiles: Boolean) = {
-    val defaultParallelism = 
+    val defaultParallelism =
       sc.getConf.get("spark.default.parallelism").toInt
     if (wholeFiles) {
       //Get output extension
       val outExt = FilenameUtils.getExtension(outputPath)
       //Load files
       sc.wholeTextFiles(
-          inputPath, 
-          defaultParallelism)
+        inputPath,
+        defaultParallelism)
         .map {
           case (filename, content) =>
             //Trim extension and path
@@ -130,8 +134,8 @@ object EasyMap extends Logging {
             }
         }
     } else {
-      sc.textFile(inputPath, 
-          sc.getConf.get("spark.default.parallelism").toInt)
+      sc.textFile(inputPath,
+        sc.getConf.get("spark.default.parallelism").toInt)
         .map((inputPath, _))
     }
   }
@@ -164,6 +168,9 @@ object EasyMap extends Logging {
       opt[Unit]("local")
         .text("set to run in local mode (useful for testing purpose).")
         .action((_, c) => c.copy(local = true))
+      opt[Unit]("dockerSudo")
+        .text("set to run docker with passwordless sudo.")
+        .action((_, c) => c.copy(dockerSudo = true))
       arg[String]("inputPath")
         .required
         .text("dataset input path. Must be a directory if wholeFiles is set.")
