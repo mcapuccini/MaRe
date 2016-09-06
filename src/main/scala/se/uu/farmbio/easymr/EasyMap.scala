@@ -71,7 +71,7 @@ object EasyMap extends Logging {
           s" ${params.dockerOpts}" //additional user options
         run.dockerRun(params.command,
           params.imageName,
-          dockerOpts,
+          dockerOpts.trim,
           params.dockerSudo)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)

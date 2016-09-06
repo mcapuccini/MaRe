@@ -60,11 +60,11 @@ object EasyReduce extends Logging {
         val t0 = System.currentTimeMillis
         val dockerOpts = s"-v ${inputFifo1.getAbsolutePath}:/input1 " +
           s"-v ${inputFifo2.getAbsolutePath}:/input2 " +
-          s"-v ${outputFifo.getAbsolutePath}:/output" +
-          s" ${params.dockerOpts}" //additional user options
+          s"-v ${outputFifo.getAbsolutePath}:/output " +
+          s"${params.dockerOpts}" //additional user options
         run.dockerRun(params.command, 
             params.imageName, 
-            dockerOpts,
+            dockerOpts.trim,
             params.dockerSudo)
         //Read result from fifo
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
