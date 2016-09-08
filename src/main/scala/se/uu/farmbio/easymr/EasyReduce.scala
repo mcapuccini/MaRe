@@ -62,7 +62,7 @@ object EasyReduce extends Logging {
           s"-v ${inputFifo2.getAbsolutePath}:/input2 " +
           s"-v ${outputFifo.getAbsolutePath}:/output " +
           s"${params.dockerOpts}" //additional user options
-        run.dockerRun(params.command, 
+        val containerName = run.dockerRun(params.command, 
             params.imageName, 
             dockerOpts.trim,
             params.dockerSudo)
@@ -75,6 +75,8 @@ object EasyReduce extends Logging {
         inputFifo1.delete
         inputFifo2.delete
         outputFifo.delete
+        //Remove container
+        run.dockerRm(containerName)
         //Shut down thread pool
         threadPool.shutdown()
         //Trim results and return
