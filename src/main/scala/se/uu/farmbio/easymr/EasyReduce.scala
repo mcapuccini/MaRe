@@ -76,7 +76,7 @@ object EasyReduce extends Logging {
         inputFifo2.delete
         outputFifo.delete
         //Remove container
-        run.dockerRm(containerName)
+        run.dockerRm(containerName, params.dockerSudo)
         //Shut down thread pool
         threadPool.shutdown()
         //Trim results and return
