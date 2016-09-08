@@ -93,7 +93,7 @@ class RunUtils(val threadPool: ExecutorService) extends Logging {
   
   def dockerRm(containerName: String) = {
     val toRun = s"docker rm -f $containerName".split(" ")
-    command(toRun)
+    command(toRun, asynch = false)
   }
 
   def mkfifo(name: String) = {
