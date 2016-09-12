@@ -91,13 +91,9 @@ class RunUtils(val threadPool: ExecutorService) extends Logging {
     uuid
   }
   
-  def dockerRm(containerName: String, sudo: Boolean = false) = {
+  def dockerRm(containerName: String) = {
     val toRun = s"docker rm -f $containerName".split(" ")
-    if(sudo) {
-      command(Seq("sudo") ++ toRun, asynch = false)
-    } else {
-      command(toRun, asynch = false)
-    }
+    command(toRun, asynch = false)
   }
 
   def mkfifo(name: String) = {

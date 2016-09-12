@@ -82,7 +82,7 @@ object EasyMap extends Logging {
         inputFifo.delete
         outputFifo.delete
         //Remove container
-        run.dockerRm(containerName, params.dockerSudo)
+        run.dockerRm(containerName)
         //Shut down thread pool
         threadPool.shutdown()
         //Trim results and return
