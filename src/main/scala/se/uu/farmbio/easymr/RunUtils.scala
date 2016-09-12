@@ -23,7 +23,6 @@ import scala.util.Success
 import org.apache.spark.Logging
 
 import com.google.common.io.Files
-import java.util.UUID
 
 
 class RunException(msg: String) extends Exception(msg)
@@ -80,20 +79,12 @@ class RunUtils(val threadPool: ExecutorService) extends Logging {
     imageName: String,
     dockerOpts: String,
     sudo: Boolean = false) = {
-    val uuid = "EasyMapReduce_" + UUID.randomUUID.toString
-    val toRun = s"docker run --name=$uuid $dockerOpts $imageName sh -c "
-      .split(" ") ++ Seq(cmd)
-    if(sudo) {
+    val toRun = s"docker run $dockerOpts $imageName sh -c ".split(" ") ++ Seq(cmd)
+    val sudoStr = if(sudo) {
       command(Seq("sudo") ++ toRun)
     } else {
       command(toRun)
     }
-    uuid
-  }
-  
-  def dockerRm(containerName: String) = {
-    val toRun = s"docker rm -f $containerName".split(" ")
-    command(toRun)
   }
 
   def mkfifo(name: String) = {

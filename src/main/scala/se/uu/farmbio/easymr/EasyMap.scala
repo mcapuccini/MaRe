@@ -69,7 +69,7 @@ object EasyMap extends Logging {
         val dockerOpts = s"-v ${inputFifo.getAbsolutePath}:/input " +
           s"-v ${outputFifo.getAbsolutePath}:/output" +
           s" ${params.dockerOpts}" //additional user options
-        val containerName = run.dockerRun(params.command,
+        run.dockerRun(params.command,
           params.imageName,
           dockerOpts.trim,
           params.dockerSudo)
@@ -81,8 +81,6 @@ object EasyMap extends Logging {
         //Delete the fifos
         inputFifo.delete
         outputFifo.delete
-        //Remove container
-        run.dockerRm(containerName)
         //Shut down thread pool
         threadPool.shutdown()
         //Trim results and return
