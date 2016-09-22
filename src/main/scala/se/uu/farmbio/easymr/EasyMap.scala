@@ -10,6 +10,8 @@ import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 import scopt.OptionParser
 import org.apache.spark.Logging
+import org.apache.hadoop.fs.FileSystem
+import org.apache.hadoop.fs.Path
 
 class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
   override def generateActualKey(key: Any, value: Any): Any =
@@ -93,8 +95,17 @@ object EasyMap extends Logging {
 
     //Save results
     if (params.wholeFiles) { //Save with multiple output
-      val numFiles = result.map(_._1).distinct.count
-      result.partitionBy(new HashPartitioner(numFiles.toInt))
+      //Count files to output
+      val it = FileSystem
+        .get(sc.hadoopConfiguration)
+        .listFiles(new Path(params.inputPath), false)
+      var numFiles = 0 // Can't go functional on this :-(
+      while(it.hasNext()) {
+        it.next
+        numFiles+=1
+      }
+      //Save on separated files
+      result.partitionBy(new HashPartitioner(numFiles))
         .saveAsHadoopFile(params.outputPath,
           classOf[String],
           classOf[String],
