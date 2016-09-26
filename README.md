@@ -33,7 +33,8 @@ spark-submit --class se.uu.farmbio.easymr.EasyMap \
   easymr-0.0.1.jar \
   --imageName ubuntu:14.04 \
   --command "cat /input | fold -1 | grep [gc] | wc -l > /output" \
-  /path/to/dna.txt /results/foler/count_by_line.txt
+  /path/to/dna.txt /results/foler/count_by_line.txt \
+  --trimCommandOutput
 ```
 
 **Notes**: 
@@ -52,7 +53,8 @@ spark-submit --class se.uu.farmbio.easymr.EasyReduce \
   easymr-0.0.1.jar \
   --imageName ubuntu:14.04 \
   --command 'expr $(cat /input1) + $(cat /input2) > /output' \
-  /results/foler/count_by_line.txt /results/foler/sum.txt
+  /results/foler/count_by_line.txt /results/foler/sum.txt \
+  --trimCommandOutput
 ```
 
 **Notes**: 
@@ -68,23 +70,25 @@ In many scientific applications, instead of having a single big file, there are 
 
 ## EasyMap usage
 ```
+EasyMap: map a distributed dataset using a command form a Docker container.
 Usage: Easy Map [options] inputPath outputPath
 
   --imageName <value>
         Docker image name (default: "ubuntu:14.04").
   --command <value>
         command to run inside the Docker container, e.g. 'rev /input > /output'.
-  --noTrim
-        if set the command output will not get trimmed.
+  --trimCommandOutput
+        if set the command output will get trimmed.
   --wholeFiles
-        if set, multiple input files will be loaded from an input directory. 
-        The command will executed in parallel, on the whole files. In contrast, 
-        when this is not set the file/files in input is/are splitted line by line, 
-        and the command is executed in parallel on each line of the file.
+        if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
   --commandTimeout <value>
         execution timeout for the command, in sec. (default: 1200).
   --local
         set to run in local mode (useful for testing purpose).
+  --dockerSudo
+        set to run docker with passwordless sudo.
+  --dockerOpts <value>
+        additional options for "Docker run" (default: none).
   inputPath
         dataset input path. Must be a directory if wholeFiles is set.
   outputPath
@@ -93,24 +97,25 @@ Usage: Easy Map [options] inputPath outputPath
 
 ## EasyReduce usage
 ```
+EasyReduce: reduce a distributed dataset using a command from a Docker container.
 Usage: EasyReduce [options] inputPath outputPath
 
   --imageName <value>
         Docker image name (default: "ubuntu:14.04").
   --command <value>
-        command to run inside the Docker container, e.g. 'expr sum $(cat /input1) + $(cat /input2) > /output'. 
-        The command needs to be associative and commutative.
-  --noTrim
-        if set the command output will not get trimmed.
+        command to run inside the Docker container, e.g. 'expr sum $(cat /input1) + $(cat /input2) > /output'. The command needs to be associative and commutative.
+  --trimCommandOutput
+        if set the command output will get trimmed.
   --wholeFiles
-        if set, multiple input files will be loaded from an input directory. 
-        The command will executed in parallel, on the whole files. In contrast, 
-        when this is not set the file/files in input is/are splitted line by line, 
-        and the command is executed in parallel on each line of the file.
+        if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
   --commandTimeout <value>
         execution timeout for the command, in sec. (default: 1200).
   --local
         set to run in local mode (useful for testing purpose).
+  --dockerSudo
+        set to run docker with passwordless sudo.
+  --dockerOpts <value>
+        additional options for "Docker run" (default: none).
   inputPath
         dataset input path. Must be a directory if wholeFiles is set.
   outputPath
