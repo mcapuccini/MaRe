@@ -1,4 +1,4 @@
-package se.uu.farmbio.easymr
+package se.uu.it.easymr
 
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.io.NullWritable

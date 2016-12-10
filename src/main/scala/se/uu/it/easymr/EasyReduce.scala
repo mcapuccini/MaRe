@@ -1,4 +1,4 @@
-package se.uu.farmbio.easymr
+package se.uu.it.easymr
 
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext

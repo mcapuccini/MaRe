@@ -1,4 +1,4 @@
-package se.uu.farmbio.easymr
+package se.uu.it.easymr
 
 import java.io.File
 import java.io.PrintWriter

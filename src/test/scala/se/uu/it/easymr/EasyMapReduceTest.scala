@@ -1,4 +1,4 @@
-package se.uu.farmbio.easymr
+package se.uu.it.easymr
 
 import scala.io.Source
 
@@ -9,11 +9,18 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 import com.google.common.io.Files
+
 import java.io.PrintWriter
+
 import org.scalatest.BeforeAndAfterAll
+
 import scala.reflect.io.Path
+import se.uu.it.easymr.EasyMap;
+import se.uu.it.easymr.EasyReduce;
+
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+
 import java.io.File
 
 @RunWith(classOf[JUnitRunner])
