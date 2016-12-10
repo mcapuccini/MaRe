@@ -17,7 +17,7 @@ import org.scalatest.junit.JUnitRunner
 import com.google.common.io.Files
 
 @RunWith(classOf[JUnitRunner])
-class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
+class CLITest extends FunSuite with BeforeAndAfterAll {
 
   val conf = new SparkConf()
     .setAppName("MapReduceTest")
@@ -35,7 +35,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
       outputPath = tempDir.getAbsolutePath + "/rev.txt",
       fifoReadTimeout = 30,
       trimCommandOutput = true)
-    EasyMap.run(params)
+    EasyMapCLI.run(params)
 
     val reverseTest = Source.fromFile(getClass.getResource("dna/dna.txt").getPath)
       .getLines.map(_.reverse)
@@ -67,7 +67,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
       inputPath = tempDir.getAbsolutePath + "/count_by_line.txt",
       outputPath = tempDir.getAbsolutePath + "/sum.txt",
       fifoReadTimeout = 30)
-    EasyReduce.run(params)
+    EasyReduceCLI.run(params)
 
     val sc = new SparkContext(conf)
     val sumOut = sc.textFile(tempDir.getAbsolutePath + "/sum.txt").first
@@ -91,7 +91,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
       wholeFiles = true,
       fifoReadTimeout = 30,
       trimCommandOutput = true)
-    EasyMap.run(params)
+    EasyMapCLI.run(params)
 
     Seq("dna.txt", "dna1.txt", "dna2.txt").foreach { input =>
       val reverseTest = Source.fromFile(
@@ -134,7 +134,7 @@ class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
       wholeFiles = true,
       fifoReadTimeout = 30,
       trimCommandOutput = true)
-    EasyReduce.run(params)
+    EasyReduceCLI.run(params)
     
     val sc = new SparkContext(conf)
     val sumOut = sc.textFile(tempDir.getAbsolutePath + "/sum_whole.txt").first

@@ -36,7 +36,7 @@ case class EasyMapParams(
   dockerSudo: Boolean = false,
   dockerOpts: String = "")
 
-object EasyMap {
+object EasyMapCLI {
   
   @transient lazy val log = Logger.getLogger(getClass.getName)
 

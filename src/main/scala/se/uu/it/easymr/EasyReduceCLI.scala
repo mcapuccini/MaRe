@@ -18,7 +18,7 @@ case class EasyReduceParams(
   dockerSudo: Boolean = false,
   dockerOpts: String = "")
 
-object EasyReduce {
+object EasyReduceCLI {
   
   @transient lazy val log = Logger.getLogger(getClass.getName)
 
