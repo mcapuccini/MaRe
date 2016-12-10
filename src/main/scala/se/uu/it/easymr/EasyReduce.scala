@@ -1,10 +1,10 @@
 package se.uu.it.easymr
 
+import org.apache.log4j.Logger
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
 import scopt.OptionParser
-import org.apache.spark.Logging
 
 case class EasyReduceParams(
   command: String = null,
@@ -18,7 +18,9 @@ case class EasyReduceParams(
   dockerSudo: Boolean = false,
   dockerOpts: String = "")
 
-object EasyReduce extends Logging {
+object EasyReduce {
+  
+  @transient lazy val log = Logger.getLogger(getClass.getName)
 
   def run(params: EasyReduceParams) = {
 
@@ -70,7 +72,7 @@ object EasyReduce extends Logging {
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         val dockerTime = System.currentTimeMillis - t0
         //Log serial time
-        logInfo(s"Docker ran in (millisec.): $dockerTime")
+        log.info(s"Docker ran in (millisec.): $dockerTime")
         //Delete the fifos
         inputFifo1.delete
         inputFifo2.delete

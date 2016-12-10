@@ -20,9 +20,8 @@ import scala.sys.process.stringSeqToProcess
 import scala.util.Failure
 import scala.util.Success
 
-import org.apache.spark.Logging
-
 import com.google.common.io.Files
+import org.apache.log4j.Logger
 
 
 class RunException(msg: String) extends Exception(msg)
@@ -45,29 +44,30 @@ object RunUtils {
   
 }
 
-class RunUtils(val threadPool: ExecutorService) extends Logging {
+class RunUtils(val threadPool: ExecutorService) {
   
   implicit val ec = ExecutionContext.fromExecutor(threadPool)
+  @transient lazy val log = Logger.getLogger(getClass.getName)
   
   def writeToFifo(fifo: File, toWrite: String) = {
-    logInfo(s"writing to fifo: ${fifo.getAbsolutePath}")
+    log.info(s"writing to fifo: ${fifo.getAbsolutePath}")
     Future {
       val pw = new PrintWriter(fifo)
       pw.write(toWrite)
       pw.close
     } onComplete {
       case Failure(e) => {
-        logWarning(
+        log.warn(
             s"exeption while writing to ${fifo.getAbsolutePath} \n" + 
             e.getStackTraceString
         )
       }
-      case Success(_) => logInfo(s"successfully wrote into ${fifo.getAbsolutePath}")
+      case Success(_) => log.info(s"successfully wrote into ${fifo.getAbsolutePath}")
     }
   }
 
   def readFromFifo(fifo: File, timeoutSec: Int) = {
-    logInfo(s"reading output from fifo: ${fifo.getAbsolutePath}")
+    log.warn(s"reading output from fifo: ${fifo.getAbsolutePath}")
     val future = Future {
       Source.fromFile(fifo).mkString
     } 
@@ -98,22 +98,22 @@ class RunUtils(val threadPool: ExecutorService) extends Logging {
   }
 
   def command(cmd: Seq[String], asynch: Boolean = true) = {
-    logInfo(s"executing command: ${cmd.mkString(" ")}")
+    log.info(s"executing command: ${cmd.mkString(" ")}")
     val future = Future {
       cmd ! ProcessLogger(
-        (o: String) => logInfo(o),
-        (e: String) => logInfo(e))
+        (o: String) => log.info(o),
+        (e: String) => log.warn(e))
     }
     future onComplete {
       case Success(exitCode) => {
         if (exitCode != 0) {
           throw new RunException(s"${cmd.mkString(" ")} exited with non-zero exit code: $exitCode")
         } else {
-          logInfo(s"successfully executed command: ${cmd.mkString(" ")}")
+          log.info(s"successfully executed command: ${cmd.mkString(" ")}")
         }
       }
       case Failure(e) => {
-        logWarning(
+        log.warn(
             s"exeption while running ${cmd.mkString(" ")} \n" + 
             e.getStackTraceString
         )

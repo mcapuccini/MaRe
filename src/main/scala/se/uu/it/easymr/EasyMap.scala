@@ -9,9 +9,10 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 import scopt.OptionParser
-import org.apache.spark.Logging
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
+import org.apache.log4j.Logger
+
 
 class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
   override def generateActualKey(key: Any, value: Any): Any =
@@ -35,7 +36,9 @@ case class EasyMapParams(
   dockerSudo: Boolean = false,
   dockerOpts: String = "")
 
-object EasyMap extends Logging {
+object EasyMap {
+  
+  @transient lazy val log = Logger.getLogger(getClass.getName)
 
   def run(params: EasyMapParams) = {
 
@@ -79,7 +82,7 @@ object EasyMap extends Logging {
         val results = run.readFromFifo(outputFifo, params.fifoReadTimeout)
         val dockerTime = System.currentTimeMillis - t0
         //Log serial time
-        logInfo(s"Docker ran in (millisec.): $dockerTime")
+        log.info(s"Docker ran in (millisec.): $dockerTime")
         //Delete the fifos
         inputFifo.delete
         outputFifo.delete

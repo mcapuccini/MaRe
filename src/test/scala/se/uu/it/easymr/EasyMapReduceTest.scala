@@ -1,27 +1,20 @@
 package se.uu.it.easymr
 
+import java.io.File
+import java.io.PrintWriter
+
 import scala.io.Source
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.junit.runner.RunWith
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 import com.google.common.io.Files
-
-import java.io.PrintWriter
-
-import org.scalatest.BeforeAndAfterAll
-
-import scala.reflect.io.Path
-import se.uu.it.easymr.EasyMap;
-import se.uu.it.easymr.EasyReduce;
-
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
-
-import java.io.File
 
 @RunWith(classOf[JUnitRunner])
 class EasyMapReduceTest extends FunSuite with BeforeAndAfterAll {
