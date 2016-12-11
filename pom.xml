@@ -43,6 +43,12 @@
 			<version>3.5.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.docker-java</groupId>
+			<artifactId>docker-java</artifactId>
+			<version>3.0.6</version>
+		</dependency>
+
 		<!-- Test -->
 
 		<dependency>
@@ -52,7 +58,7 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
