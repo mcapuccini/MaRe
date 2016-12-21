@@ -29,7 +29,7 @@ class CLITest
 
     val params = EasyMapParams(
       command = "rev /input | tr -d '\\n' > /output",
-      imageName = "busybox",
+      imageName = "ubuntu:xenial",
       local = true,
       inputPath = getClass.getResource("dna/dna.txt").getPath,
       outputPath = tempDir.getAbsolutePath + "/rev.txt")
@@ -61,7 +61,7 @@ class CLITest
 
     val params = EasyReduceParams(
       command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output",
-      imageName = "busybox",
+      imageName = "ubuntu:xenial",
       local = true,
       inputPath = tempDir.getAbsolutePath + "/count_by_line.txt",
       outputPath = tempDir.getAbsolutePath + "/sum.txt")
@@ -82,7 +82,7 @@ class CLITest
 
     val params = EasyMapParams(
       command = "rev /input | tr -d '\\n' > /output",
-      imageName = "busybox",
+      imageName = "ubuntu:xenial",
       local = true,
       inputPath = getClass.getResource("dna").getPath,
       outputPath = tempDir.getAbsolutePath + "/seq.rev",
@@ -123,7 +123,7 @@ class CLITest
 
     val params = EasyReduceParams(
       command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output",
-      imageName = "busybox",
+      imageName = "ubuntu:xenial",
       local = true,
       inputPath = sumDir.getAbsolutePath,
       outputPath = tempDir.getAbsolutePath + "/sum_whole.txt",

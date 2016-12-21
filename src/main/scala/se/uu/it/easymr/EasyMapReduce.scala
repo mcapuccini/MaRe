@@ -44,9 +44,6 @@ object EasyMapReduce {
     imageName: String,
     command: String) = {
 
-    //Init Docker client
-    val docker = DockerClientBuilder.getInstance.build
-
     //Map
     rdd.map(mapLambda(imageName, command, _))
 
@@ -56,9 +53,6 @@ object EasyMapReduce {
     rdd: RDD[(String, String)],
     imageName: String,
     command: String) = {
-    
-    //Init Docker client
-    val docker = DockerClientBuilder.getInstance.build
 
     //Map
     rdd.map { case(filename, content) =>
@@ -71,9 +65,6 @@ object EasyMapReduce {
     rdd: RDD[String],
     imageName: String,
     command: String) = {
-
-    //Init Docker client
-    val docker = DockerClientBuilder.getInstance.build
 
     //Reduce
     rdd.reduce {
