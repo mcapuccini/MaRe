@@ -92,12 +92,12 @@ class CLITest
     Seq("dna.txt", "dna1.txt", "dna2.txt").foreach { input =>
       val reverseTest = Source.fromFile(
         getClass.getResource("dna/" + input).getPath)
-        .getLines.map(_.reverse)
+        .getLines.map(_.reverse).mkString
       val outPath = tempDir.getAbsolutePath + s"/seq.rev/$input"
       val reverseOut = Source.fromFile(
         FilenameUtils.removeExtension(outPath) + ".rev")
-        .getLines
-      assert(reverseTest.toSet == reverseOut.toSet)
+        .getLines.mkString
+      assert(reverseTest == reverseOut)
     }
 
   }
