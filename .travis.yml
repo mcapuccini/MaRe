@@ -1,0 +1,12 @@
+sudo: required
+
+language: java
+
+services:
+  - docker
+  
+env:
+  - TMPDIR=/tmp
+  
+before_install:
+  - docker pull ubuntu:xenial
