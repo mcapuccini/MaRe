@@ -4,3 +4,6 @@ language: java
 
 services:
   - docker
+  
+env:
+  - TMPDIR=/tmp
