@@ -8,19 +8,19 @@ import com.github.dockerjava.core.DockerClientBuilder
 import java.io.File
 import scala.io.Source
 
-object EasyMapReduce {
+private[easymr] object EasyMapReduce {
 
-  private final val MAP_INPUT = new File("/input")
-  private final val MAP_OUTPUT = new File("/output")
+  final val MAP_INPUT = new File("/input")
+  final val MAP_OUTPUT = new File("/output")
 
-  private final val REDUCE_INPUT1 = new File("/input1")
-  private final val REDUCE_INPUT2 = new File("/input2")
-  private final val REDUCE_OUTPUT = new File("/output")
+  final val REDUCE_INPUT1 = new File("/input1")
+  final val REDUCE_INPUT2 = new File("/input2")
+  final val REDUCE_OUTPUT = new File("/output")
 
-  private def mapLambda( 
-      imageName: String, 
-      command: String,
-      record: String) = {
+  def mapLambda(
+    imageName: String,
+    command: String,
+    record: String) = {
 
     //Create temporary files
     val inputFile = EasyFiles.writeToTmpFile(record)
@@ -39,30 +39,36 @@ object EasyMapReduce {
 
   }
 
-  def map(
-    rdd: RDD[String],
-    imageName: String,
-    command: String) = {
-
-    //Map
-    rdd.map(mapLambda(imageName, command, _))
-
-  }
-
-  private[easymr] def mapWholeFiles(
+  def mapWholeFiles(
     rdd: RDD[(String, String)],
     imageName: String,
     command: String) = {
 
     //Map
-    rdd.map { case(filename, content) =>
-      (filename, mapLambda(imageName, command, content))
+    rdd.map {
+      case (filename, content) =>
+        (filename, mapLambda(imageName, command, content))
     }
 
   }
 
+}
+
+class EasyMapReduce(private val rdd: RDD[String]) {
+
+  def getRDD = rdd
+
+  def map(
+    imageName: String,
+    command: String) = {
+
+    //Map
+    val resRDD = rdd.map(EasyMapReduce.mapLambda(imageName, command, _))
+    new EasyMapReduce(resRDD)
+
+  }
+
   def reduce(
-    rdd: RDD[String],
     imageName: String,
     command: String) = {
 
@@ -82,9 +88,9 @@ object EasyMapReduce {
           command,
           bindFiles = Seq(inputFile1, inputFile2, outputFile),
           volumeFiles = Seq(
-            REDUCE_INPUT1,
-            REDUCE_INPUT2,
-            REDUCE_OUTPUT))
+            EasyMapReduce.REDUCE_INPUT1,
+            EasyMapReduce.REDUCE_INPUT2,
+            EasyMapReduce.REDUCE_OUTPUT))
 
         //Retrieve output
         Source.fromFile(outputFile).mkString

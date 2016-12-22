@@ -13,10 +13,10 @@ class EasyMapReduceTest
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 
-    val resRDD = EasyMapReduce.map(
-      rdd,
+    val resRDD = new EasyMapReduce(rdd).map(
       imageName = "ubuntu:xenial",
       command = "rev /input | tr -d '\\n' > /output")
+      .getRDD
 
     rdd.collect.zip(resRDD.collect).foreach {
       case (seq1, seq2) => {
@@ -51,8 +51,7 @@ class EasyMapReduceTest
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
       .map(_.count(c => c == 'g' || c == 'c').toString)
 
-    val res = EasyMapReduce.reduce(
-      rdd,
+    val res = new EasyMapReduce(rdd).reduce(
       imageName = "ubuntu:xenial",
       command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
 
@@ -61,6 +60,29 @@ class EasyMapReduceTest
         (lineCount1.toInt + lineCount2.toInt).toString
     }
     assert(sum == res)
+
+  }
+
+  test("MapReduce (GC count)") {
+
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+
+    val res = new EasyMapReduce(rdd)
+      .map(
+        imageName = "ubuntu:xenial",
+        command = "grep -o '[gc]' /input | wc -l | tr -d '\\n' > /output")
+      .reduce(
+        imageName = "ubuntu:xenial",
+        command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+
+    val toMatch = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+      .map(_.count(c => c == 'g' || c == 'c').toString)
+      .reduce {
+        case (lineCount1, lineCount2) =>
+          (lineCount1.toInt + lineCount2.toInt).toString
+      }
+    
+    assert(res == toMatch)
 
   }
 

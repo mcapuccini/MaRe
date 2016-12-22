@@ -42,8 +42,7 @@ object EasyReduceCLI {
     }
 
     //Reduce data
-    val result = EasyMapReduce.reduce(
-      data,
+    val result = new EasyMapReduce(data).reduce(
       params.imageName,
       params.command)
 
