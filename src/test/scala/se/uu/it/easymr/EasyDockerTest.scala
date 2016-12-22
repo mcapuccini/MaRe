@@ -23,7 +23,7 @@ class EasyDockerTest
     //Run docker
     val docker = new EasyDocker
     docker.run(
-      imageName = "busybox", // assumes busybox was pulled 
+      imageName = "ubuntu:xenial", // assumes ubuntu:xenial was pulled 
       command = "cat /input > /output",
       bindFiles = Seq(inputFile, outputFile),
       volumeFiles = Seq(new File("/input"), new File("/output")))
@@ -43,7 +43,7 @@ class EasyDockerTest
     //Run docker
     val docker = new EasyDocker
     docker.run(
-      imageName = "busybox", // assumes busybox was pulled 
+      imageName = "ubuntu:xenial", // assumes ubuntu:xenial was pulled 
       command = "cat /input1 > /output && cat /input2 >> /output",
       bindFiles = Seq(inputFile1, inputFile2, outputFile),
       volumeFiles = Seq(
