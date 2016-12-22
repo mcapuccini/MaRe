@@ -14,13 +14,20 @@ EasyMapReduce leverages the power of Docker and Spark to run and scale your seri
 
 EasyMapReduce has been developed with scientific application in mind. High-throughput methods produced massive datasets in the past decades, and using frameworks like [Spark](http://spark.apache.org/) and [Hadoop](https://hadoop.apache.org/) is a natural choice to enable high-throughput analysis. In scientific applications, many tools are highly optimized to resemble, or detect some phenomena that occur in a certain system. Hence, sometimes the effort of reimplementing scientific tools in Spark or Hadoop can't be sustained by research groups. EasyMapReduce aims to provide the means to run existing serial tools in MapReduce fashion. Since many of the available scientific tools are trivially parallelizable, [MapReduce](http://research.google.com/archive/mapreduce.html) is an excelent paradigm that can be used to parallelize the computation.
 
-Scientific tools often have many dependencies and, generally speaking, it's difficoult for the system administrator to maintain   software, which may be installed on each node of the cluster, in multiple version. Therefore, instead of running commands straight on the compute nodes, EasyMapReduce starts a user-provided [Docker](https://www.docker.com/) image that wraps a specific tool and all of its dependencies, and it runs the command inside the Docker container. The data goes from Spark through the Docker container, and back to Spark after being processed, via unix named pipes, hence very little overhead occurs.
+Scientific tools often have many dependencies and, generally speaking, it's difficoult for the system administrator to maintain   software, which may be installed on each node of the cluster, in multiple version. Therefore, instead of running commands straight on the compute nodes, EasyMapReduce starts a user-provided [Docker](https://www.docker.com/) image that wraps a specific tool and all of its dependencies, and it runs the command inside the Docker container. The data goes from Spark through the Docker container, and back to Spark after being processed, via unix files. If the `TMPDIR` environment variable in the worker nodes points to a [tmpfs](https://en.wikipedia.org/wiki/Tmpfs) very little overhead should occur. 
 
 ## Gettign started
 EasyMapReduce comes as a Spark application that you can submit to an existing Spark cluster. Docker needs to be installed and properly configured on each worker node of the Spark cluster. Also, the user that runs the Spark job needs to be in the docker group.  
 
-You can download the latest build with all of the dependencies here:
-[download](http://pele.farmbio.uu.se/artifactory/libs-release/se/uu/farmbio/easymr/0.0.1/easymr-0.0.1-jar-with-dependencies.jar).
+You can build EasyMapReduce using maven:
+
+```bash
+git clone https://github.com/mcapuccini/EasyMapReduce.git
+cd EasyMapReduce
+mvn clean package
+```
+
+If everything goes well you should find the EasyMapReduce jar (and jar-with-dependencies) in the *target* directory.
 
 ### Example: DNA GC count
 DNA is a string written in a language of 4 characters: A,T,G,C. Counting how many times G and C occurr in the genome is a task that is often performed in genomics. In this example we use EasyMap and EasyReduce, form the EasyMapReduce package to perform this task in parallel. 
@@ -30,11 +37,10 @@ First, we need submit EasyMap to the Spark cluster to count how many times G and
 ```
 spark-submit --class se.uu.farmbio.easymr.EasyMap \ 
   --master local[*] \
-  easymr-0.0.1.jar \
-  --imageName ubuntu:14.04 \
-  --command "cat /input | fold -1 | grep [gc] | wc -l > /output" \
-  /path/to/dna.txt /results/foler/count_by_line.txt \
-  --trimCommandOutput
+  easymr-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
+  --imageName ubuntu:xenial \
+  --command 'grep -o [gc] /input | wc -l | tr -d "\n" > /output' \
+  /path/to/dna.txt /results/folder/count_by_line.txt
 ```
 
 **Notes**: 
@@ -50,11 +56,10 @@ Once we have the GC count line by line, we can use EasyReduce to sum all of the 
 ```
 spark-submit --class se.uu.farmbio.easymr.EasyReduce \
   --master local[*] \
-  easymr-0.0.1.jar \
-  --imageName ubuntu:14.04 \
-  --command 'expr $(cat /input1) + $(cat /input2) > /output' \
-  /results/foler/count_by_line.txt /results/foler/sum.txt \
-  --trimCommandOutput
+  easymr-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
+  --imageName ubuntu:xenial \
+  --command 'expr $(cat /input1) + $(cat /input2) | tr -d "\n" > /output' \
+  /results/folder/count_by_line.txt /results/folder/sum.txt
 ```
 
 **Notes**: 
@@ -70,54 +75,24 @@ In many scientific applications, instead of having a single big file, there are 
 
 ## EasyMap usage
 ```
-EasyMap: map a distributed dataset using a command form a Docker container.
+EasyMap: it maps a distributed dataset using a command form a Docker container.
 Usage: Easy Map [options] inputPath outputPath
 
-  --imageName <value>
-        Docker image name (default: "ubuntu:14.04").
-  --command <value>
-        command to run inside the Docker container, e.g. 'rev /input > /output'.
-  --trimCommandOutput
-        if set the command output will get trimmed.
-  --wholeFiles
-        if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
-  --commandTimeout <value>
-        execution timeout for the command, in sec. (default: 1200).
-  --local
-        set to run in local mode (useful for testing purpose).
-  --dockerSudo
-        set to run docker with passwordless sudo.
-  --dockerOpts <value>
-        additional options for "Docker run" (default: none).
-  inputPath
-        dataset input path. Must be a directory if wholeFiles is set.
-  outputPath
-        result output path.
+  --imageName <value>  Docker image name.
+  --command <value>    command to run inside the Docker container, e.g. 'rev /input > /output | tr -d \n'.
+  --wholeFiles         if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
+  --local              set to run in local mode (useful for testing purpose).
+  inputPath            dataset input path. Must be a directory if wholeFiles is set.
+  outputPath           results output path.
 ```
 
 ## EasyReduce usage
 ```
-EasyReduce: reduce a distributed dataset using a command from a Docker container.
 Usage: EasyReduce [options] inputPath outputPath
 
-  --imageName <value>
-        Docker image name (default: "ubuntu:14.04").
-  --command <value>
-        command to run inside the Docker container, e.g. 'expr sum $(cat /input1) + $(cat /input2) > /output'. The command needs to be associative and commutative.
-  --trimCommandOutput
-        if set the command output will get trimmed.
-  --wholeFiles
-        if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
-  --commandTimeout <value>
-        execution timeout for the command, in sec. (default: 1200).
-  --local
-        set to run in local mode (useful for testing purpose).
-  --dockerSudo
-        set to run docker with passwordless sudo.
-  --dockerOpts <value>
-        additional options for "Docker run" (default: none).
-  inputPath
-        dataset input path. Must be a directory if wholeFiles is set.
-  outputPath
-        result output path.
+  --imageName <value>  Docker image name.
+  --command <value>    command to run inside the Docker container, e.g. 'expr $(cat /input1) + $(cat /input2) | tr -d \n > /output'. The command needs to be associative and commutative.
+  --wholeFiles         if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
+  inputPath            dataset input path. Must be a directory if wholeFiles is set.
+  outputPath           result output path.
 ```
