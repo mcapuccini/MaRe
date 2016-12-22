@@ -9,4 +9,4 @@ env:
   - TMPDIR=/tmp
   
 before_install:
-- docker pull ubuntu:xenial
+  - docker pull ubuntu:xenial
