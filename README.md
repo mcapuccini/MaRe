@@ -1,5 +1,7 @@
 # EasyMapReduce
 
+[![Build Status](https://travis-ci.org/mcapuccini/EasyMapReduce.svg?branch=master)](https://travis-ci.org/mcapuccini/EasyMapReduce)
+
 EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
 
 ## Table of contents
