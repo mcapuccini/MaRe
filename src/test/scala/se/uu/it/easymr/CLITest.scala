@@ -13,7 +13,10 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.FunSuite
 
 import com.google.common.io.Files
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class CLITest
     extends FunSuite
     with BeforeAndAfterAll {
