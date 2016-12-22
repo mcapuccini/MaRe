@@ -1,8 +1,8 @@
 package se.uu.it.easymr
 
 import java.io.File
-import java.util.UUID
 import java.io.PrintWriter
+import java.util.UUID
 
 private[easymr] object EasyFiles {
   

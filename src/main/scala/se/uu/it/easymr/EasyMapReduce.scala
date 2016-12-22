@@ -1,12 +1,10 @@
 package se.uu.it.easymr
 
-import org.apache.spark.rdd.RDD
-
-import com.github.dockerjava.api.model.Bind
-import com.github.dockerjava.api.model.Volume
-import com.github.dockerjava.core.DockerClientBuilder
 import java.io.File
+
 import scala.io.Source
+
+import org.apache.spark.rdd.RDD
 
 private[easymr] object EasyMapReduce {
 

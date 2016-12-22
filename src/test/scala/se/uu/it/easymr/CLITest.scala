@@ -7,13 +7,12 @@ import scala.io.Source
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.apache.spark.SharedSparkContext
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.FunSuite
 
 import com.google.common.io.Files
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
 
 class CLITest
     extends FunSuite

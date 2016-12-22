@@ -1,14 +1,11 @@
 package se.uu.it.easymr
 
-import org.scalatest.FunSuite
-import org.scalatest.BeforeAndAfterAll
-import com.google.common.io.Files
-import org.apache.commons.io.FileUtils
 import java.io.File
-import java.io.PrintWriter
+
 import scala.io.Source
+
 import org.apache.spark.SharedSparkContext
-import java.util.UUID
+import org.scalatest.FunSuite
 
 class EasyDockerTest
     extends FunSuite

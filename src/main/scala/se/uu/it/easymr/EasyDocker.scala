@@ -1,5 +1,7 @@
 package se.uu.it.easymr
 
+import java.io.File
+
 import scala.collection.JavaConversions.seqAsJavaList
 
 import org.apache.log4j.Logger
@@ -11,7 +13,6 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.core.command.AttachContainerResultCallback
 import com.github.dockerjava.core.command.WaitContainerResultCallback
-import java.io.File
 
 private[easymr] class EasyDocker extends Serializable {
 

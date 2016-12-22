@@ -1,9 +1,9 @@
 package se.uu.it.easymr
 
+import scala.io.Source
+
 import org.apache.spark.SharedSparkContext
 import org.scalatest.FunSuite
-import org.scalatest.mock.MockitoSugar
-import scala.io.Source
 
 class EasyMapReduceTest
     extends FunSuite
