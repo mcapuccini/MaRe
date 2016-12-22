@@ -35,7 +35,7 @@ DNA is a string written in a language of 4 characters: A,T,G,C. Counting how man
 First, we need submit EasyMap to the Spark cluster to count how many times G and C occurr in the file. For simplicity we run Spark in local mode in this example, we suggest you to do the same in your first experiments. 
 
 ```
-spark-submit --class se.uu.farmbio.easymr.EasyMap \ 
+spark-submit --class se.uu.it.easymr.EasyMapCLI \ 
   --master local[*] \
   easymr-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
   --imageName ubuntu:xenial \
@@ -54,7 +54,7 @@ spark-submit --class se.uu.farmbio.easymr.EasyMap \
 Once we have the GC count line by line, we can use EasyReduce to sum all of the lines together, and the get the total GC count.
 
 ```
-spark-submit --class se.uu.farmbio.easymr.EasyReduce \
+spark-submit --class se.uu.it.easymr.EasyReduceCLI \
   --master local[*] \
   easymr-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
   --imageName ubuntu:xenial \
@@ -79,7 +79,7 @@ EasyMap: it maps a distributed dataset using a command form a Docker container.
 Usage: Easy Map [options] inputPath outputPath
 
   --imageName <value>  Docker image name.
-  --command <value>    command to run inside the Docker container, e.g. 'rev /input > /output | tr -d \n'.
+  --command <value>    command to run inside the Docker container, e.g. 'rev /input > /output | tr -d "\n"'.
   --wholeFiles         if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
   --local              set to run in local mode (useful for testing purpose).
   inputPath            dataset input path. Must be a directory if wholeFiles is set.
@@ -88,11 +88,13 @@ Usage: Easy Map [options] inputPath outputPath
 
 ## EasyReduce usage
 ```
+EasyReduce: reduce a distributed dataset using a command from a Docker container.
 Usage: EasyReduce [options] inputPath outputPath
 
   --imageName <value>  Docker image name.
-  --command <value>    command to run inside the Docker container, e.g. 'expr $(cat /input1) + $(cat /input2) | tr -d \n > /output'. The command needs to be associative and commutative.
+  --command <value>    command to run inside the Docker container, e.g. 'expr $(cat /input1) + $(cat /input2) | tr -d "\n" > /output'. The command needs to be associative and commutative.
   --wholeFiles         if set, multiple input files will be loaded from an input directory. The command will executed in parallel, on the whole files. In contrast, when this is not set the file/files in input is/are splitted line by line, and the command is executed in parallel on each line of the file.
+  --local              set to run in local mode (useful for testing purpose).
   inputPath            dataset input path. Must be a directory if wholeFiles is set.
-  outputPath           result output path.
+  outputPath           result output path
 ```

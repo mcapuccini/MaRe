@@ -67,7 +67,7 @@ object EasyReduceCLI {
       opt[String]("command")
         .required
         .text("command to run inside the Docker container, " +
-          "e.g. 'expr $(cat /input1) + $(cat /input2) | tr -d \\n > /output'. " +
+          "e.g. 'expr $(cat /input1) + $(cat /input2) | tr -d \"\\n\" > /output'. " +
           "The command needs to be associative and commutative.")
         .action((x, c) => c.copy(command = x))
       opt[Unit]("wholeFiles")
@@ -76,6 +76,9 @@ object EasyReduceCLI {
           "the file/files in input is/are splitted line by line, and the command is executed in parallel " +
           "on each line of the file.")
         .action((_, c) => c.copy(wholeFiles = true))
+      opt[Unit]("local")
+        .text("set to run in local mode (useful for testing purpose).")
+        .action((_, c) => c.copy(local = true))
       arg[String]("inputPath")
         .required
         .text("dataset input path. Must be a directory if wholeFiles is set.")

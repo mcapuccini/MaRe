@@ -132,7 +132,7 @@ object EasyMapCLI {
       opt[String]("command")
         .required
         .text("command to run inside the Docker container, " +
-          "e.g. 'rev /input > /output | tr -d \\n'.")
+          "e.g. 'rev /input > /output | tr -d \"\\n\"'.")
         .action((x, c) => c.copy(command = x))
       opt[Unit]("wholeFiles")
         .text("if set, multiple input files will be loaded from an input directory. The command will " +
