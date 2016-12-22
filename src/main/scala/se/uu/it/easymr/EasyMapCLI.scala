@@ -13,7 +13,7 @@ import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 import scopt.OptionParser
 
-class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
+private[easymr] class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
   override def generateActualKey(key: Any, value: Any): Any =
     NullWritable.get()
   override def generateFileNameForKeyValue(
