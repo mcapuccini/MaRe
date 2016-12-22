@@ -62,7 +62,7 @@ object EasyReduceCLI {
     val parser = new OptionParser[EasyReduceParams]("EasyReduce") {
       head("EasyReduce: reduce a distributed dataset using a command from a Docker container.")
       opt[String]("imageName")
-        .text("Docker image name (default: \"ubuntu:14.04\").")
+        .text("Docker image name.")
         .action((x, c) => c.copy(imageName = x))
       opt[String]("command")
         .required
