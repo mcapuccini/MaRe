@@ -1,8 +1,6 @@
 package se.uu.it.easymr
 
 import org.apache.log4j.Logger
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
 
 import scopt.OptionParser
 
@@ -21,27 +19,23 @@ object EasyReduceCLI {
   def run(params: EasyReduceParams) = {
 
     //Start Spark context
-    val conf = new SparkConf()
-      .setAppName(s"Reduce: ${params.command}")
-    if (params.local) {
-      conf.setMaster("local[2]")
-      conf.set("spark.default.parallelism", "2")
-    }
-    val sc = new SparkContext(conf)
+    val sc = EasyContext.create(
+      appName = s"Reduce: ${params.command}",
+      params.local)
 
     //Read input data
     val defaultParallelism =
-      sc.getConf.get("spark.default.parallelism","0").toInt
+      sc.getConf.get("spark.default.parallelism", "0").toInt
     val data = if (params.wholeFiles) {
-      val rdd = if(defaultParallelism > 0) {
-        sc.wholeTextFiles(params.inputPath,defaultParallelism)
+      val rdd = if (defaultParallelism > 0) {
+        sc.wholeTextFiles(params.inputPath, defaultParallelism)
       } else {
         sc.wholeTextFiles(params.inputPath)
       }
       rdd.map(_._2) //remove file name
     } else {
-      if(defaultParallelism > 0) {
-        sc.textFile(params.inputPath,defaultParallelism)
+      if (defaultParallelism > 0) {
+        sc.textFile(params.inputPath, defaultParallelism)
       } else {
         sc.textFile(params.inputPath)
       }
