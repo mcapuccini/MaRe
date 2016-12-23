@@ -7,7 +7,6 @@ import org.apache.hadoop.io.NullWritable
 import org.apache.hadoop.mapred.lib.MultipleTextOutputFormat
 import org.apache.log4j.Logger
 import org.apache.spark.HashPartitioner
-import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
@@ -36,15 +35,11 @@ object EasyMapCLI {
   @transient lazy val log = Logger.getLogger(getClass.getName)
 
   def run(params: EasyMapParams) = {
-
+    
     //Start Spark context
-    val conf = new SparkConf()
-      .setAppName(s"Map: ${params.command}")
-    if (params.local) {
-      conf.setMaster("local[2]")
-      conf.set("spark.default.parallelism", "2")
-    }
-    val sc = new SparkContext(conf)
+    val sc = EasyContext.create(
+      appName = s"Map: ${params.command}",
+      params.local)
 
     //Read input data
     val data = readInputData(
