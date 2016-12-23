@@ -9,6 +9,7 @@ EasyMapReduce leverages the power of Docker and Spark to run and scale your seri
 - [Getting Started](#gettign-started)
   - [Get EasyMapReduce](#get-easymapreduce)
   - [Example: DNA GC count (via CLI)](#example-dna-gc-count-via-cli)
+  - [Example: DNA GC count (via API)](#example-dna-gc-count-via-api)
 - [Multiple input files and whole files](#multiple-input-files-and-whole-files)
 - [EasyMap usage](#easymap-usage)
 - [EasyReduce usage](#easyreduce-usage)
@@ -75,9 +76,6 @@ spark-submit --class se.uu.it.easymr.EasyReduceCLI \
 
 We suggest you to repeat this experiment yourself, using the example files in this [repository](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/resources/se/uu/farmbio/easymr/dna).
 
-## Multiple input files and whole files
-In many scientific applications, instead of having a single big file, there are many smaller files that need to be processed by the command all together without being splitted line by line. If this is you use case please give a look to the `---wholeFiles` option in the usage sections. 
-
 ### Example: DNA GC count (via API)
 EasyMapReduce aslo comes along with a Scala API, so you can use it in your Spark applications. The equivalent of the previous example, using the API follows.
 
@@ -93,6 +91,9 @@ val count = new EasyMapReduce(rdd)
 ```
 
 For more details please refer to the [unit tests](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/scala/se/uu/it/easymr).
+
+## Multiple input files and whole files
+In many scientific applications, instead of having a single big file, there are many smaller files that need to be processed by the command all together without being splitted line by line. If this is you use case please give a look to the `---wholeFiles` option in the usage sections. 
 
 ## EasyMap usage
 ```
