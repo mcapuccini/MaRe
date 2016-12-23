@@ -7,8 +7,9 @@ EasyMapReduce leverages the power of Docker and Spark to run and scale your seri
 ## Table of contents
 - [What is EasyMapReduce](#what-is-easymapreduce)
 - [Getting Started](#gettign-started)
-  - [Example: DNA GC count](#example-dna-gc-count)
-  - [Multiple input files and whole files](#multiple-input-files-and-whole-files)
+  - [Get EasyMapReduce](#get-easymapreduce)
+  - [Example: DNA GC count (via CLI)](#example-dna-gc-count-via-cli)
+- [Multiple input files and whole files](#multiple-input-files-and-whole-files)
 - [EasyMap usage](#easymap-usage)
 - [EasyReduce usage](#easyreduce-usage)
 
@@ -21,7 +22,9 @@ Scientific tools often have many dependencies and, generally speaking, it's diff
 ## Gettign started
 EasyMapReduce comes as a Spark application that you can submit to an existing Spark cluster. Docker needs to be installed and properly configured on each worker node of the Spark cluster. Also, the user that runs the Spark job needs to be in the docker group.  
 
-You can build EasyMapReduce using maven:
+### Get EasyMapReduce
+
+EasyMapReduce is distributed through git and it can be built using Maven:
 
 ```bash
 git clone https://github.com/mcapuccini/EasyMapReduce.git
@@ -31,10 +34,10 @@ mvn clean package -DskipTests
 
 If everything goes well you should find the EasyMapReduce jar (and jar-with-dependencies) in the *target* directory.
 
-### Example: DNA GC count
+### Example: DNA GC count (via CLI)
 DNA is a string written in a language of 4 characters: A,T,G,C. Counting how many times G and C occurr in the genome is a task that is often performed in genomics. In this example we use EasyMap and EasyReduce, form the EasyMapReduce package to perform this task in parallel. 
 
-First, we need submit EasyMap to the Spark cluster to count how many times G and C occurr in the file. For simplicity we run Spark in local mode in this example, we suggest you to do the same in your first experiments. 
+First, we need submit EasyMapCLI to the Spark cluster to count how many times G and C occurr in the file. For simplicity we run Spark in local mode in this example, we suggest you to do the same in your first experiments. 
 
 ```
 spark-submit --class se.uu.it.easymr.EasyMapCLI \ 
@@ -53,7 +56,7 @@ spark-submit --class se.uu.it.easymr.EasyMapCLI \
 
 3. Spark divides the input file (dna.txt) line by line, hence in the result file (count_by_line.txt) there will be the GC count for each line of the file, and not the total sum.
 
-Once we have the GC count line by line, we can use EasyReduce to sum all of the lines together, and the get the total GC count.
+Once we have the GC count line by line, we can use EasyReduceCLI to sum all of the lines together, and the get the total GC count.
 
 ```
 spark-submit --class se.uu.it.easymr.EasyReduceCLI \
@@ -72,8 +75,24 @@ spark-submit --class se.uu.it.easymr.EasyReduceCLI \
 
 We suggest you to repeat this experiment yourself, using the example files in this [repository](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/resources/se/uu/farmbio/easymr/dna).
 
-### Multiple input files and whole files
+## Multiple input files and whole files
 In many scientific applications, instead of having a single big file, there are many smaller files that need to be processed by the command all together without being splitted line by line. If this is you use case please give a look to the `---wholeFiles` option in the usage sections. 
+
+### Example: DNA GC count (via API)
+EasyMapReduce aslo comes along with a Scala API, so you can use it in your Spark applications. The equivalent of the previous example, using the API follows.
+
+```scala
+val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+val count = new EasyMapReduce(rdd)
+ .map(
+    imageName = "ubuntu:xenial",
+    command = "grep -o '[gc]' /input | wc -l | tr -d '\\n' > /output")
+ .reduce(
+    imageName = "ubuntu:xenial",
+    command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+```
+
+For more details please refer to the [unit tests](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/scala/se/uu/it/easymr).
 
 ## EasyMap usage
 ```
