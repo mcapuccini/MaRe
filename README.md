@@ -74,7 +74,7 @@ spark-submit --class se.uu.it.easymr.EasyReduceCLI \
 
 2. For the final result to be correct, and in many case for the reduce task to succeed, the provided command needs to be associative and commutative. Please give a look [here](http://stackoverflow.com/questions/329423/parallelizing-the-reduce-in-mapreduce) for more details
 
-We suggest you to repeat this experiment yourself, using the example files in this [repository](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/resources/se/uu/farmbio/easymr/dna).
+We suggest you to repeat this experiment yourself, using the example files in this [repository](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/resources/se/uu/it/easymr/dna).
 
 ### Example: DNA GC count (via API)
 EasyMapReduce aslo comes along with a Scala API, so you can use it in your Spark applications. The equivalent of the previous example, using the API follows.
