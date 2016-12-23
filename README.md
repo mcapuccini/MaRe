@@ -77,7 +77,7 @@ spark-submit --class se.uu.it.easymr.EasyReduceCLI \
 We suggest you to repeat this experiment yourself, using the example files in this [repository](https://github.com/mcapuccini/EasyMapReduce/tree/master/src/test/resources/se/uu/it/easymr/dna).
 
 ### Example: DNA GC count (via API)
-EasyMapReduce aslo comes along with a Scala API, so you can use it in your Spark applications. The equivalent of the previous example, using the API follows.
+EasyMapReduce aslo comes along with a Scala API, so you can use it in your Spark applications. The equivalent of the previous example using the API follows.
 
 ```scala
 val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
