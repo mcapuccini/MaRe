@@ -26,7 +26,7 @@ You can build EasyMapReduce using maven:
 ```bash
 git clone https://github.com/mcapuccini/EasyMapReduce.git
 cd EasyMapReduce
-mvn clean package
+mvn clean package -DskipTests
 ```
 
 If everything goes well you should find the EasyMapReduce jar (and jar-with-dependencies) in the *target* directory.
