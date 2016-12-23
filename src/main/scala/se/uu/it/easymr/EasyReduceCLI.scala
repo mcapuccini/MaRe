@@ -31,14 +31,20 @@ object EasyReduceCLI {
 
     //Read input data
     val defaultParallelism =
-      sc.getConf.get("spark.default.parallelism").toInt
+      sc.getConf.get("spark.default.parallelism","0").toInt
     val data = if (params.wholeFiles) {
-      sc.wholeTextFiles(
-        params.inputPath,
-        defaultParallelism)
-        .map(_._2) //remove file name
+      val rdd = if(defaultParallelism > 0) {
+        sc.wholeTextFiles(params.inputPath,defaultParallelism)
+      } else {
+        sc.wholeTextFiles(params.inputPath)
+      }
+      rdd.map(_._2) //remove file name
     } else {
-      sc.textFile(params.inputPath, defaultParallelism)
+      if(defaultParallelism > 0) {
+        sc.textFile(params.inputPath,defaultParallelism)
+      } else {
+        sc.textFile(params.inputPath)
+      }
     }
 
     //Reduce data

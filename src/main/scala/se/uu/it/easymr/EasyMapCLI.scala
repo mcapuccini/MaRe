@@ -92,30 +92,35 @@ object EasyMapCLI {
     outputPath: String,
     wholeFiles: Boolean) = {
     val defaultParallelism =
-      sc.getConf.get("spark.default.parallelism").toInt
+      sc.getConf.get("spark.default.parallelism", "0").toInt
     if (wholeFiles) {
       //Get output extension
       val outExt = FilenameUtils.getExtension(outputPath)
       //Load files
-      sc.wholeTextFiles(
-        inputPath,
-        defaultParallelism)
-        .map {
-          case (filename, content) =>
-            //Trim extension and path
-            val noExt = FilenameUtils.removeExtension(filename)
-            val trimmedName = FilenameUtils.getBaseName(noExt)
-            //Set trimmed name and index, with output extension
-            if (outExt != null && outExt.length > 0) {
-              (s"${trimmedName}.${outExt}", content)
-            } else {
-              (trimmedName, content)
-            }
-        }
+      val rdd = if (defaultParallelism > 0) {
+        sc.wholeTextFiles(inputPath, defaultParallelism)
+      } else {
+        sc.wholeTextFiles(inputPath)
+      }
+      rdd.map {
+        case (filename, content) =>
+          //Trim extension and path
+          val noExt = FilenameUtils.removeExtension(filename)
+          val trimmedName = FilenameUtils.getBaseName(noExt)
+          //Set trimmed name and index, with output extension
+          if (outExt != null && outExt.length > 0) {
+            (s"${trimmedName}.${outExt}", content)
+          } else {
+            (trimmedName, content)
+          }
+      }
     } else {
-      sc.textFile(inputPath,
-        sc.getConf.get("spark.default.parallelism").toInt)
-        .map((inputPath, _))
+      val rdd = if (defaultParallelism > 0) {
+        sc.textFile(inputPath, defaultParallelism)
+      } else {
+        sc.textFile(inputPath)
+      }
+      rdd.map((inputPath, _))
     }
   }
 
