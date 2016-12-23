@@ -11,8 +11,8 @@ EasyMapReduce leverages the power of Docker and Spark to run and scale your seri
   - [Example: DNA GC count (via CLI)](#example-dna-gc-count-via-cli)
   - [Example: DNA GC count (via API)](#example-dna-gc-count-via-api)
 - [Multiple input files and whole files](#multiple-input-files-and-whole-files)
-- [EasyMap usage](#easymap-usage)
-- [EasyReduce usage](#easyreduce-usage)
+- [EasyMapCLI usage](#easymapcli-usage)
+- [EasyReduceCLI usage](#easyreducecli-usage)
 
 ## What is EasyMapReduce
 
@@ -95,7 +95,7 @@ For more details please refer to the [unit tests](https://github.com/mcapuccini/
 ## Multiple input files and whole files
 In many scientific applications, instead of having a single big file, there are many smaller files that need to be processed by the command all together without being splitted line by line. If this is you use case please give a look to the `---wholeFiles` option in the usage sections. 
 
-## EasyMap usage
+## EasyMapCLI usage
 ```
 EasyMap: it maps a distributed dataset using a command form a Docker container.
 Usage: Easy Map [options] inputPath outputPath
@@ -108,7 +108,7 @@ Usage: Easy Map [options] inputPath outputPath
   outputPath           results output path.
 ```
 
-## EasyReduce usage
+## EasyReduceCLI usage
 ```
 EasyReduce: reduce a distributed dataset using a command from a Docker container.
 Usage: EasyReduce [options] inputPath outputPath
