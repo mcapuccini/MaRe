@@ -22,14 +22,12 @@ private[easymr] object EasyFiles {
   def createTmpFile = {
     val file = EasyFiles.newTmpFile
     file.createNewFile
-    file.deleteOnExit
     file
   }
   
   def writeToTmpFile(toWrite: String) = {
     val file = EasyFiles.newTmpFile
     val pw = new PrintWriter(file)
-    file.deleteOnExit
     pw.write(toWrite)
     pw.close
     file
