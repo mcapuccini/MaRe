@@ -33,7 +33,14 @@ private[easymr] object EasyMapReduce {
       volumeFiles = Seq(MAP_INPUT, MAP_OUTPUT))
 
     //Retrieve output
-    Source.fromFile(outputFile).mkString
+    val output = Source.fromFile(outputFile).mkString
+    
+    //Remove temporary files
+    inputFile.delete
+    outputFile.delete
+    
+    //Return output
+    output
 
   }
 
@@ -91,7 +98,15 @@ class EasyMapReduce(private val rdd: RDD[String]) {
             EasyMapReduce.REDUCE_OUTPUT))
 
         //Retrieve output
-        Source.fromFile(outputFile).mkString
+        val output = Source.fromFile(outputFile).mkString
+        
+        //Remove temporary files
+        inputFile1.delete()
+        inputFile2.delete()
+        outputFile.delete()
+        
+        //Return output
+        output
 
     }
 
