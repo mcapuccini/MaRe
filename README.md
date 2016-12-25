@@ -82,7 +82,7 @@ EasyMapReduce aslo comes along with a Scala API, so you can use it in your Spark
 ```scala
 val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 val count = new EasyMapReduce(rdd)
- .map(
+ .mapPartitions(
     imageName = "ubuntu:xenial",
     command = "grep -o '[gc]' /input | wc -l | tr -d '\\n' > /output")
  .reduce(
