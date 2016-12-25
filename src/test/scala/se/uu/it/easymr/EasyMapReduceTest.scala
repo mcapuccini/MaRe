@@ -105,5 +105,29 @@ class EasyMapReduceTest
     assert(res == toMatch)
 
   }
+  
+  test("MapReduce (GC count, with mapPartitions)") {
+
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+
+    val res = new EasyMapReduce(rdd)
+      .mapPartitions(
+        imageName = "ubuntu:xenial",
+        command = "grep -o '[gc]' /input | wc -l > /output")
+      .reduce(
+        imageName = "ubuntu:xenial",
+        command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+
+    val toMatch = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+      .map(_.count(c => c == 'g' || c == 'c').toString)
+      .reduce {
+        case (lineCount1, lineCount2) =>
+          (lineCount1.toInt + lineCount2.toInt).toString
+      }
+    
+    assert(res == toMatch)
+
+  }
+
 
 }
