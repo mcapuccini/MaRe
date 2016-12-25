@@ -35,27 +35,38 @@ object EasyMapCLI {
   @transient lazy val log = Logger.getLogger(getClass.getName)
 
   def run(params: EasyMapParams) = {
-    
+
     //Start Spark context
     val sc = EasyContext.create(
       appName = s"Map: ${params.command}",
       params.local)
 
-    //Read input data
-    val data = readInputData(
-      sc,
-      params.inputPath,
-      params.outputPath,
-      params.wholeFiles)
-
     //Map data
-    val result = EasyMapReduce.mapWholeFiles(
-      data,
-      params.imageName,
-      params.command)
-
-    //Save results
-    if (params.wholeFiles) { //Save with multiple output
+    val defaultParallelism =
+      sc.getConf.get("spark.default.parallelism", "0").toInt
+    if (params.wholeFiles) {
+      //Get output extension
+      val outExt = FilenameUtils.getExtension(params.outputPath)
+      //Load files
+      val rdd = if (defaultParallelism > 0) {
+        sc.wholeTextFiles(params.inputPath, defaultParallelism)
+      } else {
+        sc.wholeTextFiles(params.inputPath)
+      }
+      //Map data
+      val result = EasyMapReduce.mapWholeFiles(rdd, params.imageName, params.command)
+        .map {
+          case (filename, content) =>
+            //Trim extension and path
+            val noExt = FilenameUtils.removeExtension(filename)
+            val trimmedName = FilenameUtils.getBaseName(noExt)
+            //Set trimmed name and index, with output extension
+            if (outExt != null && outExt.length > 0) {
+              (s"${trimmedName}.${outExt}", content)
+            } else {
+              (trimmedName, content)
+            }
+        }
       //Count files to output
       val it = FileSystem
         .get(sc.hadoopConfiguration)
@@ -71,52 +82,20 @@ object EasyMapCLI {
           classOf[String],
           classOf[String],
           classOf[RDDMultipleTextOutputFormat])
-    } else { //Save as single file
-      result.map(_._2) //remove index
-        .saveAsTextFile(params.outputPath)
+    } else {
+      val rdd = if (defaultParallelism > 0) {
+        sc.textFile(params.inputPath, defaultParallelism)
+      } else {
+        sc.textFile(params.inputPath)
+      }
+      val easymr = new EasyMapReduce(rdd)
+      easymr.mapPartitions(params.imageName, params.command)
+        .getRDD.saveAsTextFile(params.outputPath)
     }
 
     //Stop Spark context
     sc.stop
 
-  }
-
-  private def readInputData(
-    sc: SparkContext,
-    inputPath: String,
-    outputPath: String,
-    wholeFiles: Boolean) = {
-    val defaultParallelism =
-      sc.getConf.get("spark.default.parallelism", "0").toInt
-    if (wholeFiles) {
-      //Get output extension
-      val outExt = FilenameUtils.getExtension(outputPath)
-      //Load files
-      val rdd = if (defaultParallelism > 0) {
-        sc.wholeTextFiles(inputPath, defaultParallelism)
-      } else {
-        sc.wholeTextFiles(inputPath)
-      }
-      rdd.map {
-        case (filename, content) =>
-          //Trim extension and path
-          val noExt = FilenameUtils.removeExtension(filename)
-          val trimmedName = FilenameUtils.getBaseName(noExt)
-          //Set trimmed name and index, with output extension
-          if (outExt != null && outExt.length > 0) {
-            (s"${trimmedName}.${outExt}", content)
-          } else {
-            (trimmedName, content)
-          }
-      }
-    } else {
-      val rdd = if (defaultParallelism > 0) {
-        sc.textFile(inputPath, defaultParallelism)
-      } else {
-        sc.textFile(inputPath)
-      }
-      rdd.map((inputPath, _))
-    }
   }
 
   def main(args: Array[String]) {

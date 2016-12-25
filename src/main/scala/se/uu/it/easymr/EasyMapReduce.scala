@@ -34,11 +34,11 @@ private[easymr] object EasyMapReduce {
 
     //Retrieve output
     val output = Source.fromFile(outputFile).mkString
-    
+
     //Remove temporary files
     inputFile.delete
     outputFile.delete
-    
+
     //Return output
     output
 
@@ -73,6 +73,20 @@ class EasyMapReduce(private val rdd: RDD[String]) {
 
   }
 
+  def mapPartitions(
+    imageName: String,
+    command: String) = {
+
+    //Map partitions
+    val resRDD = rdd.mapPartitions { it =>
+      val partition = it.reduce(_ + "\n" + _)
+      val res = EasyMapReduce.mapLambda(imageName, command, partition)
+      Source.fromString(res).getLines
+    }
+    new EasyMapReduce(resRDD)
+
+  }
+
   def reduce(
     imageName: String,
     command: String) = {
@@ -99,12 +113,12 @@ class EasyMapReduce(private val rdd: RDD[String]) {
 
         //Retrieve output
         val output = Source.fromFile(outputFile).mkString
-        
+
         //Remove temporary files
         inputFile1.delete()
         inputFile2.delete()
         outputFile.delete()
-        
+
         //Return output
         output
 
