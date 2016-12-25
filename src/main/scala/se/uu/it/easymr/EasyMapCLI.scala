@@ -116,8 +116,8 @@ object EasyMapCLI {
 
     val defaultParams = EasyMapParams()
 
-    val parser = new OptionParser[EasyMapParams]("Easy Map") {
-      head("EasyMap: it maps a distributed dataset using a command form a Docker container.")
+    val parser = new OptionParser[EasyMapParams]("EasyMapCLI") {
+      head("EasyMapCLI: it maps a distributed dataset using a command form a Docker container.")
       opt[String]("imageName")
         .required
         .text("Docker image name.")
@@ -129,9 +129,9 @@ object EasyMapCLI {
         .action((x, c) => c.copy(command = x))
       opt[Unit]("wholeFiles")
         .text("if set, multiple input files will be loaded from an input directory. The command will " +
-          "executed in parallel, on the whole files. In contrast, when this is not set " +
-          "the file/files in input is/are splitted line by line, and the command is executed in parallel " +
-          "on each line of the file.")
+          "be executed in parallel, on the whole files. In contrast, when this is not set " +
+          "the file/files in input is/are partitioned, and the command is executed in parallel " +
+          "on each partition.")
         .action((_, c) => c.copy(wholeFiles = true))
       opt[Unit]("local")
         .text("set to run in local mode (useful for testing purpose).")
