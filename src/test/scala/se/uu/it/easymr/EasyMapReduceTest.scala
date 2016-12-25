@@ -28,6 +28,23 @@ class EasyMapReduceTest
     }
 
   }
+  
+  test("Map partitions (DNA reverse)") {
+
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+
+    val resRDD = new EasyMapReduce(rdd).mapPartitions(
+      imageName = "ubuntu:xenial",
+      command = "rev /input > /output")
+      .getRDD
+
+    rdd.collect.zip(resRDD.collect).foreach {
+      case (seq1, seq2) => {
+        assert(seq1.reverse == seq2)
+      }
+    }
+
+  }
 
   test("Map whole files (DNA reverse)") {
 
