@@ -30,7 +30,7 @@ class CLITest
   test("easy map") {
 
     val params = EasyMapParams(
-      command = "rev /input | tr -d '\\n' > /output",
+      command = "rev /input > /output",
       imageName = "ubuntu:xenial",
       local = true,
       inputPath = getClass.getResource("dna/dna.txt").getPath,
@@ -83,7 +83,7 @@ class CLITest
   test("easy map, multiple inputs") {
 
     val params = EasyMapParams(
-      command = "rev /input | tr -d '\\n' > /output",
+      command = "rev /input > /output",
       imageName = "ubuntu:xenial",
       local = true,
       inputPath = getClass.getResource("dna").getPath,

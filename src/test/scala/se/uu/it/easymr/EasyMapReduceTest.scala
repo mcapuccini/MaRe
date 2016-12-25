@@ -18,7 +18,7 @@ class EasyMapReduceTest
 
     val resRDD = new EasyMapReduce(rdd).map(
       imageName = "ubuntu:xenial",
-      command = "rev /input | tr -d '\\n' > /output")
+      command = "rev /input > /output")
       .getRDD
 
     rdd.collect.zip(resRDD.collect).foreach {
@@ -36,14 +36,14 @@ class EasyMapReduceTest
     val resRDD = EasyMapReduce.mapWholeFiles(
       rdd,
       imageName = "ubuntu:xenial",
-      command = "rev /input | tr -d '\\n' > /output")
+      command = "rev /input > /output")
 
     rdd.collect.zip(resRDD.collect).foreach {
       case ((_, seq1), (_, seq2)) =>
         val toMatch = Source.fromString(seq1)
           .getLines
           .map(_.reverse)
-          .mkString
+          .mkString("\n")
         assert(toMatch == seq2)
     }
 
@@ -73,7 +73,7 @@ class EasyMapReduceTest
     val res = new EasyMapReduce(rdd)
       .map(
         imageName = "ubuntu:xenial",
-        command = "grep -o '[gc]' /input | wc -l | tr -d '\\n' > /output")
+        command = "grep -o '[gc]' /input | wc -l > /output")
       .reduce(
         imageName = "ubuntu:xenial",
         command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
