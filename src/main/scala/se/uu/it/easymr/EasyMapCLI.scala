@@ -34,6 +34,63 @@ object EasyMapCLI {
 
   @transient lazy val log = Logger.getLogger(getClass.getName)
 
+  private def mapWholeFiles(
+    sc: SparkContext,
+    defaultParallelism: Int,
+    params: EasyMapParams) = {
+    //Get output extension
+    val outExt = FilenameUtils.getExtension(params.outputPath)
+    //Load files
+    val rdd = if (defaultParallelism > 0) {
+      sc.wholeTextFiles(params.inputPath, defaultParallelism)
+    } else {
+      sc.wholeTextFiles(params.inputPath)
+    }
+    //Map data
+    val result = EasyMapReduce.mapWholeFiles(rdd, params.imageName, params.command)
+      .map { // Fix output name
+        case (filename, content) =>
+          //Trim extension and path
+          val noExt = FilenameUtils.removeExtension(filename)
+          val trimmedName = FilenameUtils.getBaseName(noExt)
+          //Set trimmed name and index, with output extension
+          if (outExt != null && outExt.length > 0) {
+            (s"${trimmedName}.${outExt}", content)
+          } else {
+            (trimmedName, content)
+          }
+      }
+    //Count files to output
+    val it = FileSystem
+      .get(sc.hadoopConfiguration)
+      .listFiles(new Path(params.inputPath), false)
+    var numFiles = 0 // Can't go functional on this :-(
+    while (it.hasNext()) {
+      it.next
+      numFiles += 1
+    }
+    //Save on separated files
+    result.partitionBy(new HashPartitioner(numFiles))
+      .saveAsHadoopFile(params.outputPath,
+        classOf[String],
+        classOf[String],
+        classOf[RDDMultipleTextOutputFormat])
+  }
+
+  private def mapPartitions(
+    sc: SparkContext,
+    defaultParallelism: Int,
+    params: EasyMapParams) = {
+    val rdd = if (defaultParallelism > 0) {
+      sc.textFile(params.inputPath, defaultParallelism)
+    } else {
+      sc.textFile(params.inputPath)
+    }
+    val easymr = new EasyMapReduce(rdd)
+    easymr.mapPartitions(params.imageName, params.command)
+      .getRDD.saveAsTextFile(params.outputPath)
+  }
+
   def run(params: EasyMapParams) = {
 
     //Start Spark context
@@ -45,52 +102,9 @@ object EasyMapCLI {
     val defaultParallelism =
       sc.getConf.get("spark.default.parallelism", "0").toInt
     if (params.wholeFiles) {
-      //Get output extension
-      val outExt = FilenameUtils.getExtension(params.outputPath)
-      //Load files
-      val rdd = if (defaultParallelism > 0) {
-        sc.wholeTextFiles(params.inputPath, defaultParallelism)
-      } else {
-        sc.wholeTextFiles(params.inputPath)
-      }
-      //Map data
-      val result = EasyMapReduce.mapWholeFiles(rdd, params.imageName, params.command)
-        .map {
-          case (filename, content) =>
-            //Trim extension and path
-            val noExt = FilenameUtils.removeExtension(filename)
-            val trimmedName = FilenameUtils.getBaseName(noExt)
-            //Set trimmed name and index, with output extension
-            if (outExt != null && outExt.length > 0) {
-              (s"${trimmedName}.${outExt}", content)
-            } else {
-              (trimmedName, content)
-            }
-        }
-      //Count files to output
-      val it = FileSystem
-        .get(sc.hadoopConfiguration)
-        .listFiles(new Path(params.inputPath), false)
-      var numFiles = 0 // Can't go functional on this :-(
-      while (it.hasNext()) {
-        it.next
-        numFiles += 1
-      }
-      //Save on separated files
-      result.partitionBy(new HashPartitioner(numFiles))
-        .saveAsHadoopFile(params.outputPath,
-          classOf[String],
-          classOf[String],
-          classOf[RDDMultipleTextOutputFormat])
+      EasyMapCLI.mapWholeFiles(sc, defaultParallelism, params)
     } else {
-      val rdd = if (defaultParallelism > 0) {
-        sc.textFile(params.inputPath, defaultParallelism)
-      } else {
-        sc.textFile(params.inputPath)
-      }
-      val easymr = new EasyMapReduce(rdd)
-      easymr.mapPartitions(params.imageName, params.command)
-        .getRDD.saveAsTextFile(params.outputPath)
+      EasyMapCLI.mapPartitions(sc, defaultParallelism, params)
     }
 
     //Stop Spark context
