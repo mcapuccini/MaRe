@@ -10,3 +10,6 @@ env:
   
 before_install:
   - docker pull ubuntu:xenial
+  
+after_success:
+  - mvn deploy --settings travis-config.xml -DskipTests=true -B
