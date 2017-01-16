@@ -14,14 +14,24 @@ private[easymr] object EasyMapReduce {
   final val REDUCE_INPUT1 = new File("/input1")
   final val REDUCE_INPUT2 = new File("/input2")
   final val REDUCE_OUTPUT = new File("/output")
-
+  
   def mapLambda(
     imageName: String,
     command: String,
-    record: String) = {
+    record: String): String = {
+    EasyMapReduce.mapLambda(
+        imageName, 
+        command, 
+        Seq(record).iterator)
+  }
+  
+  def mapLambda(
+    imageName: String,
+    command: String,
+    records: Iterator[String]): String = {
 
     //Create temporary files
-    val inputFile = EasyFiles.writeToTmpFile(record)
+    val inputFile = EasyFiles.writeToTmpFile(records)
     val outputFile = EasyFiles.createTmpFile
 
     //Run docker
@@ -34,11 +44,11 @@ private[easymr] object EasyMapReduce {
 
     //Retrieve output
     val output = Source.fromFile(outputFile).mkString
-    
+
     //Remove temporary files
     inputFile.delete
     outputFile.delete
-    
+
     //Return output
     output
 
@@ -73,6 +83,20 @@ class EasyMapReduce(private val rdd: RDD[String]) {
 
   }
 
+  def mapPartitions(
+    imageName: String,
+    command: String) = {
+
+    //Map partitions
+    val resRDD = rdd.mapPartitions { it =>
+      val partition = it.reduce(_ + "\n" + _)
+      val res = EasyMapReduce.mapLambda(imageName, command, partition)
+      Source.fromString(res).getLines
+    }
+    new EasyMapReduce(resRDD)
+
+  }
+
   def reduce(
     imageName: String,
     command: String) = {
@@ -99,12 +123,12 @@ class EasyMapReduce(private val rdd: RDD[String]) {
 
         //Retrieve output
         val output = Source.fromFile(outputFile).mkString
-        
+
         //Remove temporary files
         inputFile1.delete()
         inputFile2.delete()
         outputFile.delete()
-        
+
         //Return output
         output
 

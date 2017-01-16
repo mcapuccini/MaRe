@@ -34,70 +34,21 @@ object EasyMapCLI {
 
   @transient lazy val log = Logger.getLogger(getClass.getName)
 
-  def run(params: EasyMapParams) = {
-    
-    //Start Spark context
-    val sc = EasyContext.create(
-      appName = s"Map: ${params.command}",
-      params.local)
-
-    //Read input data
-    val data = readInputData(
-      sc,
-      params.inputPath,
-      params.outputPath,
-      params.wholeFiles)
-
-    //Map data
-    val result = EasyMapReduce.mapWholeFiles(
-      data,
-      params.imageName,
-      params.command)
-
-    //Save results
-    if (params.wholeFiles) { //Save with multiple output
-      //Count files to output
-      val it = FileSystem
-        .get(sc.hadoopConfiguration)
-        .listFiles(new Path(params.inputPath), false)
-      var numFiles = 0 // Can't go functional on this :-(
-      while (it.hasNext()) {
-        it.next
-        numFiles += 1
-      }
-      //Save on separated files
-      result.partitionBy(new HashPartitioner(numFiles))
-        .saveAsHadoopFile(params.outputPath,
-          classOf[String],
-          classOf[String],
-          classOf[RDDMultipleTextOutputFormat])
-    } else { //Save as single file
-      result.map(_._2) //remove index
-        .saveAsTextFile(params.outputPath)
-    }
-
-    //Stop Spark context
-    sc.stop
-
-  }
-
-  private def readInputData(
+  private def mapWholeFiles(
     sc: SparkContext,
-    inputPath: String,
-    outputPath: String,
-    wholeFiles: Boolean) = {
-    val defaultParallelism =
-      sc.getConf.get("spark.default.parallelism", "0").toInt
-    if (wholeFiles) {
-      //Get output extension
-      val outExt = FilenameUtils.getExtension(outputPath)
-      //Load files
-      val rdd = if (defaultParallelism > 0) {
-        sc.wholeTextFiles(inputPath, defaultParallelism)
-      } else {
-        sc.wholeTextFiles(inputPath)
-      }
-      rdd.map {
+    defaultParallelism: Int,
+    params: EasyMapParams) = {
+    //Get output extension
+    val outExt = FilenameUtils.getExtension(params.outputPath)
+    //Load files
+    val rdd = if (defaultParallelism > 0) {
+      sc.wholeTextFiles(params.inputPath, defaultParallelism)
+    } else {
+      sc.wholeTextFiles(params.inputPath)
+    }
+    //Map data
+    val result = EasyMapReduce.mapWholeFiles(rdd, params.imageName, params.command)
+      .map { // Fix output name
         case (filename, content) =>
           //Trim extension and path
           val noExt = FilenameUtils.removeExtension(filename)
@@ -109,22 +60,64 @@ object EasyMapCLI {
             (trimmedName, content)
           }
       }
-    } else {
-      val rdd = if (defaultParallelism > 0) {
-        sc.textFile(inputPath, defaultParallelism)
-      } else {
-        sc.textFile(inputPath)
-      }
-      rdd.map((inputPath, _))
+    //Count files to output
+    val it = FileSystem
+      .get(sc.hadoopConfiguration)
+      .listFiles(new Path(params.inputPath), false)
+    var numFiles = 0 // Can't go functional on this :-(
+    while (it.hasNext()) {
+      it.next
+      numFiles += 1
     }
+    //Save on separated files
+    result.partitionBy(new HashPartitioner(numFiles))
+      .saveAsHadoopFile(params.outputPath,
+        classOf[String],
+        classOf[String],
+        classOf[RDDMultipleTextOutputFormat])
+  }
+
+  private def mapPartitions(
+    sc: SparkContext,
+    defaultParallelism: Int,
+    params: EasyMapParams) = {
+    val rdd = if (defaultParallelism > 0) {
+      sc.textFile(params.inputPath, defaultParallelism)
+    } else {
+      sc.textFile(params.inputPath)
+    }
+    val easymr = new EasyMapReduce(rdd)
+    easymr.mapPartitions(params.imageName, params.command)
+      .getRDD.saveAsTextFile(params.outputPath)
+  }
+
+  def run(params: EasyMapParams) = {
+
+    //Start Spark context
+    val sc = EasyContext.create(
+      appName = s"Map: ${params.command}",
+      params.local)
+
+    //Map data
+    val defaultParallelism =
+      sc.getConf.get("spark.default.parallelism", "0").toInt
+    if (params.wholeFiles) {
+      EasyMapCLI.mapWholeFiles(sc, defaultParallelism, params)
+    } else {
+      EasyMapCLI.mapPartitions(sc, defaultParallelism, params)
+    }
+
+    //Stop Spark context
+    sc.stop
+
   }
 
   def main(args: Array[String]) {
 
     val defaultParams = EasyMapParams()
 
-    val parser = new OptionParser[EasyMapParams]("Easy Map") {
-      head("EasyMap: it maps a distributed dataset using a command form a Docker container.")
+    val parser = new OptionParser[EasyMapParams]("EasyMapCLI") {
+      head("EasyMapCLI: it maps a distributed dataset using a command form a Docker container.")
       opt[String]("imageName")
         .required
         .text("Docker image name.")
@@ -136,9 +129,9 @@ object EasyMapCLI {
         .action((x, c) => c.copy(command = x))
       opt[Unit]("wholeFiles")
         .text("if set, multiple input files will be loaded from an input directory. The command will " +
-          "executed in parallel, on the whole files. In contrast, when this is not set " +
-          "the file/files in input is/are splitted line by line, and the command is executed in parallel " +
-          "on each line of the file.")
+          "be executed in parallel, on the whole files. In contrast, when this is not set " +
+          "the file/files in input is/are partitioned, and the command is executed in parallel " +
+          "on each partition.")
         .action((_, c) => c.copy(wholeFiles = true))
       opt[Unit]("local")
         .text("set to run in local mode (useful for testing purpose).")

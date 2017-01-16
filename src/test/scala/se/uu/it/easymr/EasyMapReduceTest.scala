@@ -18,7 +18,24 @@ class EasyMapReduceTest
 
     val resRDD = new EasyMapReduce(rdd).map(
       imageName = "ubuntu:xenial",
-      command = "rev /input | tr -d '\\n' > /output")
+      command = "rev /input > /output")
+      .getRDD
+
+    rdd.collect.zip(resRDD.collect).foreach {
+      case (seq1, seq2) => {
+        assert(seq1.reverse == seq2)
+      }
+    }
+
+  }
+  
+  test("Map partitions (DNA reverse)") {
+
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+
+    val resRDD = new EasyMapReduce(rdd).mapPartitions(
+      imageName = "ubuntu:xenial",
+      command = "rev /input > /output")
       .getRDD
 
     rdd.collect.zip(resRDD.collect).foreach {
@@ -36,14 +53,14 @@ class EasyMapReduceTest
     val resRDD = EasyMapReduce.mapWholeFiles(
       rdd,
       imageName = "ubuntu:xenial",
-      command = "rev /input | tr -d '\\n' > /output")
+      command = "rev /input > /output")
 
     rdd.collect.zip(resRDD.collect).foreach {
       case ((_, seq1), (_, seq2)) =>
         val toMatch = Source.fromString(seq1)
           .getLines
           .map(_.reverse)
-          .mkString
+          .mkString("\n")
         assert(toMatch == seq2)
     }
 
@@ -73,7 +90,7 @@ class EasyMapReduceTest
     val res = new EasyMapReduce(rdd)
       .map(
         imageName = "ubuntu:xenial",
-        command = "grep -o '[gc]' /input | wc -l | tr -d '\\n' > /output")
+        command = "grep -o '[gc]' /input | wc -l > /output")
       .reduce(
         imageName = "ubuntu:xenial",
         command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
@@ -88,5 +105,29 @@ class EasyMapReduceTest
     assert(res == toMatch)
 
   }
+  
+  test("MapReduce (GC count, with mapPartitions)") {
+
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+
+    val res = new EasyMapReduce(rdd)
+      .mapPartitions(
+        imageName = "ubuntu:xenial",
+        command = "grep -o '[gc]' /input | wc -l > /output")
+      .reduce(
+        imageName = "ubuntu:xenial",
+        command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+
+    val toMatch = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+      .map(_.count(c => c == 'g' || c == 'c').toString)
+      .reduce {
+        case (lineCount1, lineCount2) =>
+          (lineCount1.toInt + lineCount2.toInt).toString
+      }
+    
+    assert(res == toMatch)
+
+  }
+
 
 }
