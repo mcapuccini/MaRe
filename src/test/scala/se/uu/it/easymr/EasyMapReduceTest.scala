@@ -73,7 +73,7 @@ class EasyMapReduceTest
 
     val res = new EasyMapReduce(rdd).reduce(
       imageName = "ubuntu:xenial",
-      command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+      command = "expr $(cat /input1) + $(cat /input2) > /output")
 
     val sum = rdd.reduce {
       case (lineCount1, lineCount2) =>
@@ -93,7 +93,7 @@ class EasyMapReduceTest
         command = "grep -o '[gc]' /input | wc -l > /output")
       .reduce(
         imageName = "ubuntu:xenial",
-        command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+        command = "expr $(cat /input1) + $(cat /input2) > /output")
 
     val toMatch = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
       .map(_.count(c => c == 'g' || c == 'c').toString)
@@ -116,7 +116,7 @@ class EasyMapReduceTest
         command = "grep -o '[gc]' /input | wc -l > /output")
       .reduce(
         imageName = "ubuntu:xenial",
-        command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+        command = "expr $(cat /input1) + $(cat /input2) > /output")
 
     val toMatch = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
       .map(_.count(c => c == 'g' || c == 'c').toString)
