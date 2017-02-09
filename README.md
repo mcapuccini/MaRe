@@ -45,7 +45,7 @@ spark-submit --class se.uu.it.easymr.EasyMapCLI \
   --master local[*] \
   easymr-0.1.0-SNAPSHOT-jar-with-dependencies.jar \
   --imageName ubuntu:xenial \
-  --command 'grep -o [gc] /input | wc -l | tr -d "\n" > /output' \
+  --command 'grep -o [gc] /input | wc -l > /output' \
   /path/to/dna.txt /results/folder/count_by_line.txt
 ```
 
@@ -84,7 +84,7 @@ val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 val count = new EasyMapReduce(rdd)
  .mapPartitions(
     imageName = "ubuntu:xenial",
-    command = "grep -o '[gc]' /input | wc -l | tr -d '\\n' > /output")
+    command = "grep -o '[gc]' /input | wc -l > /output")
  .reduce(
     imageName = "ubuntu:xenial",
     command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
