@@ -4,6 +4,10 @@
 
 EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
 
+**20 minutes introduction video**:
+
+[![youtube](https://img.youtube.com/vi/4C4R9qptUQo/0.jpg)](https://www.youtube.com/watch?v=4C4R9qptUQo)
+
 ## Table of contents
 - [What is EasyMapReduce](#what-is-easymapreduce)
 - [Getting Started](#gettign-started)
