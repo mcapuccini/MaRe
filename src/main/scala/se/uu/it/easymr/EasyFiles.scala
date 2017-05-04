@@ -12,7 +12,7 @@ private[easymr] object EasyFiles {
     new File(System.getenv("TMPDIR"))
   } else {
     val file = new File("/tmp")
-    if(!f.exists() || !f.isDirectory()) { 
+    if(!file.exists() || !file.isDirectory()) { 
       throw new IllegalStateException(
         "Environment variables EASYMR_TMP and TMPDIR are not defined. " +
         "Please define at least one of the two."
