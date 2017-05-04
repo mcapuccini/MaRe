@@ -11,10 +11,14 @@ private[easymr] object EasyFiles {
   } else if (System.getenv("TMPDIR") != null) {
     new File(System.getenv("TMPDIR"))
   } else {
-    throw new IllegalStateException(
-      "Environment variables EASYMR_TMP and TMPDIR are not defined. " +
-      "Please define at least one of the two."
-    )
+    val file = new File("/tmp")
+    if(!file.exists() || !file.isDirectory()) { 
+      throw new IllegalStateException(
+        "Environment variables EASYMR_TMP and TMPDIR are not defined. " +
+        "Please define at least one of the two."
+      )
+    }
+    file
   }
     
   private def newTmpFile = new File(tmpDir, "easymr_" + UUID.randomUUID.toString)
