@@ -14,7 +14,7 @@ class EasyDockerTest
     extends FunSuite
     with SharedSparkContext {
 
-  test("Map-like docker run") {
+  test("Map-like Docker run") {
 
     //Create temporary files
     val inputFile = EasyFiles.writeToTmpFile("hello world")
@@ -27,29 +27,6 @@ class EasyDockerTest
       command = "cat /input > /output",
       bindFiles = Seq(inputFile, outputFile),
       volumeFiles = Seq(new File("/input"), new File("/output")))
-
-    val content = Source.fromFile(outputFile).mkString
-    assert(content == "hello world")
-
-  }
-
-  test("Reduce-like docker run") {
-
-    //Create temporary files
-    val inputFile1 = EasyFiles.writeToTmpFile("hello ")
-    val inputFile2 = EasyFiles.writeToTmpFile("world")
-    val outputFile = EasyFiles.createTmpFile
-
-    //Run docker
-    val docker = new EasyDocker
-    docker.run(
-      imageName = "ubuntu:xenial", // assumes ubuntu:xenial was pulled 
-      command = "cat /input1 > /output && cat /input2 >> /output",
-      bindFiles = Seq(inputFile1, inputFile2, outputFile),
-      volumeFiles = Seq(
-        new File("/input1"),
-        new File("/input2"),
-        new File("/output")))
 
     val content = Source.fromFile(outputFile).mkString
     assert(content == "hello world")
