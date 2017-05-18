@@ -54,19 +54,6 @@ private[easymr] object EasyMapReduce {
 
   }
 
-  def mapWholeFiles(
-    rdd: RDD[(String, String)],
-    imageName: String,
-    command: String) = {
-
-    //Map
-    rdd.map {
-      case (filename, content) =>
-        (filename, mapLambda(imageName, command, content))
-    }
-
-  }
-
 }
 
 class EasyMapReduce(private val rdd: RDD[String]) {

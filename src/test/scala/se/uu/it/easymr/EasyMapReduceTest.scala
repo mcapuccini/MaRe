@@ -46,26 +46,6 @@ class EasyMapReduceTest
 
   }
 
-  test("Map whole files (DNA reverse)") {
-
-    val rdd = sc.wholeTextFiles(getClass.getResource("dna").getPath)
-
-    val resRDD = EasyMapReduce.mapWholeFiles(
-      rdd,
-      imageName = "ubuntu:xenial",
-      command = "rev /input > /output")
-
-    rdd.collect.zip(resRDD.collect).foreach {
-      case ((_, seq1), (_, seq2)) =>
-        val toMatch = Source.fromString(seq1)
-          .getLines
-          .map(_.reverse)
-          .mkString("\n")
-        assert(toMatch == seq2)
-    }
-
-  }
-
   test("Reduce (GC count)") {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
