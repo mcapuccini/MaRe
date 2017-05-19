@@ -4,15 +4,12 @@ import java.io.File
 import java.io.PrintWriter
 import java.util.UUID
 import java.io.FileNotFoundException
+import scala.util.Properties
 
 private[easymr] object EasyFiles {
   
   // Set temporary directory
-  private val tmpDir = if (System.getenv("TMPDIR") != null) {
-    new File(System.getenv("TMPDIR"))
-  } else {
-    new File("/tmp")
-  }
+  private val tmpDir = new File(Properties.envOrElse("TMPDIR", "/tmp" ))
   if(!tmpDir.exists) {
     throw new FileNotFoundException(
         s"temporary directory ${tmpDir.getAbsolutePath} doesn't extist")
@@ -33,14 +30,7 @@ private[easymr] object EasyFiles {
   def writeToTmpFile(it: Iterator[String]): File = {
     val file = EasyFiles.newTmpFile
     val pw = new PrintWriter(file)
-    while(it.hasNext) {
-      val line = it.next
-      if(it.hasNext) {
-        pw.println(line)
-      } else {
-        pw.write(line)
-      }
-    }
+    it.foreach(pw.println)
     pw.close
     file
   }
