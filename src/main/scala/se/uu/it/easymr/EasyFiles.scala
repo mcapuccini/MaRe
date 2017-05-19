@@ -4,15 +4,12 @@ import java.io.File
 import java.io.PrintWriter
 import java.util.UUID
 import java.io.FileNotFoundException
+import scala.util.Properties
 
 private[easymr] object EasyFiles {
   
   // Set temporary directory
-  private val tmpDir = if (System.getenv("TMPDIR") != null) {
-    new File(System.getenv("TMPDIR"))
-  } else {
-    new File("/tmp")
-  }
+  private val tmpDir = new File(Properties.envOrElse("TMPDIR", "/tmp" ))
   if(!tmpDir.exists) {
     throw new FileNotFoundException(
         s"temporary directory ${tmpDir.getAbsolutePath} doesn't extist")
