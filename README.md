@@ -57,8 +57,6 @@ EasyMapReduce is packaged and distributed with Maven, all you have to do is to a
 </dependencies>
 ```
 
-If everything goes well you should find the EasyMapReduce jar in the *target* directory.
-
 ### Documentation
 
 API documentation is available here: https://mcapuccini.github.io/EasyMapReduce/scaladocs/.
