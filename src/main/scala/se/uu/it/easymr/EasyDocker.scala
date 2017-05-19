@@ -3,6 +3,7 @@ package se.uu.it.easymr
 import java.io.File
 
 import scala.collection.JavaConversions.seqAsJavaList
+import scala.util.Properties
 
 import org.apache.log4j.Logger
 
@@ -18,14 +19,14 @@ private[easymr] class EasyDocker extends Serializable {
 
   // Init client
   private val configBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder()
-  if (System.getenv("DOCKER_HOST") != null) {
+  if (Properties.envOrNone("DOCKER_HOST") != None) {
     configBuilder.withDockerHost(System.getenv("DOCKER_HOST"))
   }
-  if (System.getenv("DOCKER_TLS_VERIFY") != null) {
+  if (Properties.envOrNone("DOCKER_TLS_VERIFY") != None) {
     val tlsVerify = System.getenv("DOCKER_TLS_VERIFY") == "1"
     configBuilder.withDockerTlsVerify(tlsVerify)
   }
-  if (System.getenv("DOCKER_CERT_PATH") != null) {
+  if (Properties.envOrNone("DOCKER_CERT_PATH") != None) {
     configBuilder.withDockerCertPath(System.getenv("DOCKER_CERT_PATH"))
   }
   private val config = configBuilder.build
