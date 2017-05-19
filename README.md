@@ -41,8 +41,8 @@ DNA can be represented as a string written in a language of 4 characters: A,T,G,
 ```scala
 val rdd = sc.textFile("genome.dna")
 val res = new EasyMapReduce(rdd)
-	.setInputPath("/input.dna")
-    .setOutputPath("/output.dna")
+	.setInputMountPoint("/input.dna")
+    .setOutputMountPoint("/output.dna")
     .map(
     	imageName = "ubuntu:xenial",
       	command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")

@@ -9,10 +9,24 @@ env:
   - TMPDIR=/tmp
   
 before_install:
+
+  # Import decrypt and import gpg keys
+  - >
+    openssl aes-256-cbc
+    -K $encrypted_2a86118113a7_key  -iv $encrypted_2a86118113a7_iv
+    -in gpg-keys/secret.asc.enc -out gpg-keys/secret.asc -d
+  - gpg --import gpg-keys/public.asc
+  - gpg --import gpg-keys/secret.asc
+  
+  # Pull image that is used in tests
   - docker pull ubuntu:xenial
+
+before_script:
+  - mvn scala:doc -B # generate/test documentation
 
 after_success:
   - >
     if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
-      mvn deploy --settings travis-config.xml -DskipTests=true -B
+      mvn deploy --settings .travis-config.xml -DskipTests=true -B
+      mvn site --settings .travis-config.xml -B
     fi
