@@ -40,11 +40,12 @@ DNA can be represented as a string written in a language of 4 characters: A,T,G,
 
 ```scala
 val rdd = sc.textFile("genome.txt")
-val count = new EasyMapReduce(rdd)
- .mapPartitions(
-    imageName = "ubuntu:xenial",
-    command = "grep -o '[gc]' /input | wc -l > /output")
- .reduce(
-    imageName = "ubuntu:xenial",
-    command = "expr $(cat /input1) + $(cat /input2) | tr -d '\\n' > /output")
+val res = new EasyMapReduce(rdd)
+	.map(
+    	imageName = "ubuntu:xenial",
+        command = "grep -o '[gc]' /input | wc -l > /output")
+    .reduce(
+    	imageName = "ubuntu:xenial",
+        command = "awk '{s+=$1} END {print s}' /input > /output")
+println(s"The GC count is: $res")
 ```
