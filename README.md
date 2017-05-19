@@ -12,6 +12,7 @@ EasyMapReduce leverages the power of Docker and Spark to run and scale your seri
 - [What is EasyMapReduce](#what-is-easymapreduce)
 - [Getting Started](#gettign-started)
   - [Get EasyMapReduce](#get-easymapreduce)
+  - [Documentation](#documentation)
 - [Example: DNA GC count](#example-dna-gc-count)
 
 ## What is EasyMapReduce
@@ -34,6 +35,10 @@ mvn clean package -DskipTests
 ```
 
 If everything goes well you should find the EasyMapReduce jar in the *target* directory.
+
+### Documentation
+
+API documentation is available here: https://mcapuccini.github.io/EasyMapReduce/scaladocs/.
 
 ## Example: DNA GC count 
 DNA can be represented as a string written in a language of 4 characters: A,T,G,C. Counting how many times G and C occur in a genome is a task that is often performed in genomics. In this example we use EasyMapReduce to perform this task in parallel with POSIX commands. 
