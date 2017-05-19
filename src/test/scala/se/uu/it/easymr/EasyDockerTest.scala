@@ -10,9 +10,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class EasyDockerTest
-    extends FunSuite
-    with SharedSparkContext {
+class EasyDockerTest extends FunSuite {
 
   test("Map-like Docker run") {
 

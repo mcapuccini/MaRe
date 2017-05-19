@@ -30,14 +30,7 @@ private[easymr] object EasyFiles {
   def writeToTmpFile(it: Iterator[String]): File = {
     val file = EasyFiles.newTmpFile
     val pw = new PrintWriter(file)
-    while(it.hasNext) {
-      val line = it.next
-      if(it.hasNext) {
-        pw.println(line)
-      } else {
-        pw.write(line)
-      }
-    }
+    it.foreach(pw.println)
     pw.close
     file
   }
