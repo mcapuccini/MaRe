@@ -27,7 +27,7 @@ class EasyDockerTest extends FunSuite {
       volumeFiles = Seq(new File("/input"), new File("/output")))
 
     val content = Source.fromFile(outputFile).mkString
-    assert(content == "hello world")
+    assert(content == "hello world\n")
 
   }
 
