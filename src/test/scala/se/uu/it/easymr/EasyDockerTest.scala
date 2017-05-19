@@ -10,9 +10,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class EasyDockerTest
-    extends FunSuite
-    with SharedSparkContext {
+class EasyDockerTest extends FunSuite {
 
   test("Map-like Docker run") {
 
@@ -29,7 +27,7 @@ class EasyDockerTest
       volumeFiles = Seq(new File("/input"), new File("/output")))
 
     val content = Source.fromFile(outputFile).mkString
-    assert(content == "hello world")
+    assert(content == "hello world\n")
 
   }
 
