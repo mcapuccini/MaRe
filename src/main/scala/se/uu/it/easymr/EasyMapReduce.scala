@@ -8,17 +8,18 @@ import org.apache.spark.rdd.RDD
 
 private[easymr] object EasyMapReduce {
 
-  final val MAP_INPUT = new File("/input")
-  final val MAP_OUTPUT = new File("/output")
-  
   def mapLambda(
     imageName: String,
     command: String,
+    inputFilePath: String,
+    outputFilePath: String,
     record: String): String = {
     EasyMapReduce
       .mapLambda(
         imageName,
         command,
+        inputFilePath,
+        outputFilePath,
         Seq(record).iterator)
       .mkString
   }
@@ -26,6 +27,8 @@ private[easymr] object EasyMapReduce {
   def mapLambda(
     imageName: String,
     command: String,
+    inputFilePath: String,
+    outputFilePath: String,
     records: Iterator[String]) = {
 
     //Create temporary files
@@ -38,7 +41,7 @@ private[easymr] object EasyMapReduce {
       imageName,
       command,
       bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(MAP_INPUT, MAP_OUTPUT))
+      volumeFiles = Seq(new File(inputFilePath), new File(outputFilePath)))
 
     //Retrieve output
     val output = Source.fromFile(outputFile).getLines
@@ -46,7 +49,7 @@ private[easymr] object EasyMapReduce {
     //Remove temporary files
     inputFile.delete
     outputFile.delete
-
+    
     //Return output
     output
 
@@ -54,17 +57,29 @@ private[easymr] object EasyMapReduce {
 
 }
 
-class EasyMapReduce(private val rdd: RDD[String]) {
+class EasyMapReduce(
+    private val rdd: RDD[String],
+    val inputFilePath: String = "/input",
+    val outputFilePath: String = "/output") extends Serializable {
 
   def getRDD = rdd
+  
+  def setInputPath(inputFilePath: String) = {
+    new EasyMapReduce(rdd, inputFilePath, outputFilePath)
+  }
+  
+  def setOutputPath(outputFilePath: String) = {
+    new EasyMapReduce(rdd, inputFilePath, outputFilePath)
+  }
 
   def map(
     imageName: String,
     command: String) = {
 
     //Map partitions to avoid opening too many files
-    val resRDD = rdd.mapPartitions(EasyMapReduce.mapLambda(imageName, command, _))
-    new EasyMapReduce(resRDD)
+    val resRDD = rdd.mapPartitions(
+      EasyMapReduce.mapLambda(imageName, command, inputFilePath, outputFilePath, _))
+    new EasyMapReduce(resRDD, inputFilePath, outputFilePath)
 
   }
 
@@ -76,8 +91,10 @@ class EasyMapReduce(private val rdd: RDD[String]) {
     val reducedPartitions = this.map(imageName, command).getRDD
 
     //Reduce
-    reducedPartitions.reduce { case(rp1,rp2) =>
-      EasyMapReduce.mapLambda(imageName, command, rp1+"\n"+rp2)
+    reducedPartitions.reduce {
+      case (rp1, rp2) =>
+        EasyMapReduce.mapLambda(
+          imageName, command, inputFilePath, outputFilePath, rp1 + "\n" + rp2)
     }
 
   }
