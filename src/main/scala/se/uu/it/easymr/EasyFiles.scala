@@ -3,20 +3,25 @@ package se.uu.it.easymr
 import java.io.File
 import java.io.PrintWriter
 import java.util.UUID
+import java.io.FileNotFoundException
 
 private[easymr] object EasyFiles {
   
-  private val tmpDir = if(System.getenv("EASYMR_TMP") != null) {
-    new File(System.getenv("EASYMR_TMP"))
-  } else if (System.getenv("TMPDIR") != null) {
+  // Set temporary directory
+  private val tmpDir = if (System.getenv("TMPDIR") != null) {
     new File(System.getenv("TMPDIR"))
   } else {
-    throw new IllegalStateException(
-      "Environment variables EASYMR_TMP and TMPDIR are not defined. " +
-      "Please define at least one of the two."
-    )
+    new File("/tmp")
   }
-    
+  if(!tmpDir.exists) {
+    throw new FileNotFoundException(
+        s"temporary directory ${tmpDir.getAbsolutePath} doesn't extist")
+  }
+  if(!tmpDir.isDirectory) {
+    throw new FileNotFoundException(
+        s"${tmpDir.getAbsolutePath} is not a directory")
+  }
+  
   private def newTmpFile = new File(tmpDir, "easymr_" + UUID.randomUUID.toString)
   
   def createTmpFile = {
