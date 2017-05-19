@@ -17,7 +17,7 @@ class EasyDockerTest
   test("Map-like Docker run") {
 
     //Create temporary files
-    val inputFile = EasyFiles.writeToTmpFile("hello world")
+    val inputFile = EasyFiles.writeToTmpFile(Seq("hello world").iterator)
     val outputFile = EasyFiles.createTmpFile
 
     //Run docker

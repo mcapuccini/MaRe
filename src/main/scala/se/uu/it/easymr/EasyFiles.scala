@@ -25,10 +25,6 @@ private[easymr] object EasyFiles {
     file
   }
   
-  def writeToTmpFile(toWrite: String): File = {
-    EasyFiles.writeToTmpFile(Seq(toWrite).iterator)
-  }
-  
   def writeToTmpFile(it: Iterator[String]): File = {
     val file = EasyFiles.newTmpFile
     val pw = new PrintWriter(file)
