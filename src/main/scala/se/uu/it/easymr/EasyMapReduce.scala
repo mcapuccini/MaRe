@@ -8,27 +8,28 @@ import org.apache.spark.rdd.RDD
 
 private[easymr] object EasyMapReduce {
 
-  final val MAP_INPUT = new File("/input")
-  final val MAP_OUTPUT = new File("/output")
-
-  final val REDUCE_INPUT1 = new File("/input1")
-  final val REDUCE_INPUT2 = new File("/input2")
-  final val REDUCE_OUTPUT = new File("/output")
-  
   def mapLambda(
     imageName: String,
     command: String,
+    inputMountPoint: String,
+    outputMountPoint: String,
     record: String): String = {
-    EasyMapReduce.mapLambda(
-        imageName, 
-        command, 
+    EasyMapReduce
+      .mapLambda(
+        imageName,
+        command,
+        inputMountPoint,
+        outputMountPoint,
         Seq(record).iterator)
+      .mkString
   }
-  
+
   def mapLambda(
     imageName: String,
     command: String,
-    records: Iterator[String]): String = {
+    inputMountPoint: String,
+    outputMountPoint: String,
+    records: Iterator[String]) = {
 
     //Create temporary files
     val inputFile = EasyFiles.writeToTmpFile(records)
@@ -40,98 +41,105 @@ private[easymr] object EasyMapReduce {
       imageName,
       command,
       bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(MAP_INPUT, MAP_OUTPUT))
+      volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)))
 
     //Retrieve output
-    val output = Source.fromFile(outputFile).mkString
+    val output = Source.fromFile(outputFile).getLines
 
     //Remove temporary files
     inputFile.delete
     outputFile.delete
-
+    
     //Return output
     output
 
   }
 
-  def mapWholeFiles(
-    rdd: RDD[(String, String)],
-    imageName: String,
-    command: String) = {
-
-    //Map
-    rdd.map {
-      case (filename, content) =>
-        (filename, mapLambda(imageName, command, content))
-    }
-
-  }
-
 }
 
-class EasyMapReduce(private val rdd: RDD[String]) {
+/**
+ * EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools 
+ * in MapReduce fashion. The data goes from Spark through the Docker container, and back to Spark 
+ * after being processed, via Unix files. Please make sure that the TMPDIR environment variable 
+ * in the worker nodes points to a tmpfs to reduce overhead when running in production. To make sure
+ * that the TMPDIR is properly set in each node you can use the "setExecutorEnv" method from the 
+ * SparkConf class when initializing the SparkContext.
+ * 
+ *  @constructor
+ *  @param rdd input RDD
+ *  @param inputMountPoint mount point for the input chunk that is passed to the containers
+ *  @param outputMountPoint mount point where the processed data is read back to Spark
+ */
+class EasyMapReduce(
+    private val rdd: RDD[String],
+    val inputMountPoint: String = "/input",
+    val outputMountPoint: String = "/output") extends Serializable {
 
   def getRDD = rdd
+  
+  /**
+   * It sets the mount point for the input chunk that is passed to the containers.
+   * 
+   * 	@constructor
+   * 	@param inputMountPoint mount point for the input chunk that is passed to the containers
+   */
+  def setInputMountPoint(inputMountPoint: String) = {
+    new EasyMapReduce(rdd, inputMountPoint, outputMountPoint)
+  }
+  
+  /**
+   * It sets the mount point where the processed data is read back to Spark.
+   * 
+   * @param outputMountPoint mount point where the processed data is read back to Spark
+   */
+  def setOutputMountPoint(outputMountPoint: String) = {
+    new EasyMapReduce(rdd, inputMountPoint, outputMountPoint)
+  }
 
+  /**
+   * It maps each RDD partition through a Docker container command. 
+   * Data is mounted to the specified inputMountPoint and read back 
+   * from the specified outputMountPoint. 
+   * 
+   * @param imageName a Docker image name available in each node
+   * @param command a command to run in the Docker container, this should read from 
+   * inputMountPoint and write back to outputMountPoint
+   */
   def map(
     imageName: String,
     command: String) = {
 
-    //Map
-    val resRDD = rdd.map(EasyMapReduce.mapLambda(imageName, command, _))
-    new EasyMapReduce(resRDD)
+    //Map partitions to avoid opening too many files
+    val resRDD = rdd.mapPartitions(
+      EasyMapReduce.mapLambda(imageName, command, inputMountPoint, outputMountPoint, _))
+    new EasyMapReduce(resRDD, inputMountPoint, outputMountPoint)
 
   }
 
-  def mapPartitions(
-    imageName: String,
-    command: String) = {
-
-    //Map partitions
-    val resRDD = rdd.mapPartitions { it =>
-      val partition = it.reduce(_ + "\n" + _)
-      val res = EasyMapReduce.mapLambda(imageName, command, partition)
-      Source.fromString(res).getLines
-    }
-    new EasyMapReduce(resRDD)
-
-  }
-
+  /**
+   * It reduces a RDD to a single String using a Docker container command. The command is applied first 
+   * to each RDD partition, and then to couples of RDD records (that are concatenated with a new line
+   * separator). Data is mounted to the specified inputMountPoint and read back from the specified 
+   * outputMountPoint.
+   * 
+   * @param imageName a Docker image name available in each node
+   * @param command a command to run in the Docker container, this should read from 
+   * inputMountPoint and write back to outputMountPoint, and it should perform an
+   * associative and commutative operation (for the parallelization to work)
+   * 
+   */
   def reduce(
     imageName: String,
     command: String) = {
 
+    //First reduce within partitions
+    val reducedPartitions = this.map(imageName, command).getRDD
+
     //Reduce
-    rdd.reduce {
-      case (record1, record2) =>
-
-        //Create temporary files
-        val inputFile1 = EasyFiles.writeToTmpFile(record1)
-        val inputFile2 = EasyFiles.writeToTmpFile(record2)
-        val outputFile = EasyFiles.createTmpFile
-
-        //Run docker
-        val docker = new EasyDocker
-        docker.run(
-          imageName,
-          command,
-          bindFiles = Seq(inputFile1, inputFile2, outputFile),
-          volumeFiles = Seq(
-            EasyMapReduce.REDUCE_INPUT1,
-            EasyMapReduce.REDUCE_INPUT2,
-            EasyMapReduce.REDUCE_OUTPUT))
-
-        //Retrieve output
-        val output = Source.fromFile(outputFile).mkString
-
-        //Remove temporary files
-        inputFile1.delete()
-        inputFile2.delete()
-        outputFile.delete()
-
-        //Return output
-        output
-
+    reducedPartitions.reduce {
+      case (rp1, rp2) =>
+        EasyMapReduce.mapLambda(
+          imageName, command, inputMountPoint, outputMountPoint, rp1 + "\n" + rp2)
     }
 
   }
