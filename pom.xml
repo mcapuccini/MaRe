@@ -36,6 +36,7 @@
 		<encoding>UTF-8</encoding>
 		<scala.version>2.11.5</scala.version>
 		<scala.compat.version>2.11</scala.compat.version>
+		<github.global.server>github</github.global.server>
 	</properties>
 
 	<distributionManagement>
