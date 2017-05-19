@@ -39,13 +39,15 @@ If everything goes well you should find the EasyMapReduce jar in the *target* di
 DNA can be represented as a string written in a language of 4 characters: A,T,G,C. Counting how many times G and C occur in a genome is a task that is often performed in genomics. In this example we use EasyMapReduce to perform this task in parallel with POSIX commands. 
 
 ```scala
-val rdd = sc.textFile("genome.txt")
+val rdd = sc.textFile("genome.dna")
 val res = new EasyMapReduce(rdd)
-	.map(
+	.setInputPath("/input.dna")
+    .setOutputPath("/output.dna")
+    .map(
     	imageName = "ubuntu:xenial",
-        command = "grep -o '[gc]' /input | wc -l > /output")
+      	command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")
     .reduce(
-    	imageName = "ubuntu:xenial",
-        command = "awk '{s+=$1} END {print s}' /input > /output")
+        imageName = "ubuntu:xenial",
+        command = "awk '{s+=$1} END {print s}' /input.dna > /output.dna")
 println(s"The GC count is: $res")
 ```
