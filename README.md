@@ -1,7 +1,6 @@
 # EasyMapReduce
 
 [![Build Status](https://travis-ci.org/mcapuccini/EasyMapReduce.svg?branch=master)](https://travis-ci.org/mcapuccini/EasyMapReduce)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/93fc973eb70a4e95a8f9a8b57f411504)](https://www.codacy.com/app/m-capuccini/EasyMapReduce?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mcapuccini/EasyMapReduce&amp;utm_campaign=Badge_Grade)
 
 EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
 
