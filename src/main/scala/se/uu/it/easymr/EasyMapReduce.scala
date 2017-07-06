@@ -63,12 +63,14 @@ class EasyMapReduce(
     Option(rdd.sparkContext.hadoopConfiguration.get("textinputformat.record.delimiter"))
       .getOrElse("\n")
 
+  /**
+   * It returns the underlying RDD for this EasyMapReduce object.
+   */
   def getRDD = rdd
 
   /**
    * It sets the mount point for the input chunk that is passed to the containers.
    *
-   * 	@constructor
    * 	@param inputMountPoint mount point for the input chunk that is passed to the containers
    */
   def setInputMountPoint(inputMountPoint: String) = {
