@@ -41,7 +41,10 @@ private[easymr] object EasyFiles {
   
   def readFromFile(file: File, recordDelimiter: String) = {    
     val delimiterRegex = Pattern.quote(recordDelimiter)
-    Source.fromFile(file).mkString.split(delimiterRegex).iterator
+    val source = Source.fromFile(file)
+    val recordsIteratior = source.mkString.split(delimiterRegex).iterator
+    source.close
+    recordsIteratior
   }
   
 }
