@@ -1,8 +1,7 @@
 package se.uu.it.easymr
 
 import java.io.File
-
-import scala.io.Source
+import java.util.regex.Pattern
 
 import org.apache.spark.rdd.RDD
 
@@ -13,26 +12,11 @@ private[easymr] object EasyMapReduce {
     command: String,
     inputMountPoint: String,
     outputMountPoint: String,
-    record: String): String = {
-    EasyMapReduce
-      .mapLambda(
-        imageName,
-        command,
-        inputMountPoint,
-        outputMountPoint,
-        Seq(record).iterator)
-      .mkString
-  }
-
-  def mapLambda(
-    imageName: String,
-    command: String,
-    inputMountPoint: String,
-    outputMountPoint: String,
-    records: Iterator[String]) = {
+    records: Iterator[String],
+    recordDelimiter: String) = {
 
     //Create temporary files
-    val inputFile = EasyFiles.writeToTmpFile(records)
+    val inputFile = EasyFiles.writeToTmpFile(records, recordDelimiter)
     val outputFile = EasyFiles.createTmpFile
 
     //Run docker
@@ -44,12 +28,12 @@ private[easymr] object EasyMapReduce {
       volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)))
 
     //Retrieve output
-    val output = Source.fromFile(outputFile).getLines
+    val output = EasyFiles.readFromFile(outputFile, recordDelimiter)
 
     //Remove temporary files
     inputFile.delete
     outputFile.delete
-    
+
     //Return output
     output
 
@@ -58,13 +42,13 @@ private[easymr] object EasyMapReduce {
 }
 
 /**
- * EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools 
- * in MapReduce fashion. The data goes from Spark through the Docker container, and back to Spark 
- * after being processed, via Unix files. Please make sure that the TMPDIR environment variable 
+ * EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools
+ * in MapReduce fashion. The data goes from Spark through the Docker container, and back to Spark
+ * after being processed, via Unix files. Please make sure that the TMPDIR environment variable
  * in the worker nodes points to a tmpfs to reduce overhead when running in production. To make sure
- * that the TMPDIR is properly set in each node you can use the "setExecutorEnv" method from the 
+ * that the TMPDIR is properly set in each node you can use the "setExecutorEnv" method from the
  * SparkConf class when initializing the SparkContext.
- * 
+ *
  *  @constructor
  *  @param rdd input RDD
  *  @param inputMountPoint mount point for the input chunk that is passed to the containers
@@ -75,21 +59,25 @@ class EasyMapReduce(
     val inputMountPoint: String = "/input",
     val outputMountPoint: String = "/output") extends Serializable {
 
+  val recordDelimiter =
+    Option(rdd.sparkContext.hadoopConfiguration.get("textinputformat.record.delimiter"))
+      .getOrElse("\n")
+
   def getRDD = rdd
-  
+
   /**
    * It sets the mount point for the input chunk that is passed to the containers.
-   * 
+   *
    * 	@constructor
    * 	@param inputMountPoint mount point for the input chunk that is passed to the containers
    */
   def setInputMountPoint(inputMountPoint: String) = {
     new EasyMapReduce(rdd, inputMountPoint, outputMountPoint)
   }
-  
+
   /**
    * It sets the mount point where the processed data is read back to Spark.
-   * 
+   *
    * @param outputMountPoint mount point where the processed data is read back to Spark
    */
   def setOutputMountPoint(outputMountPoint: String) = {
@@ -97,12 +85,12 @@ class EasyMapReduce(
   }
 
   /**
-   * It maps each RDD partition through a Docker container command. 
-   * Data is mounted to the specified inputMountPoint and read back 
-   * from the specified outputMountPoint. 
-   * 
+   * It maps each RDD partition through a Docker container command.
+   * Data is mounted to the specified inputMountPoint and read back
+   * from the specified outputMountPoint.
+   *
    * @param imageName a Docker image name available in each node
-   * @param command a command to run in the Docker container, this should read from 
+   * @param command a command to run in the Docker container, this should read from
    * inputMountPoint and write back to outputMountPoint
    */
   def map(
@@ -110,23 +98,26 @@ class EasyMapReduce(
     command: String) = {
 
     //Map partitions to avoid opening too many files
-    val resRDD = rdd.mapPartitions(
-      EasyMapReduce.mapLambda(imageName, command, inputMountPoint, outputMountPoint, _))
+    val resRDD = rdd.mapPartitions { records =>
+      EasyMapReduce.mapLambda(
+        imageName, command,
+        inputMountPoint, outputMountPoint,
+        records, recordDelimiter)
+    }
     new EasyMapReduce(resRDD, inputMountPoint, outputMountPoint)
 
   }
 
   /**
-   * It reduces a RDD to a single String using a Docker container command. The command is applied first 
-   * to each RDD partition, and then to couples of RDD records (that are concatenated with a new line
-   * separator). Data is mounted to the specified inputMountPoint and read back from the specified 
-   * outputMountPoint.
-   * 
+   * It reduces a RDD to a single String using a Docker container command. The command is applied first
+   * to each RDD partition, and then to couples of RDD records. Data is mounted to the specified
+   * inputMountPoint and read back from the specified outputMountPoint.
+   *
    * @param imageName a Docker image name available in each node
-   * @param command a command to run in the Docker container, this should read from 
+   * @param command a command to run in the Docker container, this should read from
    * inputMountPoint and write back to outputMountPoint, and it should perform an
    * associative and commutative operation (for the parallelization to work)
-   * 
+   *
    */
   def reduce(
     imageName: String,
@@ -138,8 +129,14 @@ class EasyMapReduce(
     //Reduce
     reducedPartitions.reduce {
       case (rp1, rp2) =>
+        val delimiterRegex = Pattern.quote(recordDelimiter)
+        val records = rp1.split(delimiterRegex) ++ rp2.split(delimiterRegex)
         EasyMapReduce.mapLambda(
-          imageName, command, inputMountPoint, outputMountPoint, rp1 + "\n" + rp2)
+          imageName, command,
+          inputMountPoint, outputMountPoint,
+          records.iterator, recordDelimiter)
+          .map(_ + recordDelimiter)
+          .mkString
     }
 
   }

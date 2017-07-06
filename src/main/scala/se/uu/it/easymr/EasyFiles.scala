@@ -1,10 +1,14 @@
 package se.uu.it.easymr
 
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.util.UUID
-import java.io.FileNotFoundException
+import java.util.regex.Pattern
+
+import scala.io.Source
 import scala.util.Properties
+
 
 private[easymr] object EasyFiles {
   
@@ -27,12 +31,17 @@ private[easymr] object EasyFiles {
     file
   }
   
-  def writeToTmpFile(it: Iterator[String]): File = {
+  def writeToTmpFile(it: Iterator[String], recordDelimiter: String): File = {
     val file = EasyFiles.newTmpFile
     val pw = new PrintWriter(file)
-    it.foreach(pw.println)
+    it.foreach(r => pw.write(r+recordDelimiter))
     pw.close
     file
+  }
+  
+  def readFromFile(file: File, recordDelimiter: String) = {    
+    val delimiterRegex = Pattern.quote(recordDelimiter)
+    Source.fromFile(file).mkString.split(delimiterRegex).iterator
   }
   
 }

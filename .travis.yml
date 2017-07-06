@@ -22,8 +22,11 @@ before_install:
   - gpg --import .gpg-keys/public.asc
   - gpg --import .gpg-keys/secret.asc
   
-  # Pull image that is used in tests
+  # Pull images that are used in tests
+  - docker login -u mcapuccini -p $DOCKERHUB_PASSWORD
   - docker pull ubuntu:xenial
+  - docker pull mcapuccini/oe-docking
+  - docker pull mcapuccini/sdsorter
 
 before_script:
   - mvn scala:doc -B # generate/test documentation
