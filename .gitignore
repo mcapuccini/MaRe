@@ -42,3 +42,7 @@ build.log
 
 # cache
 .cache*
+
+# scalastyle
+scalastyle-output.xml
+.scalastyle

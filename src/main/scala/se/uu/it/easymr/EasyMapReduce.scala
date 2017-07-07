@@ -15,11 +15,11 @@ private[easymr] object EasyMapReduce {
     records: Iterator[String],
     recordDelimiter: String) = {
 
-    //Create temporary files
+    // Create temporary files
     val inputFile = EasyFiles.writeToTmpFile(records, recordDelimiter)
     val outputFile = EasyFiles.createTmpFile
 
-    //Run docker
+    // Run docker
     val docker = new EasyDocker
     docker.run(
       imageName,
@@ -27,14 +27,14 @@ private[easymr] object EasyMapReduce {
       bindFiles = Seq(inputFile, outputFile),
       volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)))
 
-    //Retrieve output
+    // Retrieve output
     val output = EasyFiles.readFromFile(outputFile, recordDelimiter)
 
-    //Remove temporary files
+    // Remove temporary files
     inputFile.delete
     outputFile.delete
 
-    //Return output
+    // Return output
     output
 
   }
@@ -71,7 +71,7 @@ class EasyMapReduce(
   /**
    * It sets the mount point for the input chunk that is passed to the containers.
    *
-   * 	@param inputMountPoint mount point for the input chunk that is passed to the containers
+   * @param inputMountPoint mount point for the input chunk that is passed to the containers
    */
   def setInputMountPoint(inputMountPoint: String) = {
     new EasyMapReduce(rdd, inputMountPoint, outputMountPoint)
@@ -99,7 +99,7 @@ class EasyMapReduce(
     imageName: String,
     command: String) = {
 
-    //Map partitions to avoid opening too many files
+    // Map partitions to avoid opening too many files
     val resRDD = rdd.mapPartitions { records =>
       EasyMapReduce.mapLambda(
         imageName, command,
@@ -125,10 +125,10 @@ class EasyMapReduce(
     imageName: String,
     command: String) = {
 
-    //First reduce within partitions
+    // First reduce within partitions
     val reducedPartitions = this.map(imageName, command).getRDD
 
-    //Reduce
+    // Reduce
     reducedPartitions.reduce {
       case (rp1, rp2) =>
         val delimiterRegex = Pattern.quote(recordDelimiter)
