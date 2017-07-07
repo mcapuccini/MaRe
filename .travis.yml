@@ -29,6 +29,7 @@ before_install:
   - docker pull mcapuccini/sdsorter
 
 before_script:
+  - mvn scalastyle:check # check scalastyle
   - mvn scala:doc -B # generate/test documentation
 
 after_success:

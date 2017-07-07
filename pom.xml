@@ -189,12 +189,12 @@
 			<plugin>
 				<groupId>org.scalastyle</groupId>
 				<artifactId>scalastyle-maven-plugin</artifactId>
-				<version>0.7.0</version>
+				<version>0.8.0</version>
 				<configuration>
 					<verbose>false</verbose>
 					<failOnViolation>true</failOnViolation>
 					<includeTestSourceDirectory>true</includeTestSourceDirectory>
-					<failOnWarning>false</failOnWarning>
+					<failOnWarning>true</failOnWarning>
 					<sourceDirectory>${basedir}/src/main/scala</sourceDirectory>
 					<testSourceDirectory>${basedir}/src/test/scala</testSourceDirectory>
 					<configLocation>${basedir}/lib/scalastyle_config.xml</configLocation>
