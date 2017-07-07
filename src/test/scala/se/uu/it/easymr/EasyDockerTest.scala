@@ -14,15 +14,15 @@ class EasyDockerTest extends FunSuite {
 
   test("Map-like Docker run") {
 
-    //Create temporary files
+    // Create temporary files
     val inputFile = EasyFiles.writeToTmpFile(
       Seq("hello world").iterator, recordDelimiter = "\n")
     val outputFile = EasyFiles.createTmpFile
 
-    //Run docker
+    // Run docker
     val docker = new EasyDocker
     docker.run(
-      imageName = "ubuntu:xenial", // assumes ubuntu:xenial was pulled 
+      imageName = "ubuntu:xenial", // assumes ubuntu:xenial was pulled
       command = "cat /input > /output",
       bindFiles = Seq(inputFile, outputFile),
       volumeFiles = Seq(new File("/input"), new File("/output")))

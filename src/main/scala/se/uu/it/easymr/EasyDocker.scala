@@ -43,21 +43,21 @@ private[easymr] class EasyDocker extends Serializable {
   def run(
     imageName: String,
     command: String,
-    bindFiles: Seq[File], 
+    bindFiles: Seq[File],
     volumeFiles: Seq[File]) = {
 
-    //Create volumes and binds
+    // Create volumes and binds
     def volumes = volumeFiles.map { file =>
       val volumePath = file.getAbsolutePath
       new Volume(volumePath)
     }
     def binds = bindFiles.zip(volumes).map {
-      case(file, volume) => 
+      case (file, volume) =>
         val bindPath = file.getAbsolutePath
-        new Bind(bindPath,volume)
+        new Bind(bindPath, volume)
     }
 
-    //Run container
+    // Run container
     val container = dockerClient.createContainerCmd(imageName)
       .withEntrypoint("sh", "-c")
       .withCmd(command)
@@ -66,7 +66,7 @@ private[easymr] class EasyDocker extends Serializable {
       .exec
     val exec = dockerClient.startContainerCmd(container.getId).exec
 
-    //Attach container output to log4j
+    // Attach container output to log4j
     dockerClient
       .attachContainerCmd(container.getId)
       .withStdErr(true)
@@ -75,15 +75,15 @@ private[easymr] class EasyDocker extends Serializable {
       .exec(new LoggingCallback)
       .awaitCompletion
 
-    //Wait for container exit code  
+    // Wait for container exit code
     val statusCode = dockerClient.waitContainerCmd(container.getId())
       .exec(new WaitContainerResultCallback())
       .awaitStatusCode()
 
-    //Remove container
+    // Remove container
     dockerClient.removeContainerCmd(container.getId).exec
 
-    //Raise exception if statusCode != 0
+    // Raise exception if statusCode != 0
     if (statusCode != 0) {
       throw new RuntimeException(
         s"container exited with non zero exit code: $statusCode")
