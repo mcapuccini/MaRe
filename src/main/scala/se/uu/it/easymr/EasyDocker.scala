@@ -80,9 +80,6 @@ private[easymr] class EasyDocker extends Serializable {
       .exec(new WaitContainerResultCallback())
       .awaitStatusCode()
 
-    // Remove container
-    dockerClient.removeContainerCmd(container.getId).exec
-
     // Raise exception if statusCode != 0
     if (statusCode != 0) {
       throw new RuntimeException(
