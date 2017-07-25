@@ -32,8 +32,9 @@ private[easymr] class EasyDocker extends Serializable {
   private val config = configBuilder.build
   private val dockerClient = DockerClientBuilder.getInstance(config).build
 
+  // Logging
+  @transient private lazy val log = Logger.getLogger(getClass.getName)
   private class LoggingCallback extends AttachContainerResultCallback {
-    @transient lazy val log = Logger.getLogger(getClass.getName)
     override def onNext(item: Frame) = {
       log.info(item)
       super.onNext(item)
@@ -58,6 +59,7 @@ private[easymr] class EasyDocker extends Serializable {
     }
 
     // Run container
+    log.info(s"Running '$imageName' with command '$command'")
     val container = dockerClient.createContainerCmd(imageName)
       .withEntrypoint("sh", "-c")
       .withCmd(command)
@@ -76,6 +78,7 @@ private[easymr] class EasyDocker extends Serializable {
       .awaitCompletion
 
     // Wait for container exit code
+    log.info(s"Waiting for '$imageName' with command '$command'")
     val statusCode = dockerClient.waitContainerCmd(container.getId())
       .exec(new WaitContainerResultCallback())
       .awaitStatusCode()
@@ -83,8 +86,9 @@ private[easymr] class EasyDocker extends Serializable {
     // Raise exception if statusCode != 0
     if (statusCode != 0) {
       throw new RuntimeException(
-        s"container exited with non zero exit code: $statusCode")
+        s"'$imageName' with command '$command' exited with non zero exit code: $statusCode")
     }
+    log.info(s"'$imageName' with command '$command' exited with zero exit code: 0")
 
   }
 
