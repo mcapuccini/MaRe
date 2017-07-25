@@ -4,8 +4,12 @@ import java.io.File
 import java.util.regex.Pattern
 
 import org.apache.spark.rdd.RDD
+import org.apache.log4j.Logger
 
 private[easymr] object EasyMapReduce {
+  
+  // Logger
+  private lazy val log = Logger.getLogger(getClass.getName)
 
   def mapLambda(
     imageName: String,
@@ -31,8 +35,12 @@ private[easymr] object EasyMapReduce {
     val output = EasyFiles.readFromFile(outputFile, recordDelimiter)
 
     // Remove temporary files
+    log.info(s"Deleteing temporary file: ${inputFile.getAbsolutePath}")
     inputFile.delete
+    log.info(s"Temporary file '${inputFile.getAbsolutePath}' deleted successfully")
+    log.info(s"Deleteing temporary file: ${outputFile.getAbsolutePath}")
     outputFile.delete
+    log.info(s"Temporary file '${outputFile.getAbsolutePath}' deleted successfully")
 
     // Return output
     output
@@ -58,6 +66,9 @@ class EasyMapReduce(
     private val rdd: RDD[String],
     val inputMountPoint: String = "/input",
     val outputMountPoint: String = "/output") extends Serializable {
+  
+  // Logger
+  @transient private lazy val log = Logger.getLogger(getClass.getName)
 
   val recordDelimiter =
     Option(rdd.sparkContext.hadoopConfiguration.get("textinputformat.record.delimiter"))
@@ -131,8 +142,10 @@ class EasyMapReduce(
     // Reduce
     reducedPartitions.reduce {
       case (rp1, rp2) =>
+        log.info(s"Splitting records by record delimiter: $recordDelimiter")
         val delimiterRegex = Pattern.quote(recordDelimiter)
         val records = rp1.split(delimiterRegex) ++ rp2.split(delimiterRegex)
+        log.info(s"Records sucessfully splitted by record delimiter: $recordDelimiter")
         EasyMapReduce.mapLambda(
           imageName, command,
           inputMountPoint, outputMountPoint,
