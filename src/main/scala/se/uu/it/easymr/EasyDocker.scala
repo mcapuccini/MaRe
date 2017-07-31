@@ -30,7 +30,6 @@ private[easymr] class EasyDocker extends Serializable {
     configBuilder.withDockerCertPath(System.getenv("DOCKER_CERT_PATH"))
   }
   private val config = configBuilder.build
-  private val dockerClient = DockerClientBuilder.getInstance(config).build
 
   // Logging
   @transient private lazy val log = Logger.getLogger(getClass.getName)
@@ -46,6 +45,9 @@ private[easymr] class EasyDocker extends Serializable {
     command: String,
     bindFiles: Seq[File],
     volumeFiles: Seq[File]) = {
+    
+    // Init client
+    val dockerClient = DockerClientBuilder.getInstance(config).build
 
     // Create volumes and binds
     def volumes = volumeFiles.map { file =>
@@ -89,6 +91,9 @@ private[easymr] class EasyDocker extends Serializable {
         s"'$imageName' with command '$command' exited with non zero exit code: $statusCode")
     }
     log.info(s"'$imageName' with command '$command' exited with zero exit code: 0")
+    
+    // Close Docker client
+    dockerClient.close
 
   }
 
