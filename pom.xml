@@ -142,7 +142,7 @@
 						<include>**/*Suite.*</include>
 					</includes>
 					<excludes>
-						<exclude>**/VirtualScreeningTest.scala</exclude>
+						<exclude>**/VirtualScreeningTest.*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
