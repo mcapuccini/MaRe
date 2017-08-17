@@ -141,6 +141,9 @@
 						<include>**/*Test.*</include>
 						<include>**/*Suite.*</include>
 					</includes>
+					<excludes>
+						<exclude>**/VirtualScreeningTest.*</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
