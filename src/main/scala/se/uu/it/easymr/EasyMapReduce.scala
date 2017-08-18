@@ -106,7 +106,7 @@ class EasyMapReduce(
    * @param command a command to run in the Docker container, this should read from
    * inputMountPoint and write back to outputMountPoint
    */
-  def map(
+  def mapPartitions(
     imageName: String,
     command: String) = {
 
@@ -132,12 +132,12 @@ class EasyMapReduce(
    * associative and commutative operation (for the parallelization to work)
    *
    */
-  def reduce(
+  def reducePartitions(
     imageName: String,
     command: String) = {
 
     // First reduce within partitions
-    val reducedPartitions = this.map(imageName, command).getRDD
+    val reducedPartitions = this.mapPartitions(imageName, command).getRDD
 
     // Reduce
     reducedPartitions.reduce {

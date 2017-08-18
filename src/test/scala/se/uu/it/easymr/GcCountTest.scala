@@ -15,10 +15,10 @@ class GcCountTest extends FunSuite with SharedSparkContext {
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 
     val res = new EasyMapReduce(rdd)
-      .map(
+      .mapPartitions(
         imageName = "ubuntu:xenial",
         command = "grep -o '[gc]' /input | wc -l > /output")
-      .reduce(
+      .reducePartitions(
         imageName = "ubuntu:xenial",
         command = "awk '{s+=$1} END {print s}' /input > /output")
 
@@ -40,10 +40,10 @@ class GcCountTest extends FunSuite with SharedSparkContext {
     val res = new EasyMapReduce(rdd)
       .setInputMountPoint("/input.dna")
       .setOutputMountPoint("/output.dna")
-      .map(
+      .mapPartitions(
         imageName = "ubuntu:xenial",
         command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")
-      .reduce(
+      .reducePartitions(
         imageName = "ubuntu:xenial",
         command = "awk '{s+=$1} END {print s}' /input.dna > /output.dna")
 
