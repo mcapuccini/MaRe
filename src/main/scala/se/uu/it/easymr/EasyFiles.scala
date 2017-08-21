@@ -9,6 +9,9 @@ import java.util.regex.Pattern
 import scala.io.Source
 import scala.util.Properties
 import org.apache.log4j.Logger
+import java.io.FileOutputStream
+import java.nio.charset.StandardCharsets
+import java.io.OutputStreamWriter
 
 private[easymr] object EasyFiles {
 
@@ -39,9 +42,11 @@ private[easymr] object EasyFiles {
   def writeToTmpFile(it: Iterator[String], recordDelimiter: String): File = {
     val file = EasyFiles.newTmpFile
     log.info(s"Writing to: ${file.getAbsolutePath}")
-    val pw = new PrintWriter(file)
-    it.foreach(r => pw.write(r + recordDelimiter))
-    pw.close
+    val outStream = new FileOutputStream(file)
+    val writer = new OutputStreamWriter(outStream, StandardCharsets.UTF_8)
+    it.foreach(r => writer.write(r + recordDelimiter))
+    writer.close
+    outStream.close
     log.info(s"Successfully wrote to: ${file.getAbsolutePath}")
     file
   }
@@ -49,7 +54,7 @@ private[easymr] object EasyFiles {
   def readFromFile(file: File, recordDelimiter: String) = {
     val delimiterRegex = Pattern.quote(recordDelimiter)
     log.info(s"Reading from: ${file.getAbsolutePath}")
-    val source = Source.fromFile(file)
+    val source = Source.fromFile(file)("UTF-8")
     val recordsIteratior = source.mkString.split(delimiterRegex).iterator
     source.close
     log.info(s"Successfully read from: ${file.getAbsolutePath}")
