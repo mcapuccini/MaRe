@@ -64,12 +64,14 @@ class GcCountTest extends FunSuite with SharedSparkContext {
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 
     val res = new EasyMapReduce(rdd)
+      .setReduceInputMountPoint1("/input1.txt")
+      .setReduceInputMountPoint2("/input2.txt")
       .map(
         imageName = "ubuntu:xenial",
         command = "grep -o '[gc]' /input | wc -l > /output")
       .reduce(
         imageName = "ubuntu:xenial",
-        command = "cat /input1 /input2 | awk '{s+=$1} END {print s}' > /output")
+        command = "cat /input1.txt /input2.txt | awk '{s+=$1} END {print s}' > /output")
 
     // Check if results matches with the one computed with the standard RDD API
     val toMatch = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
