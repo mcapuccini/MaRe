@@ -31,14 +31,14 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
     val hitsParallel = new EasyMapReduce(mols)
       .setInputMountPoint("/input.sdf")
       .setOutputMountPoint("/output.sdf")
-      .map(
+      .mapPartitions(
         imageName = "mcapuccini/oe-docking", // obs: this is a private image
         command = "fred -receptor /var/openeye/hiv1_protease.oeb " +
           "-hitlist_size 0 " +
           "-conftest none " +
           "-dbase /input.sdf " +
           "-docked_molecule_file /output.sdf")
-      .reduce(
+      .reducePartitions(
         imageName = "mcapuccini/sdsorter",
         command = "sdsorter -reversesort='FRED Chemgauss4 score' " +
           "-keep-tag='FRED Chemgauss4 score' " +
