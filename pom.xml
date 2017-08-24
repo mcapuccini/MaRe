@@ -143,6 +143,7 @@
 					</includes>
 					<excludes>
 						<exclude>**/VirtualScreeningTest.*</exclude>
+						<exclude>**/CpSignTest.*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
