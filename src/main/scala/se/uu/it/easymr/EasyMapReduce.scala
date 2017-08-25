@@ -301,8 +301,7 @@ class EasyMapReduce(
           reduceInputMountPoint2,
           outputMountPoint,
           r1, r2, recordDelimiter)
-          .map(_ + recordDelimiter)
-          .mkString
+          .next
     }
 
   }

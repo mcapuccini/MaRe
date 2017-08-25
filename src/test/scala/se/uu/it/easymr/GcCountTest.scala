@@ -80,7 +80,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
         case (lineCount1, lineCount2) =>
           (lineCount1.toInt + lineCount2.toInt).toString
       }
-    assert(res == toMatch + "\n")
+    assert(res == toMatch)
 
   }
 
