@@ -80,7 +80,7 @@ private[easymr] class EasyDocker extends Serializable {
       .awaitCompletion
 
     // Wait for container exit code
-    log.info(s"Waiting for '$imageName' with command '$command'")
+    log.info(s"Waiting for container ${container.getId}")
     val statusCode = dockerClient.waitContainerCmd(container.getId())
       .exec(new WaitContainerResultCallback())
       .awaitStatusCode()
@@ -88,9 +88,9 @@ private[easymr] class EasyDocker extends Serializable {
     // Raise exception if statusCode != 0
     if (statusCode != 0) {
       throw new RuntimeException(
-        s"'$imageName' with command '$command' exited with non zero exit code: $statusCode")
+        s"Container ${container.getId} exited with non zero exit code: $statusCode")
     }
-    log.info(s"'$imageName' with command '$command' exited with zero exit code: 0")
+    log.info(s"Container ${container.getId} exited with zero exit code: 0")
     
     // Close Docker client
     dockerClient.close
