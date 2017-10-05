@@ -31,18 +31,20 @@ class CpSignTest extends FunSuite with SharedSparkContext {
           "--labels 0 1 " +
           "-rn class " +
           "--license cpsign0.6-standard.license && " +
+          "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
           "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
       .reduce(
         imageName = "mcapuccini/cpsign",
         command =
           "base64 -d < /model1.txt > /model1.cpsign && " +
           "base64 -d < /model2.txt > /model2.cpsign && " +
-          "java -jar cpsign-0.6.1.jar aggregate " +
+          "java -jar cpsign-0.6.1.jar fast-aggregate " +
           "-m /model1.cpsign /model2.cpsign " + 
           "-mn out " + 
           "-mo /tmp.cpsign " + 
           "-mt 3 " + 
           "--license cpsign0.6-standard.license && " +
+          "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
           "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
 
     // Test that we get a cpsign Jar archive as result
