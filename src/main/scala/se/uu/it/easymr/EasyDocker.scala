@@ -61,13 +61,14 @@ private[easymr] class EasyDocker extends Serializable {
     }
 
     // Run container
-    log.info(s"Running '$imageName' with command '$command'")
     val container = dockerClient.createContainerCmd(imageName)
       .withEntrypoint("sh", "-c")
       .withCmd(command)
       .withVolumes(volumes)
       .withBinds(binds)
       .exec
+    log.info(s"Running container '${container.getId}' (image: '$imageName', command: '$command'")
+    val t0 = System.currentTimeMillis()
     val exec = dockerClient.startContainerCmd(container.getId).exec
 
     // Attach container output to log4j
@@ -84,6 +85,8 @@ private[easymr] class EasyDocker extends Serializable {
     val statusCode = dockerClient.waitContainerCmd(container.getId())
       .exec(new WaitContainerResultCallback())
       .awaitStatusCode()
+    val t1 = System.currentTimeMillis()
+    log.info(s"Container ${container.getId} took ${t1-t0} ms")
 
     // Raise exception if statusCode != 0
     if (statusCode != 0) {
@@ -94,7 +97,7 @@ private[easymr] class EasyDocker extends Serializable {
     
     // Close Docker client
     dockerClient.close
-
+    
   }
 
 }

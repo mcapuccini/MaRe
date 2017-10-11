@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 
 import org.apache.spark.rdd.RDD
 import org.apache.log4j.Logger
+import org.apache.spark.util.LongAccumulator
 
 private[easymr] object EasyMapReduce {
 
@@ -106,6 +107,8 @@ private[easymr] object EasyMapReduce {
  *  @param rdd input RDD
  *  @param inputMountPoint mount point for the input chunk that is passed to the containers
  *  @param outputMountPoint mount point where the processed data is read back to Spark
+ *  @param reduceInputMountPoint1 reduce mount point for the first input file that is passed to the containers
+ *  @param reduceInputMountPoint2 recude mount point for the second input file that is passed to the containers
  */
 class EasyMapReduce(
     private val rdd: RDD[String],
