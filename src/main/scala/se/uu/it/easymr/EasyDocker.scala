@@ -15,7 +15,7 @@ import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.core.command.AttachContainerResultCallback
 import com.github.dockerjava.core.command.WaitContainerResultCallback
 
-private[easymr] class EasyDocker extends Serializable {
+private class EasyDocker extends Serializable {
 
   // Init client
   private val configBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder()
