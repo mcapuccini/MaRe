@@ -19,49 +19,56 @@ import sun.misc.BASE64Decoder
 @RunWith(classOf[JUnitRunner])
 class CpSignTest extends FunSuite with SharedSparkContext {
 
-    test("Train ACP in parallel with CPSign") {
-  
-      val rdd = sc.parallelize(1 to 3).map(_.toString)
-  
-      val res = new EasyMapReduce(rdd)
-        .setOutputMountPoint("/out.txt")
-        .setReduceInputMountPoint1("/model1.txt")
-        .setReduceInputMountPoint2("/model2.txt")
-        .map(
-          imageName = "mcapuccini/cpsign",
-          command = "java -jar cpsign-0.6.1.jar train " +
-            "-t data_small_train.sdf " +
-            "-mn out " +
+  test("Train ACP in parallel with CPSign") {
+
+    val rdd = sc.parallelize(1 to 3).map(_.toString)
+
+    val res = new EasyMapReduce(rdd)
+      .setOutputMountPoint("/out.txt")
+      .setReduceInputMountPoint1("/model1.txt")
+      .setReduceInputMountPoint2("/model2.txt")
+      .map(
+        imageName = "mcapuccini/cpsign",
+        command = "java -jar cpsign-0.6.1.jar train " +
+          "-t data_small_train.sdf " +
+          "-mn out " +
+          "-mo /tmp.cpsign " +
+          "-c 1 " +
+          "--labels 0 1 " +
+          "-rn class " +
+          "--license cpsign0.6-standard.license && " +
+          "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
+          "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
+      .reduce(
+        imageName = "mcapuccini/cpsign",
+        command =
+          "base64 -d < /model1.txt > /model1.cpsign && " +
+            "base64 -d < /model2.txt > /model2.cpsign && " +
+            "java -jar cpsign-0.6.1.jar fast-aggregate " +
+            "-m /model1.cpsign /model2.cpsign " +
             "-mo /tmp.cpsign " +
-            "-c 1 " +
-            "--labels 0 1 " +
-            "-rn class " +
             "--license cpsign0.6-standard.license && " +
             "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
             "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
-        .reduce(
-          imageName = "mcapuccini/cpsign",
-          command =
-            "base64 -d < /model1.txt > /model1.cpsign && " +
-              "base64 -d < /model2.txt > /model2.cpsign && " +
-              "java -jar cpsign-0.6.1.jar fast-aggregate " +
-              "-m /model1.cpsign /model2.cpsign " +
-              "-mo /tmp.cpsign " +
-              "--license cpsign0.6-standard.license && " +
-              "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
-              "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
-  
-      // Test that we get a cpsign Jar archive as result
-      val base64 = new BASE64Decoder()
-      val jarBytes = base64.decodeBuffer(res)
-      val jar = new JarInputStream(new ByteArrayInputStream(jarBytes))
-      assert(Option(jar.getManifest).isDefined)
-  
-    }
+
+    // Test that we get a cpsign Jar archive as result
+    val base64 = new BASE64Decoder()
+    val jarBytes = base64.decodeBuffer(res)
+    val jar = new JarInputStream(new ByteArrayInputStream(jarBytes))
+    assert(Option(jar.getManifest).isDefined)
+
+  }
 
   test("Train ACP in parallel with CPSign, aggregate predictions only") {
 
     val rdd = sc.parallelize(1 to 3).map(_.toString)
+
+    // Define median primitive
+    val median = (seq: Seq[Double]) => if (seq.length % 2 == 0) {
+      (seq(seq.length / 2) + seq(seq.length / 2 - 1)) / 2
+    } else {
+      seq.sortWith(_ < _)(seq.length / 2)
+    }
 
     val predictions = new EasyMapReduce(rdd)
       .setInputMountPoint("/in.txt")
@@ -98,17 +105,14 @@ class CpSignTest extends FunSuite with SharedSparkContext {
         (title, (Seq(pv0), Seq(pv1)))
       }
       .reduceByKey { case ((seq0a, seq1a), (seq0b, seq1b)) => (seq0a ++ seq0b, seq1a ++ seq1b) }
-      .map { case (title, (seq0, seq1)) => 
-        val p0 = seq0.sortWith(_<_)(seq0.length/2)
-        val p1 = seq1.sortWith(_<_)(seq1.length/2)
-        (title, p0, p1) 
-      }
+      .map { case (title, (s0, s1)) => (title, median(s0), median(s1))}
 
     // Check that the data is in the right format
-    predictions.collect.foreach { case(title, pv0, pv1) =>
-      assert(title.isInstanceOf[String])
-      assert(pv0.isInstanceOf[Double])
-      assert(pv1.isInstanceOf[Double])
+    predictions.collect.foreach {
+      case (title, pv0, pv1) =>
+        assert(title.isInstanceOf[String])
+        assert(pv0.isInstanceOf[Double])
+        assert(pv1.isInstanceOf[Double])
     }
 
   }
