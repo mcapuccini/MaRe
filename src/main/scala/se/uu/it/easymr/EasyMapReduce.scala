@@ -253,7 +253,8 @@ class EasyMapReduce(
   /**
    * It maps each RDD record through a Docker container command.
    * Data is mounted to the specified inputMountPoint and read back
-   * from the specified outputMountPoint.
+   * from the specified outputMountPoint. If the container command
+   * returns multiple records, results are flattened.
    *
    * @param imageName a Docker image name available in each node
    * @param command a command to run in the Docker container, this should read from
@@ -263,12 +264,12 @@ class EasyMapReduce(
     imageName: String,
     command: String) = {
 
-    val resRDD = rdd.map { record =>
+    val resRDD = rdd.flatMap { record =>
       val resIt = EasyMapReduce.mapLambda(
         imageName, command,
         inputMountPoint, outputMountPoint,
         Seq(record).iterator, recordDelimiter)
-      resIt.next
+      resIt
     }
     new EasyMapReduce(resRDD,
       inputMountPoint,

@@ -19,45 +19,45 @@ import sun.misc.BASE64Decoder
 @RunWith(classOf[JUnitRunner])
 class CpSignTest extends FunSuite with SharedSparkContext {
 
-  test("Train ACP in parallel with CPSign") {
-
-    val rdd = sc.parallelize(1 to 3).map(_.toString)
-
-    val res = new EasyMapReduce(rdd)
-      .setOutputMountPoint("/out.txt")
-      .setReduceInputMountPoint1("/model1.txt")
-      .setReduceInputMountPoint2("/model2.txt")
-      .map(
-        imageName = "mcapuccini/cpsign",
-        command = "java -jar cpsign-0.6.1.jar train " +
-          "-t data_small_train.sdf " +
-          "-mn out " +
-          "-mo /tmp.cpsign " +
-          "-c 1 " +
-          "--labels 0 1 " +
-          "-rn class " +
-          "--license cpsign0.6-standard.license && " +
-          "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
-          "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
-      .reduce(
-        imageName = "mcapuccini/cpsign",
-        command =
-          "base64 -d < /model1.txt > /model1.cpsign && " +
-            "base64 -d < /model2.txt > /model2.cpsign && " +
-            "java -jar cpsign-0.6.1.jar fast-aggregate " +
-            "-m /model1.cpsign /model2.cpsign " +
-            "-mo /tmp.cpsign " +
-            "--license cpsign0.6-standard.license && " +
-            "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
-            "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
-
-    // Test that we get a cpsign Jar archive as result
-    val base64 = new BASE64Decoder()
-    val jarBytes = base64.decodeBuffer(res)
-    val jar = new JarInputStream(new ByteArrayInputStream(jarBytes))
-    assert(Option(jar.getManifest).isDefined)
-
-  }
+  //  test("Train ACP in parallel with CPSign") {
+  //
+  //    val rdd = sc.parallelize(1 to 3).map(_.toString)
+  //
+  //    val res = new EasyMapReduce(rdd)
+  //      .setOutputMountPoint("/out.txt")
+  //      .setReduceInputMountPoint1("/model1.txt")
+  //      .setReduceInputMountPoint2("/model2.txt")
+  //      .map(
+  //        imageName = "mcapuccini/cpsign",
+  //        command = "java -jar cpsign-0.6.1.jar train " +
+  //          "-t data_small_train.sdf " +
+  //          "-mn out " +
+  //          "-mo /tmp.cpsign " +
+  //          "-c 1 " +
+  //          "--labels 0 1 " +
+  //          "-rn class " +
+  //          "--license cpsign0.6-standard.license && " +
+  //          "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
+  //          "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
+  //      .reduce(
+  //        imageName = "mcapuccini/cpsign",
+  //        command =
+  //          "base64 -d < /model1.txt > /model1.cpsign && " +
+  //            "base64 -d < /model2.txt > /model2.cpsign && " +
+  //            "java -jar cpsign-0.6.1.jar fast-aggregate " +
+  //            "-m /model1.cpsign /model2.cpsign " +
+  //            "-mo /tmp.cpsign " +
+  //            "--license cpsign0.6-standard.license && " +
+  //            "[ -e tmp.cpsign ] && " + // workaround for cpsign bug (it always exits with 0)
+  //            "base64 < /tmp.cpsign | tr -d '\n' > /out.txt")
+  //
+  //    // Test that we get a cpsign Jar archive as result
+  //    val base64 = new BASE64Decoder()
+  //    val jarBytes = base64.decodeBuffer(res)
+  //    val jar = new JarInputStream(new ByteArrayInputStream(jarBytes))
+  //    assert(Option(jar.getManifest).isDefined)
+  //
+  //  }
 
   test("Train ACP in parallel with CPSign, aggregate predictions only") {
 
@@ -99,21 +99,24 @@ class CpSignTest extends FunSuite with SharedSparkContext {
           "--license cpsign0.6-standard.license")
       .getRDD.map { json =>
         val parsedJson = parse(json)
-        val title = compact(render(parsedJson \ "molecule" \ "cdk:Title"))
+        val key = compact(render(parsedJson \ "molecule" \ "SMILES"))
         val pv0 = compact(render(parsedJson \ "prediction" \ "pValues" \ "0")).toDouble
         val pv1 = compact(render(parsedJson \ "prediction" \ "pValues" \ "1")).toDouble
-        (title, (Seq(pv0), Seq(pv1)))
+        (key, (Seq(pv0), Seq(pv1)))
       }
       .reduceByKey { case ((seq0a, seq1a), (seq0b, seq1b)) => (seq0a ++ seq0b, seq1a ++ seq1b) }
-      .map { case (title, (s0, s1)) => (title, median(s0), median(s1))}
+      .map { case (title, (s0, s1)) => (title, median(s0), median(s1)) }
 
     // Check that the data is in the right format
     predictions.collect.foreach {
-      case (title, pv0, pv1) =>
-        assert(title.isInstanceOf[String])
+      case (key, pv0, pv1) =>
+        assert(key.isInstanceOf[String])
         assert(pv0.isInstanceOf[Double])
         assert(pv1.isInstanceOf[Double])
     }
+    
+    // Check that we get the correct number of predictions
+    assert(predictions.count == 161L)
 
   }
 
