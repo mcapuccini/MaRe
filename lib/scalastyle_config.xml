@@ -38,7 +38,7 @@
  </check>
  <check class="org.scalastyle.scalariform.MagicNumberChecker" level="warning" enabled="true">
   <parameters>
-   <parameter name="ignore"><![CDATA[-1,0,1,2,3]]></parameter>
+   <parameter name="ignore"><![CDATA[-1,0,1,2,3,2200,7872,1935]]></parameter>
   </parameters>
  </check>
  <check class="org.scalastyle.scalariform.NoWhitespaceBeforeLeftBracketChecker" level="warning" enabled="true"></check>
