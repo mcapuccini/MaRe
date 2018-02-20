@@ -51,7 +51,7 @@ EasyMapReduce is packaged and distributed with Maven, all you have to do is to a
   <dependency>
     <groupId>se.uu.it</groupId>
     <artifactId>easymr</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
   </dependency>
   ...
 </dependencies>
