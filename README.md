@@ -15,7 +15,7 @@ MaRe (formerly EasyMapReduce) leverages the power of Docker and Spark to run and
 ## Table of contents
 - [What is MaRe](#what-is-mare)
 - [Example: DNA GC count](#example-dna-gc-count)
-- [Getting Started](#gettign-started)
+- [Getting Started](#getting-started)
   - [Get MaRe](#get-mare)
   - [Documentation](#documentation)
 
@@ -42,7 +42,7 @@ val res = new MaRe(rdd)
 println(s"The GC count is: $res")
 ```
 
-## Gettign started
+## Getting started
 MaRe comes as a Scala library that you can use in your Spark applications. Please keep in mind that when submitting MaRe applications, Docker needs to be installed and properly configured on each worker node of your Spark cluster. Also, the user that runs the Spark job needs to be in the Docker group.  
 
 ### Get MaRe
