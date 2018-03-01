@@ -1,10 +1,8 @@
-package se.uu.it.easymr
-
-import scala.io.Source
+package se.uu.it.mare
 
 import org.apache.spark.SharedSparkContext
-import org.scalatest.FunSuite
 import org.junit.runner.RunWith
+import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
@@ -14,7 +12,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 
-    val res = new EasyMapReduce(rdd)
+    val res = new MaRe(rdd)
       .mapPartitions(
         imageName = "ubuntu:xenial",
         command = "grep -o '[gc]' /input | wc -l > /output")
@@ -37,7 +35,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 
-    val res = new EasyMapReduce(rdd)
+    val res = new MaRe(rdd)
       .setInputMountPoint("/input.dna")
       .setOutputMountPoint("/output.dna")
       .mapPartitions(
@@ -63,7 +61,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
     
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
 
-    val res = new EasyMapReduce(rdd)
+    val res = new MaRe(rdd)
       .setReduceInputMountPoint1("/input1.txt")
       .setReduceInputMountPoint2("/input2.txt")
       .map(

@@ -1,10 +1,9 @@
-package se.uu.it.easymr
+package se.uu.it.mare
 
 import java.io.File
 
 import scala.io.Source
 
-import org.apache.spark.HashPartitioner
 import org.apache.spark.SharedSparkContext
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -27,8 +26,8 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
     sc.hadoopConfiguration.set("textinputformat.record.delimiter", "\n$$$$\n")
     val mols = sc.textFile(getClass.getResource("sdf/molecules.sdf").getPath)
 
-    // Parallel execution with EasyMapReduce
-    val hitsParallel = new EasyMapReduce(mols)
+    // Parallel execution with MaRe
+    val hitsParallel = new MaRe(mols)
       .setInputMountPoint("/input.sdf")
       .setOutputMountPoint("/output.sdf")
       .mapPartitions(
@@ -48,11 +47,11 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
 
     // Serial execution
     val inputFile = new File(getClass.getResource("sdf/molecules.sdf").getPath)
-    val dockedFile = EasyFiles.createTmpFile
+    val dockedFile = FileHelper.createTmpFile
     dockedFile.deleteOnExit
-    val outputFile = EasyFiles.createTmpFile
+    val outputFile = FileHelper.createTmpFile
     outputFile.deleteOnExit
-    val docker = new EasyDocker
+    val docker = new DockerHelper
     docker.run(
       imageName = "mcapuccini/oe-docking", // obs: this is a private image
       command = "fred -receptor /var/openeye/hiv1_protease.oeb " +

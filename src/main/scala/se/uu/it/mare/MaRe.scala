@@ -1,13 +1,12 @@
-package se.uu.it.easymr
+package se.uu.it.mare
 
 import java.io.File
 import java.util.regex.Pattern
 
-import org.apache.spark.rdd.RDD
 import org.apache.log4j.Logger
-import org.apache.spark.util.LongAccumulator
+import org.apache.spark.rdd.RDD
 
-private[easymr] object EasyMapReduce {
+private[mare] object MaRe {
 
   // Logger
   private lazy val log = Logger.getLogger(getClass.getName)
@@ -21,11 +20,11 @@ private[easymr] object EasyMapReduce {
     recordDelimiter: String) = {
 
     // Create temporary files
-    val inputFile = EasyFiles.writeToTmpFile(records, recordDelimiter)
-    val outputFile = EasyFiles.createTmpFile
+    val inputFile = FileHelper.writeToTmpFile(records, recordDelimiter)
+    val outputFile = FileHelper.createTmpFile
 
     // Run docker
-    val docker = new EasyDocker
+    val docker = new DockerHelper
     docker.run(
       imageName,
       command,
@@ -33,7 +32,7 @@ private[easymr] object EasyMapReduce {
       volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)))
 
     // Retrieve output
-    val output = EasyFiles.readFromFile(outputFile, recordDelimiter)
+    val output = FileHelper.readFromFile(outputFile, recordDelimiter)
 
     // Remove temporary files
     log.info(s"Deleteing temporary file: ${inputFile.getAbsolutePath}")
@@ -59,12 +58,12 @@ private[easymr] object EasyMapReduce {
     recordDelimiter: String) = {
 
     // Create temporary files
-    val inputFile1 = EasyFiles.writeToTmpFile(Seq(record1).iterator, recordDelimiter)
-    val inputFile2 = EasyFiles.writeToTmpFile(Seq(record2).iterator, recordDelimiter)
-    val outputFile = EasyFiles.createTmpFile
+    val inputFile1 = FileHelper.writeToTmpFile(Seq(record1).iterator, recordDelimiter)
+    val inputFile2 = FileHelper.writeToTmpFile(Seq(record2).iterator, recordDelimiter)
+    val outputFile = FileHelper.createTmpFile
 
     // Run docker
-    val docker = new EasyDocker
+    val docker = new DockerHelper
     docker.run(
       imageName,
       command,
@@ -75,7 +74,7 @@ private[easymr] object EasyMapReduce {
         new File(outputMountPoint)))
 
     // Retrieve output
-    val output = EasyFiles.readFromFile(outputFile, recordDelimiter)
+    val output = FileHelper.readFromFile(outputFile, recordDelimiter)
 
     // Remove temporary files
     log.info(s"Deleteing temporary file: ${inputFile1.getAbsolutePath}")
@@ -96,7 +95,7 @@ private[easymr] object EasyMapReduce {
 }
 
 /**
- * EasyMapReduce leverages the power of Docker and Spark to run and scale your serial tools
+ * MaRe leverages the power of Docker and Spark to run and scale your serial tools
  * in MapReduce fashion. The data goes from Spark through the Docker container, and back to Spark
  * after being processed, via Unix files. Please make sure that the TMPDIR environment variable
  * in the worker nodes points to a tmpfs to reduce overhead when running in production. To make sure
@@ -110,7 +109,7 @@ private[easymr] object EasyMapReduce {
  *  @param reduceInputMountPoint1 reduce mount point for the first input file that is passed to the containers
  *  @param reduceInputMountPoint2 recude mount point for the second input file that is passed to the containers
  */
-class EasyMapReduce(
+class MaRe(
     private val rdd: RDD[String],
     val inputMountPoint: String = "/input",
     val outputMountPoint: String = "/output",
@@ -125,7 +124,7 @@ class EasyMapReduce(
       .getOrElse("\n")
 
   /**
-   * It returns the underlying RDD for this EasyMapReduce object.
+   * It returns the underlying RDD for this MaRe object.
    */
   def getRDD = rdd
 
@@ -135,7 +134,7 @@ class EasyMapReduce(
    * @param inputMountPoint mount point for the input chunk that is passed to the containers
    */
   def setInputMountPoint(inputMountPoint: String) = {
-    new EasyMapReduce(
+    new MaRe(
       rdd,
       inputMountPoint,
       outputMountPoint,
@@ -149,7 +148,7 @@ class EasyMapReduce(
    * @param outputMountPoint mount point where the processed data is read back to Spark
    */
   def setOutputMountPoint(outputMountPoint: String) = {
-    new EasyMapReduce(
+    new MaRe(
       rdd,
       inputMountPoint,
       outputMountPoint,
@@ -164,7 +163,7 @@ class EasyMapReduce(
    * in the reduce method
    */
   def setReduceInputMountPoint1(reduceInputMountPoint1: String) = {
-    new EasyMapReduce(
+    new MaRe(
       rdd,
       inputMountPoint,
       outputMountPoint,
@@ -179,7 +178,7 @@ class EasyMapReduce(
    * in the reduce method
    */
   def setReduceInputMountPoint2(reduceInputMountPoint2: String) = {
-    new EasyMapReduce(
+    new MaRe(
       rdd,
       inputMountPoint,
       outputMountPoint,
@@ -202,12 +201,12 @@ class EasyMapReduce(
 
     // Map partitions to avoid opening too many files
     val resRDD = rdd.mapPartitions { records =>
-      EasyMapReduce.mapLambda(
+      MaRe.mapLambda(
         imageName, command,
         inputMountPoint, outputMountPoint,
         records, recordDelimiter)
     }
-    new EasyMapReduce(resRDD,
+    new MaRe(resRDD,
       inputMountPoint,
       outputMountPoint,
       reduceInputMountPoint1,
@@ -240,7 +239,7 @@ class EasyMapReduce(
         val delimiterRegex = Pattern.quote(recordDelimiter)
         val records = rp1.split(delimiterRegex) ++ rp2.split(delimiterRegex)
         log.info(s"Records sucessfully splitted by record delimiter: $recordDelimiter")
-        EasyMapReduce.mapLambda(
+        MaRe.mapLambda(
           imageName, command,
           inputMountPoint, outputMountPoint,
           records.iterator, recordDelimiter)
@@ -265,13 +264,13 @@ class EasyMapReduce(
     command: String) = {
 
     val resRDD = rdd.flatMap { record =>
-      val resIt = EasyMapReduce.mapLambda(
+      val resIt = MaRe.mapLambda(
         imageName, command,
         inputMountPoint, outputMountPoint,
         Seq(record).iterator, recordDelimiter)
       resIt
     }
-    new EasyMapReduce(resRDD,
+    new MaRe(resRDD,
       inputMountPoint,
       outputMountPoint,
       reduceInputMountPoint1,
@@ -299,7 +298,7 @@ class EasyMapReduce(
     // Reduce
     rdd.reduce {
       case (r1, r2) =>
-        EasyMapReduce.reduceLambda(
+        MaRe.reduceLambda(
           imageName, command,
           reduceInputMountPoint1,
           reduceInputMountPoint2,

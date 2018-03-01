@@ -1,4 +1,4 @@
-package se.uu.it.easymr
+package se.uu.it.mare
 
 import java.io.File
 import java.io.FileNotFoundException
@@ -8,9 +8,10 @@ import java.util.regex.Pattern
 
 import scala.io.Source
 import scala.util.Properties
+
 import org.apache.log4j.Logger
 
-private[easymr] object EasyFiles {
+private[mare] object FileHelper {
 
   // Set temporary directory
   private val tmpDir = new File(Properties.envOrElse("TMPDIR", "/tmp"))
@@ -26,10 +27,10 @@ private[easymr] object EasyFiles {
   // Logger
   private lazy val log = Logger.getLogger(getClass.getName)
 
-  private def newTmpFile = new File(tmpDir, "easymr_" + UUID.randomUUID.toString)
+  private def newTmpFile = new File(tmpDir, "mare_" + UUID.randomUUID.toString)
 
   def createTmpFile = {
-    val file = EasyFiles.newTmpFile
+    val file = FileHelper.newTmpFile
     log.info(s"Creating new file: ${file.getAbsolutePath}")
     file.createNewFile
     log.info(s"New file '${file.getAbsolutePath}' created")
@@ -37,7 +38,7 @@ private[easymr] object EasyFiles {
   }
 
   def writeToTmpFile(it: Iterator[String], recordDelimiter: String): File = {
-    val file = EasyFiles.newTmpFile
+    val file = FileHelper.newTmpFile
     log.info(s"Writing to: ${file.getAbsolutePath}")
     val pw = new PrintWriter(file)
     it.foreach(r => pw.write(r + recordDelimiter))
