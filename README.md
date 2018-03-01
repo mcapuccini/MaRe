@@ -1,8 +1,8 @@
 # MaRe
 
-[![Build Status](https://travis-ci.org/mcapuccini/MaRe.svg?branch=master)](https://travis-ci.org/mcapuccini/MaRe)
-
 > Italian, pronounced: `/ˈmare/`. Noun: `Sea`.
+
+[![Build Status](https://travis-ci.org/mcapuccini/MaRe.svg?branch=master)](https://travis-ci.org/mcapuccini/MaRe)
 
 MaRe (formerly EasyMapReduce) leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
 
