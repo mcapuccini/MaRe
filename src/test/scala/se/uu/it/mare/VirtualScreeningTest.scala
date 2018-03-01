@@ -47,11 +47,11 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
 
     // Serial execution
     val inputFile = new File(getClass.getResource("sdf/molecules.sdf").getPath)
-    val dockedFile = EasyFiles.createTmpFile
+    val dockedFile = FileHelper.createTmpFile
     dockedFile.deleteOnExit
-    val outputFile = EasyFiles.createTmpFile
+    val outputFile = FileHelper.createTmpFile
     outputFile.deleteOnExit
-    val docker = new EasyDocker
+    val docker = new DockerHelper
     docker.run(
       imageName = "mcapuccini/oe-docking", // obs: this is a private image
       command = "fred -receptor /var/openeye/hiv1_protease.oeb " +

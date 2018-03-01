@@ -11,7 +11,7 @@ import scala.util.Properties
 
 import org.apache.log4j.Logger
 
-private[mare] object EasyFiles {
+private[mare] object FileHelper {
 
   // Set temporary directory
   private val tmpDir = new File(Properties.envOrElse("TMPDIR", "/tmp"))
@@ -30,7 +30,7 @@ private[mare] object EasyFiles {
   private def newTmpFile = new File(tmpDir, "mare_" + UUID.randomUUID.toString)
 
   def createTmpFile = {
-    val file = EasyFiles.newTmpFile
+    val file = FileHelper.newTmpFile
     log.info(s"Creating new file: ${file.getAbsolutePath}")
     file.createNewFile
     log.info(s"New file '${file.getAbsolutePath}' created")
@@ -38,7 +38,7 @@ private[mare] object EasyFiles {
   }
 
   def writeToTmpFile(it: Iterator[String], recordDelimiter: String): File = {
-    val file = EasyFiles.newTmpFile
+    val file = FileHelper.newTmpFile
     log.info(s"Writing to: ${file.getAbsolutePath}")
     val pw = new PrintWriter(file)
     it.foreach(r => pw.write(r + recordDelimiter))

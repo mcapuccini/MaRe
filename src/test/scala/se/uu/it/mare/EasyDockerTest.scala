@@ -9,17 +9,17 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class EasyDockerTest extends FunSuite {
+class DockerHelperTest extends FunSuite {
 
   test("Map-like Docker run") {
 
     // Create temporary files
-    val inputFile = EasyFiles.writeToTmpFile(
+    val inputFile = FileHelper.writeToTmpFile(
       Seq("hello world").iterator, recordDelimiter = "\n")
-    val outputFile = EasyFiles.createTmpFile
+    val outputFile = FileHelper.createTmpFile
 
     // Run docker
-    val docker = new EasyDocker
+    val docker = new DockerHelper
     docker.run(
       imageName = "ubuntu:xenial", // assumes ubuntu:xenial was pulled
       command = "cat /input > /output",

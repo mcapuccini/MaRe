@@ -20,11 +20,11 @@ private[mare] object MaRe {
     recordDelimiter: String) = {
 
     // Create temporary files
-    val inputFile = EasyFiles.writeToTmpFile(records, recordDelimiter)
-    val outputFile = EasyFiles.createTmpFile
+    val inputFile = FileHelper.writeToTmpFile(records, recordDelimiter)
+    val outputFile = FileHelper.createTmpFile
 
     // Run docker
-    val docker = new EasyDocker
+    val docker = new DockerHelper
     docker.run(
       imageName,
       command,
@@ -32,7 +32,7 @@ private[mare] object MaRe {
       volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)))
 
     // Retrieve output
-    val output = EasyFiles.readFromFile(outputFile, recordDelimiter)
+    val output = FileHelper.readFromFile(outputFile, recordDelimiter)
 
     // Remove temporary files
     log.info(s"Deleteing temporary file: ${inputFile.getAbsolutePath}")
@@ -58,12 +58,12 @@ private[mare] object MaRe {
     recordDelimiter: String) = {
 
     // Create temporary files
-    val inputFile1 = EasyFiles.writeToTmpFile(Seq(record1).iterator, recordDelimiter)
-    val inputFile2 = EasyFiles.writeToTmpFile(Seq(record2).iterator, recordDelimiter)
-    val outputFile = EasyFiles.createTmpFile
+    val inputFile1 = FileHelper.writeToTmpFile(Seq(record1).iterator, recordDelimiter)
+    val inputFile2 = FileHelper.writeToTmpFile(Seq(record2).iterator, recordDelimiter)
+    val outputFile = FileHelper.createTmpFile
 
     // Run docker
-    val docker = new EasyDocker
+    val docker = new DockerHelper
     docker.run(
       imageName,
       command,
@@ -74,7 +74,7 @@ private[mare] object MaRe {
         new File(outputMountPoint)))
 
     // Retrieve output
-    val output = EasyFiles.readFromFile(outputFile, recordDelimiter)
+    val output = FileHelper.readFromFile(outputFile, recordDelimiter)
 
     // Remove temporary files
     log.info(s"Deleteing temporary file: ${inputFile1.getAbsolutePath}")
