@@ -3,6 +3,8 @@
 > Italian, pronounced: `/ˈmare/`. Noun: `Sea`.
 
 [![Build Status](https://travis-ci.org/mcapuccini/MaRe.svg?branch=master)](https://travis-ci.org/mcapuccini/MaRe)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.uu.it/mare/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.uu.it/mare)
+
 
 MaRe (formerly EasyMapReduce) leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
 
