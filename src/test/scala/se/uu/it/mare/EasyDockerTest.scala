@@ -1,12 +1,11 @@
-package se.uu.it.easymr
+package se.uu.it.mare
 
 import java.io.File
 
 import scala.io.Source
 
-import org.apache.spark.SharedSparkContext
-import org.scalatest.FunSuite
 import org.junit.runner.RunWith
+import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])

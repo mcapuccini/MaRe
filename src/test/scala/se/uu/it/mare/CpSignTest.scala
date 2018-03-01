@@ -1,4 +1,4 @@
-package se.uu.it.easymr
+package se.uu.it.mare
 
 import java.io.ByteArrayInputStream
 import java.util.jar.JarInputStream
@@ -23,7 +23,7 @@ class CpSignTest extends FunSuite with SharedSparkContext {
 
     val rdd = sc.parallelize(1 to 3).map(_.toString)
 
-    val res = new EasyMapReduce(rdd)
+    val res = new MaRe(rdd)
       .setOutputMountPoint("/out.txt")
       .setReduceInputMountPoint1("/model1.txt")
       .setReduceInputMountPoint2("/model2.txt")
@@ -72,7 +72,7 @@ class CpSignTest extends FunSuite with SharedSparkContext {
       seq.sortWith(_ < _)(seq.length / 2)
     }
 
-    val predictions = new EasyMapReduce(rdd)
+    val predictions = new MaRe(rdd)
       .setInputMountPoint("/in.txt")
       .setOutputMountPoint("/out.txt")
       // Train

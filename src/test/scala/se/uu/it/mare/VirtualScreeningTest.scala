@@ -1,10 +1,9 @@
-package se.uu.it.easymr
+package se.uu.it.mare
 
 import java.io.File
 
 import scala.io.Source
 
-import org.apache.spark.HashPartitioner
 import org.apache.spark.SharedSparkContext
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -27,8 +26,8 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
     sc.hadoopConfiguration.set("textinputformat.record.delimiter", "\n$$$$\n")
     val mols = sc.textFile(getClass.getResource("sdf/molecules.sdf").getPath)
 
-    // Parallel execution with EasyMapReduce
-    val hitsParallel = new EasyMapReduce(mols)
+    // Parallel execution with MaRe
+    val hitsParallel = new MaRe(mols)
       .setInputMountPoint("/input.sdf")
       .setOutputMountPoint("/output.sdf")
       .mapPartitions(
