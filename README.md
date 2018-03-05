@@ -1,4 +1,4 @@
-# MaRe
+# MaRe :whale:
 
 > Italian, pronounced: `/ˈmare/`. Noun: `Sea`.
 
