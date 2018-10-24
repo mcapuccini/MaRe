@@ -33,6 +33,7 @@ private[mare] object FileHelper {
     val file = FileHelper.newTmpFile
     log.info(s"Creating new file: ${file.getAbsolutePath}")
     file.createNewFile
+    file.deleteOnExit
     log.info(s"New file '${file.getAbsolutePath}' created")
     file
   }
