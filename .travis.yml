@@ -21,10 +21,6 @@ before_install:
     -in .gpg-keys/secret.asc.enc -out .gpg-keys/secret.asc -d
   - gpg --import .gpg-keys/public.asc
   - gpg --import .gpg-keys/secret.asc
-  
-  # Pull images that are used in tests
-  - docker login -u mcapuccini -p $DOCKERHUB_PASSWORD
-  - docker pull ubuntu:xenial
 
 before_script:
   - mvn scalastyle:check # check scalastyle
