@@ -14,6 +14,8 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.core.command.AttachContainerResultCallback
 import com.github.dockerjava.core.command.WaitContainerResultCallback
+import com.github.dockerjava.core.command.PullImageResultCallback
+import com.github.dockerjava.api.model.PullResponseItem
 
 private[mare] class DockerHelper extends Serializable {
 
@@ -33,8 +35,14 @@ private[mare] class DockerHelper extends Serializable {
 
   // Logging
   @transient private lazy val log = Logger.getLogger(getClass.getName)
-  private class LoggingCallback extends AttachContainerResultCallback {
+  private class AttachLoggingCallback extends AttachContainerResultCallback {
     override def onNext(item: Frame) = {
+      log.info(item)
+      super.onNext(item)
+    }
+  }
+  private class PullLoggingCallback extends PullImageResultCallback {
+    override def onNext(item: PullResponseItem) = {
       log.info(item)
       super.onNext(item)
     }
@@ -59,6 +67,12 @@ private[mare] class DockerHelper extends Serializable {
         val bindPath = file.getAbsolutePath
         new Bind(bindPath, volume)
     }
+    
+    // Pull container
+    log.info(s"Pulling image '$imageName'")
+    dockerClient.pullImageCmd(imageName)
+      .exec(new PullLoggingCallback)
+      .awaitSuccess()
 
     // Run container
     val container = dockerClient.createContainerCmd(imageName)
@@ -77,7 +91,7 @@ private[mare] class DockerHelper extends Serializable {
       .withStdErr(true)
       .withStdOut(true)
       .withLogs(true)
-      .exec(new LoggingCallback)
+      .exec(new AttachLoggingCallback)
       .awaitCompletion
 
     // Wait for container exit code
