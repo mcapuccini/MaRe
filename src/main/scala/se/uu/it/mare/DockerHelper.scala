@@ -49,11 +49,11 @@ private[mare] class DockerHelper extends Serializable {
   }
 
   def run(
-    imageName: String,
-    command: String,
-    bindFiles: Seq[File],
+    imageName:   String,
+    command:     String,
+    bindFiles:   Seq[File],
     volumeFiles: Seq[File]) = {
-    
+
     // Init client
     val dockerClient = DockerClientBuilder.getInstance(config).build
 
@@ -67,7 +67,7 @@ private[mare] class DockerHelper extends Serializable {
         val bindPath = file.getAbsolutePath
         new Bind(bindPath, volume)
     }
-    
+
     // Pull container
     log.info(s"Pulling image '$imageName'")
     dockerClient.pullImageCmd(imageName)
@@ -100,7 +100,7 @@ private[mare] class DockerHelper extends Serializable {
       .exec(new WaitContainerResultCallback())
       .awaitStatusCode()
     val t1 = System.currentTimeMillis()
-    log.info(s"Container ${container.getId} took ${t1-t0} ms")
+    log.info(s"Container ${container.getId} took ${t1 - t0} ms")
 
     // Raise exception if statusCode != 0
     if (statusCode != 0) {
@@ -108,10 +108,10 @@ private[mare] class DockerHelper extends Serializable {
         s"Container ${container.getId} exited with non zero exit code: $statusCode")
     }
     log.info(s"Container ${container.getId} exited with zero exit code: 0")
-    
+
     // Close Docker client
     dockerClient.close
-    
+
   }
 
 }

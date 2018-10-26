@@ -12,12 +12,12 @@ private[mare] object MaRe {
   private lazy val log = Logger.getLogger(getClass.getName)
 
   def mapLambda(
-    imageName: String,
-    command: String,
-    inputMountPoint: String,
+    imageName:        String,
+    command:          String,
+    inputMountPoint:  String,
     outputMountPoint: String,
-    records: Iterator[String],
-    recordDelimiter: String) = {
+    records:          Iterator[String],
+    recordDelimiter:  String) = {
 
     // Create temporary files
     val inputFile = FileHelper.writeToTmpFile(records, recordDelimiter)
@@ -47,51 +47,6 @@ private[mare] object MaRe {
 
   }
 
-  def reduceLambda(
-    imageName: String,
-    command: String,
-    reduceInputMountPoint1: String,
-    reduceInputMountPoint2: String,
-    outputMountPoint: String,
-    record1: String,
-    record2: String,
-    recordDelimiter: String) = {
-
-    // Create temporary files
-    val inputFile1 = FileHelper.writeToTmpFile(Seq(record1).iterator, recordDelimiter)
-    val inputFile2 = FileHelper.writeToTmpFile(Seq(record2).iterator, recordDelimiter)
-    val outputFile = FileHelper.createTmpFile
-
-    // Run docker
-    val docker = new DockerHelper
-    docker.run(
-      imageName,
-      command,
-      bindFiles = Seq(inputFile1, inputFile2, outputFile),
-      volumeFiles = Seq(
-        new File(reduceInputMountPoint1),
-        new File(reduceInputMountPoint2),
-        new File(outputMountPoint)))
-
-    // Retrieve output
-    val output = FileHelper.readFromFile(outputFile, recordDelimiter)
-
-    // Remove temporary files
-    log.info(s"Deleteing temporary file: ${inputFile1.getAbsolutePath}")
-    inputFile1.delete
-    log.info(s"Temporary file '${inputFile1.getAbsolutePath}' deleted successfully")
-    log.info(s"Deleteing temporary file: ${inputFile2.getAbsolutePath}")
-    inputFile2.delete
-    log.info(s"Temporary file '${inputFile2.getAbsolutePath}' deleted successfully")
-    log.info(s"Deleteing temporary file: ${outputFile.getAbsolutePath}")
-    outputFile.delete
-    log.info(s"Temporary file '${outputFile.getAbsolutePath}' deleted successfully")
-
-    // Return output
-    output
-
-  }
-
 }
 
 /**
@@ -110,11 +65,9 @@ private[mare] object MaRe {
  *  @param reduceInputMountPoint2 recude mount point for the second input file that is passed to the containers
  */
 class MaRe(
-    private val rdd: RDD[String],
-    val inputMountPoint: String = "/input",
-    val outputMountPoint: String = "/output",
-    val reduceInputMountPoint1: String = "/input1",
-    val reduceInputMountPoint2: String = "/input2") extends Serializable {
+  private val rdd:      RDD[String],
+  val inputMountPoint:  String      = "/input",
+  val outputMountPoint: String      = "/output") extends Serializable {
 
   // Logger
   @transient private lazy val log = Logger.getLogger(getClass.getName)
@@ -129,6 +82,16 @@ class MaRe(
   def getRDD = rdd
 
   /**
+   * It caches the underlying RDD in memory
+   */
+  def cache = {
+    new MaRe(
+      rdd.cache,
+      inputMountPoint,
+      outputMountPoint)
+  }
+
+  /**
    * It sets the mount point for the input chunk that is passed to the containers.
    *
    * @param inputMountPoint mount point for the input chunk that is passed to the containers
@@ -137,9 +100,7 @@ class MaRe(
     new MaRe(
       rdd,
       inputMountPoint,
-      outputMountPoint,
-      reduceInputMountPoint1,
-      reduceInputMountPoint2)
+      outputMountPoint)
   }
 
   /**
@@ -151,39 +112,7 @@ class MaRe(
     new MaRe(
       rdd,
       inputMountPoint,
-      outputMountPoint,
-      reduceInputMountPoint1,
-      reduceInputMountPoint2)
-  }
-
-  /**
-   * It sets the mount point for the first input file that is passed to the containers in the reduce method.
-   *
-   * @param reduceInputMountPoint1 mount point for the first input file that is passed to the containers
-   * in the reduce method
-   */
-  def setReduceInputMountPoint1(reduceInputMountPoint1: String) = {
-    new MaRe(
-      rdd,
-      inputMountPoint,
-      outputMountPoint,
-      reduceInputMountPoint1,
-      reduceInputMountPoint2)
-  }
-
-  /**
-   * It sets the mount point for the second input file that is passed to the containers in the reduce method.
-   *
-   * @param reduceInputMountPoint2 mount point for the second input file that is passed to the containers
-   * in the reduce method
-   */
-  def setReduceInputMountPoint2(reduceInputMountPoint2: String) = {
-    new MaRe(
-      rdd,
-      inputMountPoint,
-      outputMountPoint,
-      reduceInputMountPoint1,
-      reduceInputMountPoint2)
+      outputMountPoint)
   }
 
   /**
@@ -195,9 +124,9 @@ class MaRe(
    * @param command a command to run in the Docker container, this should read from
    * inputMountPoint and write back to outputMountPoint
    */
-  def mapPartitions(
+  def map(
     imageName: String,
-    command: String) = {
+    command:   String) = {
 
     // Map partitions to avoid opening too many files
     val resRDD = rdd.mapPartitions { records =>
@@ -206,11 +135,10 @@ class MaRe(
         inputMountPoint, outputMountPoint,
         records, recordDelimiter)
     }
-    new MaRe(resRDD,
+    new MaRe(
+      resRDD,
       inputMountPoint,
-      outputMountPoint,
-      reduceInputMountPoint1,
-      reduceInputMountPoint2)
+      outputMountPoint)
 
   }
 
@@ -225,12 +153,12 @@ class MaRe(
    * associative and commutative operation (for the parallelization to work)
    *
    */
-  def reducePartitions(
+  def reduce(
     imageName: String,
-    command: String) = {
+    command:   String) = {
 
     // First reduce within partitions
-    val reducedPartitions = this.mapPartitions(imageName, command).getRDD
+    val reducedPartitions = this.map(imageName, command).getRDD
 
     // Reduce
     reducedPartitions.reduce {
@@ -245,66 +173,6 @@ class MaRe(
           records.iterator, recordDelimiter)
           .map(_ + recordDelimiter)
           .mkString
-    }
-
-  }
-
-  /**
-   * It maps each RDD record through a Docker container command.
-   * Data is mounted to the specified inputMountPoint and read back
-   * from the specified outputMountPoint. If the container command
-   * returns multiple records, results are flattened.
-   *
-   * @param imageName a Docker image name available in each node
-   * @param command a command to run in the Docker container, this should read from
-   * inputMountPoint and write back to outputMountPoint
-   */
-  def map(
-    imageName: String,
-    command: String) = {
-
-    val resRDD = rdd.flatMap { record =>
-      val resIt = MaRe.mapLambda(
-        imageName, command,
-        inputMountPoint, outputMountPoint,
-        Seq(record).iterator, recordDelimiter)
-      resIt
-    }
-    new MaRe(resRDD,
-      inputMountPoint,
-      outputMountPoint,
-      reduceInputMountPoint1,
-      reduceInputMountPoint2)
-
-  }
-
-  /**
-   * It reduces a RDD to a single String using a Docker container command.
-   * The command is applied to couples of RDD records. Data is mounted to the specified
-   * reduceInputMountPoint1 and reduceInputMountPoint2, and it is read back from
-   * the specified outputMountPoint.
-   *
-   * @param imageName a Docker image name available in each node
-   * @param command a command to run in the Docker container, this should read from
-   * reduceInputMountPoint1 and reduceInputMountPoint2, and it should write back to
-   * outputMountPoint. The command should perform an associative and commutative operation
-   * (for the parallelization to work).
-   *
-   */
-  def reduce(
-    imageName: String,
-    command: String) = {
-
-    // Reduce
-    rdd.reduce {
-      case (r1, r2) =>
-        MaRe.reduceLambda(
-          imageName, command,
-          reduceInputMountPoint1,
-          reduceInputMountPoint2,
-          outputMountPoint,
-          r1, r2, recordDelimiter)
-          .next
     }
 
   }

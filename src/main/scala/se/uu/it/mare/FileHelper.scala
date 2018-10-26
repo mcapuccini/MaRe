@@ -23,7 +23,7 @@ private[mare] object FileHelper {
     throw new FileNotFoundException(
       s"${tmpDir.getAbsolutePath} is not a directory")
   }
-  
+
   // Logger
   private lazy val log = Logger.getLogger(getClass.getName)
 

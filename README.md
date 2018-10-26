@@ -33,10 +33,10 @@ val rdd = sc.textFile("genome.dna")
 val res = new MaRe(rdd)
     .setInputMountPoint("/input.dna")
     .setOutputMountPoint("/output.dna")
-    .mapPartitions(
+    .map(
     	imageName = "ubuntu:xenial",
       	command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")
-    .reducePartitions(
+    .reduce(
         imageName = "ubuntu:xenial",
         command = "awk '{s+=$1} END {print s}' /input.dna > /output.dna")
 println(s"The GC count is: $res")

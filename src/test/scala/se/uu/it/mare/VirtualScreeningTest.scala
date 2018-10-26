@@ -30,15 +30,15 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
     val hitsParallel = new MaRe(mols)
       .setInputMountPoint("/input.sdf")
       .setOutputMountPoint("/output.sdf")
-      .mapPartitions(
-        imageName = "mcapuccini/oe-docking", // obs: this is a private image
+      .map(
+        imageName = "mcapuccini/oe-docking:latest", // obs: this is a private image
         command = "fred -receptor /var/openeye/hiv1_protease.oeb " +
           "-hitlist_size 0 " +
           "-conftest none " +
           "-dbase /input.sdf " +
           "-docked_molecule_file /output.sdf")
-      .reducePartitions(
-        imageName = "mcapuccini/sdsorter",
+      .reduce(
+        imageName = "mcapuccini/sdsorter:latest",
         command = "sdsorter -reversesort='FRED Chemgauss4 score' " +
           "-keep-tag='FRED Chemgauss4 score' " +
           "-nbest=3 " +
@@ -53,7 +53,7 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
     outputFile.deleteOnExit
     val docker = new DockerHelper
     docker.run(
-      imageName = "mcapuccini/oe-docking", // obs: this is a private image
+      imageName = "mcapuccini/oe-docking:latest", // obs: this is a private image
       command = "fred -receptor /var/openeye/hiv1_protease.oeb " +
         "-hitlist_size 0 " +
         "-conftest none " +
@@ -62,7 +62,7 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
       bindFiles = Seq(inputFile, dockedFile),
       volumeFiles = Seq(new File("/input.sdf"), new File("/docked.sdf")))
     docker.run(
-      imageName = "mcapuccini/sdsorter",
+      imageName = "mcapuccini/sdsorter:latest",
       command = "sdsorter -reversesort='FRED Chemgauss4 score' " +
         "-keep-tag='FRED Chemgauss4 score' " +
         "-nbest=3 " +
