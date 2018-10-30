@@ -51,7 +51,7 @@ private[mare] object DockerHelper {
   private def cleanImageName(imageName: String) = {
 
     val splittedImageName = imageName.split(":")
-    require(splittedImageName.length < 2, s"imageName should be of the form '<image>:<tag>' but got: '$imageName'")
+    require(splittedImageName.length <= 2, s"imageName should be of the form '<image>:<tag>' but got: '$imageName'")
 
     if (splittedImageName.length == 1) {
       s"$imageName:latest"
