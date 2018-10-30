@@ -161,7 +161,8 @@ class MaRe(
 
   /**
    * It reduces a RDD to a single String using a Docker container command. The command is applied
-   * using a tree reduce strategy.
+   * using a tree reduce strategy. Data is mounted to the specified inputMountPoint and read back 
+   * from the specified outputMountPoint.
    *
    * @param imageName a Docker image name available in each node
    * @param command a command to run in the Docker container, this should read from
