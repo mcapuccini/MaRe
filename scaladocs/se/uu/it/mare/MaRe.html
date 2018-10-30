@@ -96,7 +96,7 @@ SparkConf class when initializing the SparkContext.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="se.uu.it.mare.MaRe#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(rdd:org.apache.spark.rdd.RDD[String],inputMountPoint:String,outputMountPoint:String):se.uu.it.mare.MaRe"></a>
+      <a id="&lt;init&gt;(rdd:org.apache.spark.rdd.RDD[String],inputMountPoint:String,outputMountPoint:String,forcePull:Boolean):se.uu.it.mare.MaRe"></a>
       <a id="&lt;init&gt;:MaRe"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -104,10 +104,10 @@ SparkConf class when initializing the SparkContext.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">MaRe</span><span class="params">(<span name="rdd">rdd: <span class="extype" name="org.apache.spark.rdd.RDD">RDD</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="inputMountPoint">inputMountPoint: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;/input&quot;</span></span>, <span name="outputMountPoint">outputMountPoint: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;/output&quot;</span></span>)</span>
+        <span class="name">MaRe</span><span class="params">(<span name="rdd">rdd: <span class="extype" name="org.apache.spark.rdd.RDD">RDD</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="inputMountPoint">inputMountPoint: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;/input&quot;</span></span>, <span name="outputMountPoint">outputMountPoint: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;/output&quot;</span></span>, <span name="forcePull">forcePull: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@&lt;init&gt;(rdd:org.apache.spark.rdd.RDD[String],inputMountPoint:String,outputMountPoint:String):se.uu.it.mare.MaRe" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@&lt;init&gt;(rdd:org.apache.spark.rdd.RDD[String],inputMountPoint:String,outputMountPoint:String,forcePull:Boolean):se.uu.it.mare.MaRe" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -287,6 +287,42 @@ SparkConf class when initializing the SparkContext.
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="se.uu.it.mare.MaRe#forcePull" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="forcePull(forcePull:Boolean):se.uu.it.mare.MaRe"></a>
+      <a id="forcePull(Boolean):MaRe"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">forcePull</span><span class="params">(<span name="forcePull">forcePull: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@forcePull(forcePull:Boolean):se.uu.it.mare.MaRe" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">If set to true it will pull the Docker image even if present locally.</p><div class="fullcomment"><div class="comment cmt"><p>If set to true it will pull the Docker image even if present locally.
+</p></div><dl class="paramcmts block"><dt class="param">forcePull</dt><dd class="cmt"><p>set to true to force Docker image pulling
+</p></dd></dl></div>
+    </li><li name="se.uu.it.mare.MaRe#forcePull" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="forcePull:Boolean"></a>
+      <a id="forcePull:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">forcePull</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@forcePull:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
