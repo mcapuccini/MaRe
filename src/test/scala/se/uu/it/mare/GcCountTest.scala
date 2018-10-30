@@ -18,10 +18,12 @@ private object DNAUtils {
 
 @RunWith(classOf[JUnitRunner])
 class GcCountTest extends FunSuite with SharedSparkContext {
+  
+  private val partitions = 5
 
   test("GC count in DNA string, defaults") {
 
-    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
     val res = new MaRe(rdd)
       .map(
@@ -40,7 +42,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
   test("GC count in DNA string, set volume files") {
 
-    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
     val res = new MaRe(rdd)
       .setInputMountPoint("/input.dna")
@@ -59,14 +61,13 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
   }
 
-  test("GC count in DNA string, 5 partitions depth 3") {
+  test("GC count in DNA string, depth 3") {
 
-    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
     val res = new MaRe(rdd)
       .setInputMountPoint("/input.dna")
       .setOutputMountPoint("/output.dna")
-      .repartition(5)
       .map(
         imageName = "ubuntu:xenial",
         command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")
@@ -82,37 +83,13 @@ class GcCountTest extends FunSuite with SharedSparkContext {
     
   }
   
-  test("GC count in DNA string, 5 partitions depth 2") {
+  test("GC count in DNA string, depth 1") {
 
-    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
-
-    val res = new MaRe(rdd)
-      .setInputMountPoint("/input.dna")
-      .setOutputMountPoint("/output.dna")
-      .repartition(5)
-      .map(
-        imageName = "ubuntu:xenial",
-        command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")
-      .reduce(
-        imageName = "ubuntu:xenial",
-        command = "awk '{s+=$1} END {print s}' /input.dna > /output.dna",
-        depth = 2)
-        
-    // Check if results matches with the one computed with the standard RDD API
-    val dna = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
-    val toMatch = DNAUtils.sparkCountGC(dna)
-    assert(res == toMatch + "\n") 
-    
-  }
-  
-  test("GC count in DNA string, 5 partitions depth 1") {
-
-    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
+    val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
     val res = new MaRe(rdd)
       .setInputMountPoint("/input.dna")
       .setOutputMountPoint("/output.dna")
-      .repartition(5)
       .map(
         imageName = "ubuntu:xenial",
         command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")
