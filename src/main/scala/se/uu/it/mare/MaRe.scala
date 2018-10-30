@@ -92,6 +92,23 @@ class MaRe(
   }
 
   /**
+   * It repartitions the underlying RDD to the specified number of partitions.
+   *
+   * @param numPartitions number of partitions to use in the underlying RDD
+   */
+  def repartition(numPartitions: Int) = {
+    new MaRe(
+      rdd.repartition(numPartitions),
+      inputMountPoint,
+      outputMountPoint)
+  }
+
+  /**
+   * Returns the number of partitions of the underlying RDD.
+   */
+  def getNumPartitions = rdd.getNumPartitions
+
+  /**
    * It sets the mount point for the input chunk that is passed to the containers.
    *
    * @param inputMountPoint mount point for the input chunk that is passed to the containers
@@ -143,36 +160,44 @@ class MaRe(
   }
 
   /**
-   * It reduces a RDD to a single String using a Docker container command. The command is applied first
-   * to each RDD partition, and then to couples of RDD records. Data is mounted to the specified
-   * inputMountPoint and read back from the specified outputMountPoint.
+   * It reduces a RDD to a single String using a Docker container command. The command is applied
+   * using a tree reduce strategy.
    *
    * @param imageName a Docker image name available in each node
    * @param command a command to run in the Docker container, this should read from
    * inputMountPoint and write back to outputMountPoint, and it should perform an
    * associative and commutative operation (for the parallelization to work)
+   * @param depth depth of the reduce tree (default: 2, must be greater than or equal to 1)
    *
    */
   def reduce(
     imageName: String,
-    command:   String) = {
+    command:   String,
+    depth:     Int    = 2): String = {
 
-    // First reduce within partitions
-    val reducedPartitions = this.map(imageName, command).getRDD
+    require(depth >= 1, s"Depth must be greater than or equal to 1 but got $depth.")
 
-    // Reduce
-    reducedPartitions.reduce {
-      case (rp1, rp2) =>
-        log.info(s"Splitting records by record delimiter: $recordDelimiter")
-        val delimiterRegex = Pattern.quote(recordDelimiter)
-        val records = rp1.split(delimiterRegex) ++ rp2.split(delimiterRegex)
-        log.info(s"Records sucessfully splitted by record delimiter: $recordDelimiter")
-        MaRe.mapLambda(
-          imageName, command,
-          inputMountPoint, outputMountPoint,
-          records.iterator, recordDelimiter)
-          .map(_ + recordDelimiter)
-          .mkString
+    val scale = math.max(math.ceil(math.pow(this.getNumPartitions, 1 / depth)).toInt, 2)
+    if (depth > 2 && this.getNumPartitions > this.getNumPartitions / scale) {
+      // If depth greater than 2 and partitions will scale down, map and repartition
+      val reduced = this.map(imageName, command)
+      reduced.repartition(reduced.getNumPartitions / scale)
+        .reduce(imageName, command, depth - 1)
+    } else if (this.getNumPartitions > 1) {
+      // If depth is in {1,2} map, then collect and reduce locally
+      val reduced = this.map(imageName, command)
+      val records = reduced.getRDD.collect
+      MaRe.mapLambda(
+        imageName, command,
+        inputMountPoint, outputMountPoint,
+        records.iterator, recordDelimiter)
+        .map(_ + recordDelimiter)
+        .mkString
+    } else {
+      // If there is only 1 partition it's better to reduce before to collect
+      val reduced = this.map(imageName, command)
+      val records = reduced.getRDD.collect
+      records.map(_ + recordDelimiter).mkString
     }
 
   }
