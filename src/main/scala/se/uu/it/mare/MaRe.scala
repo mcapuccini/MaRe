@@ -17,19 +17,20 @@ private[mare] object MaRe {
     inputMountPoint:  String,
     outputMountPoint: String,
     records:          Iterator[String],
-    recordDelimiter:  String) = {
+    recordDelimiter:  String,
+    forcePull:        Boolean) = {
 
     // Create temporary files
     val inputFile = FileHelper.writeToTmpFile(records, recordDelimiter)
     val outputFile = FileHelper.createTmpFile
 
     // Run docker
-    val docker = new DockerHelper
-    docker.run(
+    DockerHelper.run(
       imageName,
       command,
       bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)))
+      volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)),
+      forcePull)
 
     // Retrieve output
     val output = FileHelper.readFromFile(outputFile, recordDelimiter)
@@ -67,7 +68,8 @@ private[mare] object MaRe {
 class MaRe(
   private val rdd:      RDD[String],
   val inputMountPoint:  String      = "/input",
-  val outputMountPoint: String      = "/output") extends Serializable {
+  val outputMountPoint: String      = "/output",
+  val forcePull:        Boolean     = false) extends Serializable {
 
   // Logger
   @transient private lazy val log = Logger.getLogger(getClass.getName)
@@ -116,6 +118,19 @@ class MaRe(
   }
 
   /**
+   * If set to true it will pull the Docker image even if present locally.
+   *
+   * @param forcePull set to true to force Docker image pulling
+   */
+  def forcePull(forcePull: Boolean) = {
+    new MaRe(
+      rdd,
+      inputMountPoint,
+      outputMountPoint,
+      forcePull)
+  }
+
+  /**
    * It maps each RDD partition through a Docker container command.
    * Data is mounted to the specified inputMountPoint and read back
    * from the specified outputMountPoint.
@@ -131,9 +146,13 @@ class MaRe(
     // Map partitions to avoid opening too many files
     val resRDD = rdd.mapPartitions { records =>
       MaRe.mapLambda(
-        imageName, command,
-        inputMountPoint, outputMountPoint,
-        records, recordDelimiter)
+        imageName,
+        command,
+        inputMountPoint,
+        outputMountPoint,
+        records,
+        recordDelimiter,
+        forcePull)
     }
     new MaRe(
       resRDD,
@@ -168,9 +187,13 @@ class MaRe(
         val records = rp1.split(delimiterRegex) ++ rp2.split(delimiterRegex)
         log.info(s"Records sucessfully splitted by record delimiter: $recordDelimiter")
         MaRe.mapLambda(
-          imageName, command,
-          inputMountPoint, outputMountPoint,
-          records.iterator, recordDelimiter)
+          imageName,
+          command,
+          inputMountPoint,
+          outputMountPoint,
+          records.iterator,
+          recordDelimiter,
+          forcePull)
           .map(_ + recordDelimiter)
           .mkString
     }

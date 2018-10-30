@@ -17,7 +17,7 @@ import com.github.dockerjava.core.command.WaitContainerResultCallback
 import com.github.dockerjava.core.command.PullImageResultCallback
 import com.github.dockerjava.api.model.PullResponseItem
 
-private[mare] class DockerHelper extends Serializable {
+private[mare] object DockerHelper {
 
   // Init client
   private val configBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -48,14 +48,43 @@ private[mare] class DockerHelper extends Serializable {
     }
   }
 
+  private def cleanImageName(imageName: String) = {
+
+    val splittedImageName = imageName.split(":")
+    require(splittedImageName.length < 2, s"imageName should be of the form '<image>:<tag>' but got: '$imageName'")
+
+    if (splittedImageName.length == 1) {
+      s"$imageName:latest"
+    } else {
+      imageName
+    }
+
+  }
+
   def run(
     imageName:   String,
     command:     String,
     bindFiles:   Seq[File],
-    volumeFiles: Seq[File]) = {
+    volumeFiles: Seq[File],
+    forcePull:   Boolean) = {
+    
+    // Clean image name
+    val cleanedImageName = cleanImageName(imageName)
 
     // Init client
     val dockerClient = DockerClientBuilder.getInstance(config).build
+
+    // Pull image if needed
+    val localImgList = dockerClient.listImagesCmd
+      .withImageNameFilter(cleanedImageName)
+      .exec
+    if (localImgList.isEmpty || forcePull) {
+      // Pull container
+      log.info(s"Pulling image '$cleanedImageName'")
+      dockerClient.pullImageCmd(cleanedImageName)
+        .exec(new PullLoggingCallback)
+        .awaitSuccess()
+    }
 
     // Create volumes and binds
     def volumes = volumeFiles.map { file =>
@@ -68,20 +97,14 @@ private[mare] class DockerHelper extends Serializable {
         new Bind(bindPath, volume)
     }
 
-    // Pull container
-    log.info(s"Pulling image '$imageName'")
-    dockerClient.pullImageCmd(imageName)
-      .exec(new PullLoggingCallback)
-      .awaitSuccess()
-
     // Run container
-    val container = dockerClient.createContainerCmd(imageName)
+    val container = dockerClient.createContainerCmd(cleanedImageName)
       .withEntrypoint("sh", "-c")
       .withCmd(command)
       .withVolumes(volumes)
       .withBinds(binds)
       .exec
-    log.info(s"Running container '${container.getId}' (image: '$imageName', command: '$command'")
+    log.info(s"Running container '${container.getId}' (image: '$cleanedImageName', command: '$command'")
     val t0 = System.currentTimeMillis()
     val exec = dockerClient.startContainerCmd(container.getId).exec
 

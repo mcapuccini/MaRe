@@ -51,8 +51,7 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
     dockedFile.deleteOnExit
     val outputFile = FileHelper.createTmpFile
     outputFile.deleteOnExit
-    val docker = new DockerHelper
-    docker.run(
+    DockerHelper.run(
       imageName = "mcapuccini/oe-docking:latest", // obs: this is a private image
       command = "fred -receptor /var/openeye/hiv1_protease.oeb " +
         "-hitlist_size 0 " +
@@ -60,8 +59,9 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
         "-dbase /input.sdf " +
         "-docked_molecule_file /docked.sdf",
       bindFiles = Seq(inputFile, dockedFile),
-      volumeFiles = Seq(new File("/input.sdf"), new File("/docked.sdf")))
-    docker.run(
+      volumeFiles = Seq(new File("/input.sdf"), new File("/docked.sdf")),
+      forcePull = false)
+    DockerHelper.run(
       imageName = "mcapuccini/sdsorter:latest",
       command = "sdsorter -reversesort='FRED Chemgauss4 score' " +
         "-keep-tag='FRED Chemgauss4 score' " +
@@ -69,7 +69,8 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
         "/docked.sdf " +
         "/output.sdf",
       bindFiles = Seq(dockedFile, outputFile),
-      volumeFiles = Seq(new File("/docked.sdf"), new File("/output.sdf")))
+      volumeFiles = Seq(new File("/docked.sdf"), new File("/output.sdf")),
+      forcePull = false)
     val hitsSerial = Source.fromFile(outputFile).mkString
 
     // Test

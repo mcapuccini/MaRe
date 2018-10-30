@@ -19,12 +19,12 @@ class DockerHelperTest extends FunSuite {
     val outputFile = FileHelper.createTmpFile
 
     // Run docker
-    val docker = new DockerHelper
-    docker.run(
+    DockerHelper.run(
       imageName = "ubuntu:xenial", // assumes ubuntu:xenial was pulled
       command = "cat /input > /output",
       bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(new File("/input"), new File("/output")))
+      volumeFiles = Seq(new File("/input"), new File("/output")),
+      forcePull = false)
 
     val content = Source.fromFile(outputFile).mkString
     assert(content == "hello world\n")
