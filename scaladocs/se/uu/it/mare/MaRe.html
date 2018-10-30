@@ -304,6 +304,23 @@ SparkConf class when initializing the SparkContext.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="se.uu.it.mare.MaRe#getNumPartitions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getNumPartitions:Int"></a>
+      <a id="getNumPartitions:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getNumPartitions</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@getNumPartitions:Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the number of partitions of the underlying RDD.</p>
     </li><li name="se.uu.it.mare.MaRe#getRDD" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="getRDD:org.apache.spark.rdd.RDD[String]"></a>
       <a id="getRDD:RDD[String]"></a>
@@ -480,27 +497,46 @@ inputMountPoint and write back to outputMountPoint
     </span>
       
     </li><li name="se.uu.it.mare.MaRe#reduce" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="reduce(imageName:String,command:String):String"></a>
-      <a id="reduce(String,String):String"></a>
+      <a id="reduce(imageName:String,command:String,depth:Int):String"></a>
+      <a id="reduce(String,String,Int):String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">reduce</span><span class="params">(<span name="imageName">imageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="command">command: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">reduce</span><span class="params">(<span name="imageName">imageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="command">command: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">2</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@reduce(imageName:String,command:String):String" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@reduce(imageName:String,command:String,depth:Int):String" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">It reduces a RDD to a single String using a Docker container command.</p><div class="fullcomment"><div class="comment cmt"><p>It reduces a RDD to a single String using a Docker container command. The command is applied first
-to each RDD partition, and then to couples of RDD records. Data is mounted to the specified
-inputMountPoint and read back from the specified outputMountPoint.
+      <p class="shortcomment cmt">It reduces a RDD to a single String using a Docker container command.</p><div class="fullcomment"><div class="comment cmt"><p>It reduces a RDD to a single String using a Docker container command. The command is applied
+using a tree reduce strategy. Data is mounted to the specified inputMountPoint and read back
+from the specified outputMountPoint.
 </p></div><dl class="paramcmts block"><dt class="param">imageName</dt><dd class="cmt"><p>a Docker image name available in each node</p></dd><dt class="param">command</dt><dd class="cmt"><p>a command to run in the Docker container, this should read from
 inputMountPoint and write back to outputMountPoint, and it should perform an
-associative and commutative operation (for the parallelization to work)</p></dd></dl></div>
+associative and commutative operation (for the parallelization to work)</p></dd><dt class="param">depth</dt><dd class="cmt"><p>depth of the reduce tree (default: 2, must be greater than or equal to 1)</p></dd></dl></div>
+    </li><li name="se.uu.it.mare.MaRe#repartition" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="repartition(numPartitions:Int):se.uu.it.mare.MaRe"></a>
+      <a id="repartition(Int):MaRe"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">repartition</span><span class="params">(<span name="numPartitions">numPartitions: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@repartition(numPartitions:Int):se.uu.it.mare.MaRe" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">It repartitions the underlying RDD to the specified number of partitions.</p><div class="fullcomment"><div class="comment cmt"><p>It repartitions the underlying RDD to the specified number of partitions.
+</p></div><dl class="paramcmts block"><dt class="param">numPartitions</dt><dd class="cmt"><p>number of partitions to use in the underlying RDD
+</p></dd></dl></div>
     </li><li name="se.uu.it.mare.MaRe#setInputMountPoint" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setInputMountPoint(inputMountPoint:String):se.uu.it.mare.MaRe"></a>
       <a id="setInputMountPoint(String):MaRe"></a>
