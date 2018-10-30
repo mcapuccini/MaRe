@@ -67,7 +67,7 @@ private[mare] object DockerHelper {
     bindFiles:   Seq[File],
     volumeFiles: Seq[File],
     forcePull:   Boolean) = {
-    
+
     // Clean image name
     val cleanedImageName = cleanImageName(imageName)
 

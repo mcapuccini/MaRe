@@ -88,9 +88,9 @@ class DockerHelperTest extends FunSuite {
     // Test results
     val content = Source.fromFile(outputFile).mkString
     assert(content == "hello world\n")
-    
+
   }
-  
+
   test("Map-like Docker run, no tag") {
 
     // Create temporary files
@@ -109,7 +109,7 @@ class DockerHelperTest extends FunSuite {
     // Test results
     val content = Source.fromFile(outputFile).mkString
     assert(content == "hello world\n")
-    
+
   }
 
 }

@@ -18,7 +18,7 @@ private object DNAUtils {
 
 @RunWith(classOf[JUnitRunner])
 class GcCountTest extends FunSuite with SharedSparkContext {
-  
+
   private val partitions = 5
 
   test("GC count in DNA string, defaults") {
@@ -75,14 +75,14 @@ class GcCountTest extends FunSuite with SharedSparkContext {
         imageName = "ubuntu:xenial",
         command = "awk '{s+=$1} END {print s}' /input.dna > /output.dna",
         depth = 3)
-        
+
     // Check if results matches with the one computed with the standard RDD API
     val dna = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
     val toMatch = DNAUtils.sparkCountGC(dna)
-    assert(res == toMatch + "\n") 
-    
+    assert(res == toMatch + "\n")
+
   }
-  
+
   test("GC count in DNA string, depth 1") {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
@@ -97,12 +97,12 @@ class GcCountTest extends FunSuite with SharedSparkContext {
         imageName = "ubuntu:xenial",
         command = "awk '{s+=$1} END {print s}' /input.dna > /output.dna",
         depth = 1)
-        
+
     // Check if results matches with the one computed with the standard RDD API
     val dna = sc.textFile(getClass.getResource("dna/dna.txt").getPath)
     val toMatch = DNAUtils.sparkCountGC(dna)
-    assert(res == toMatch + "\n") 
-    
+    assert(res == toMatch + "\n")
+
   }
 
 }

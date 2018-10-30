@@ -180,7 +180,7 @@ class MaRe(
 
   /**
    * It reduces a RDD to a single String using a Docker container command. The command is applied
-   * using a tree reduce strategy. Data is mounted to the specified inputMountPoint and read back 
+   * using a tree reduce strategy. Data is mounted to the specified inputMountPoint and read back
    * from the specified outputMountPoint.
    *
    * @param imageName a Docker image name available in each node
@@ -208,11 +208,11 @@ class MaRe(
       val reduced = this.map(imageName, command)
       val records = reduced.getRDD.collect
       MaRe.mapLambda(
-        imageName, 
+        imageName,
         command,
-        inputMountPoint, 
+        inputMountPoint,
         outputMountPoint,
-        records.iterator, 
+        records.iterator,
         recordDelimiter,
         forcePull)
         .map(_ + recordDelimiter)
