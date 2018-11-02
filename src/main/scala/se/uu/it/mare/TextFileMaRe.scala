@@ -108,7 +108,6 @@ class TextFileMaRe(
     imageName: String,
     command:   String) = {
 
-    // Map partitions to avoid opening too many files
     val resRDD = rdd.mapPartitions { records =>
       TextFileMaRe.mapLambda(
         imageName,

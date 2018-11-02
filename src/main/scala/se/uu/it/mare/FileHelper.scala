@@ -1,7 +1,9 @@
 package se.uu.it.mare
 
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.io.InputStream
 import java.io.PrintWriter
 import java.util.UUID
 import java.util.regex.Pattern
@@ -37,8 +39,17 @@ private[mare] object FileHelper {
     log.info(s"New file '${file.getAbsolutePath}' created")
     file
   }
+  
+  def createTmpDir = {
+    val dir = FileHelper.newTmpFile
+    log.info(s"Creating new directory: ${dir.getAbsolutePath}")
+    dir.mkdir
+    dir.deleteOnExit
+    log.info(s"New directory '${dir.getAbsolutePath}' created")
+    dir
+  }
 
-  def writeToTmpFile(it: Iterator[String], recordDelimiter: String): File = {
+  def writeToTmpFile(it: Iterator[String], recordDelimiter: String) = {
     val file = FileHelper.newTmpFile
     log.info(s"Writing to: ${file.getAbsolutePath}")
     val pw = new PrintWriter(file)
@@ -46,6 +57,20 @@ private[mare] object FileHelper {
     pw.close
     log.info(s"Successfully wrote to: ${file.getAbsolutePath}")
     file
+  }
+  
+  def writeToTmpDir(it: Iterator[(String,InputStream)]) = {
+    val dir = FileHelper.createTmpDir
+    log.info(s"Writing files to: ${dir.getAbsolutePath}")
+    it.foreach { case(fileName,is) =>
+      val file = new File(dir, fileName)
+      val in = scala.io.Source.fromInputStream(is)
+      val out = new PrintWriter(file)
+      in.getLines().foreach(out.println(_))
+      out.close
+    }
+    log.info(s"Successfully wrote files to: ${dir.getAbsolutePath}")
+    dir
   }
 
   def readFromFile(file: File, recordDelimiter: String) = {
@@ -56,6 +81,15 @@ private[mare] object FileHelper {
     source.close
     log.info(s"Successfully read from: ${file.getAbsolutePath}")
     recordsIteratior
+  }
+  
+  def readFromDir(dir: File) = {
+    log.info(s"Loading input streams from: ${dir.getAbsolutePath}")
+    val isSeq = dir.listFiles.map { f =>
+      (f.getName, new FileInputStream(f))
+    }
+    log.info(s"Successfully loaded input streams from: ${dir.getAbsolutePath}")
+    isSeq
   }
 
 }
