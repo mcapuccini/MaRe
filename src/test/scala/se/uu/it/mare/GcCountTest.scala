@@ -25,7 +25,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
-    val res = new MaRe(rdd)
+    val res = MaRe(rdd)
       .map(
         imageName = "ubuntu:xenial",
         command = "grep -o '[gc]' /input | wc -l > /output")
@@ -44,7 +44,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
-    val res = new MaRe(rdd)
+    val res = MaRe(rdd)
       .setInputMountPoint("/input.dna")
       .setOutputMountPoint("/output.dna")
       .map(
@@ -65,7 +65,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
-    val res = new MaRe(rdd)
+    val res = MaRe(rdd)
       .setInputMountPoint("/input.dna")
       .setOutputMountPoint("/output.dna")
       .map(
@@ -87,7 +87,7 @@ class GcCountTest extends FunSuite with SharedSparkContext {
 
     val rdd = sc.textFile(getClass.getResource("dna/dna.txt").getPath, partitions)
 
-    val res = new MaRe(rdd)
+    val res = MaRe(rdd)
       .setInputMountPoint("/input.dna")
       .setOutputMountPoint("/output.dna")
       .map(

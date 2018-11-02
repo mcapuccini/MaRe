@@ -27,7 +27,7 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
     val mols = sc.textFile(getClass.getResource("sdf/molecules.sdf").getPath)
 
     // Parallel execution with MaRe
-    val hitsParallel = new MaRe(mols)
+    val hitsParallel = MaRe(mols)
       .setInputMountPoint("/input.sdf")
       .setOutputMountPoint("/output.sdf")
       .map(
