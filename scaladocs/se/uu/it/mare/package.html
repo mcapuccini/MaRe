@@ -66,29 +66,94 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="se.uu.it.mare.MaRe" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="MaReextendsSerializable"></a>
-      <a id="MaRe:MaRe"></a>
+              <ol><li name="se.uu.it.mare.BinaryFiles" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="BinaryFilesextendsMountPoint[(String,Array[Byte])]withProductwithSerializable"></a>
+      <a id="BinaryFiles:BinaryFiles"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="BinaryFiles.html"><span class="name">BinaryFiles</span></a><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>])] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.package@BinaryFilesextendsMountPoint[(String,Array[Byte])]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"> BinaryFiles mount point.</p><div class="fullcomment"><div class="comment cmt"><p> BinaryFiles mount point. Use this when processing many binary files.
+</p></div></div>
+    </li><li name="se.uu.it.mare.MaRe" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MaRe[T]extendsSerializable"></a>
+      <a id="MaRe[T]:MaRe[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="MaRe.html"><span class="name">MaRe</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="MaRe.html"><span class="name">MaRe</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.package@MaReextendsSerializable" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.package@MaRe[T]extendsSerializable" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">MaRe leverages the power of Docker and Spark to run and scale your serial tools
-in MapReduce fashion.</p><div class="fullcomment"><div class="comment cmt"><p>MaRe leverages the power of Docker and Spark to run and scale your serial tools
-in MapReduce fashion. The data goes from Spark through the Docker container, and back to Spark
-after being processed, via Unix files. Please make sure that the TMPDIR environment variable
-in the worker nodes points to a tmpfs to reduce overhead when running in production. To make sure
-that the TMPDIR is properly set in each node you can use the &quot;setExecutorEnv&quot; method from the
-SparkConf class when initializing the SparkContext.
+      <p class="shortcomment cmt">MaRe API.</p>
+    </li><li name="se.uu.it.mare.MountPoint" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="MountPoint[T]extendsSerializable"></a>
+      <a id="MountPoint[T]:MountPoint[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="MountPoint.html"><span class="name">MountPoint</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.package@MountPoint[T]extendsSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">MountPoint defines how partitions are written to the a host path, and read back from it.</p>
+    </li><li name="se.uu.it.mare.TextFile" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="TextFileextendsMountPoint[String]withProductwithSerializable"></a>
+      <a id="TextFile:TextFile"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="TextFile.html"><span class="name">TextFile</span></a><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recordDelimiter">recordDelimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;\n&quot;</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="scala.Predef.String">String</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.package@TextFileextendsMountPoint[String]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"> TextFile mount point.</p><div class="fullcomment"><div class="comment cmt"><p> TextFile mount point. Use this when processing large partitionable text files.
+</p></div><dl class="paramcmts block"><dt class="param">path</dt><dd class="cmt"><p>mount point inside the in the Docker container</p></dd><dt class="param">recordDelimiter</dt><dd class="cmt"><p>record delimiter (default: \n).
+</p></dd></dl></div>
+    </li><li name="se.uu.it.mare.WholeTextFiles" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="WholeTextFilesextendsMountPoint[(String,String)]withProductwithSerializable"></a>
+      <a id="WholeTextFiles:WholeTextFiles"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="WholeTextFiles.html"><span class="name">WholeTextFiles</span></a><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.package@WholeTextFilesextendsMountPoint[(String,String)]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"> WholeTextFiles mount point.</p><div class="fullcomment"><div class="comment cmt"><p> WholeTextFiles mount point. Use this when processing many text files.
 </p></div></div>
     </li></ol>
             </div>

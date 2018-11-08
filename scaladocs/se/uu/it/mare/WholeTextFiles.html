@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>MaRe - mare 0.4.0-SNAPSHOT API - se.uu.it.mare.MaRe</title>
-          <meta name="description" content="MaRe - mare 0.4.0 - SNAPSHOT API - se.uu.it.mare.MaRe" />
-          <meta name="keywords" content="MaRe mare 0.4.0 SNAPSHOT API se.uu.it.mare.MaRe" />
+          <title>WholeTextFiles - mare 0.4.0-SNAPSHOT API - se.uu.it.mare.WholeTextFiles</title>
+          <meta name="description" content="WholeTextFiles - mare 0.4.0 - SNAPSHOT API - se.uu.it.mare.WholeTextFiles" />
+          <meta name="keywords" content="WholeTextFiles mare 0.4.0 SNAPSHOT API se.uu.it.mare.WholeTextFiles" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
-            var hash = 'se.uu.it.mare.MaRe';
+            var hash = 'se.uu.it.mare.WholeTextFiles';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,10 +30,10 @@
       <div id="definition">
         <img src="../../../../lib/class_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="se">se</a>.<a href="../../package.html" class="extype" name="se.uu">uu</a>.<a href="../package.html" class="extype" name="se.uu.it">it</a>.<a href="package.html" class="extype" name="se.uu.it.mare">mare</a></p>
-        <h1>MaRe</h1><h3><span class="morelinks"><div>Related Doc:
+        <h1>WholeTextFiles</h1><h3><span class="morelinks"><div>Related Doc:
             <a href="package.html" class="extype" name="se.uu.it.mare">package mare</a>
           </div></span></h3><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -42,17 +42,17 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">class</span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">MaRe</span><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">WholeTextFiles</span><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>MaRe API.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p> WholeTextFiles mount point. Use this when processing many text files.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -70,7 +70,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="se.uu.it.mare.MaRe"><span>MaRe</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="se.uu.it.mare.WholeTextFiles"><span>WholeTextFiles</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="se.uu.it.mare.MountPoint"><span>MountPoint</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -90,24 +90,23 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="se.uu.it.mare.MaRe#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(rdd:org.apache.spark.rdd.RDD[T])(implicitevidence$1:scala.reflect.ClassTag[T]):se.uu.it.mare.MaRe[T]"></a>
-      <a id="&lt;init&gt;:MaRe[T]"></a>
+              <ol><li name="se.uu.it.mare.WholeTextFiles#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(path:String):se.uu.it.mare.WholeTextFiles"></a>
+      <a id="&lt;init&gt;:WholeTextFiles"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">MaRe</span><span class="params">(<span name="rdd">rdd: <span class="extype" name="org.apache.spark.rdd.RDD">RDD</span>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.reflect.ClassTag">ClassTag</span>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>)</span>
+        <span class="name">WholeTextFiles</span><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@&lt;init&gt;(rdd:org.apache.spark.rdd.RDD[T])(implicitevidence$1:scala.reflect.ClassTag[T]):se.uu.it.mare.MaRe[T]" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@&lt;init&gt;(path:String):se.uu.it.mare.WholeTextFiles" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">rdd</dt><dd class="cmt"><p>input RDD
-</p></dd></dl></div>
+      
     </li></ol>
             </div>
 
@@ -129,7 +128,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -146,7 +145,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@##():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@##():Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -163,7 +162,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -180,30 +179,11 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="se.uu.it.mare.MaRe#cache" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="cache:se.uu.it.mare.MaRe[T]"></a>
-      <a id="cache:MaRe[T]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">cache</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@cache:se.uu.it.mare.MaRe[T]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Caches the underlying RDD in memory.</p><div class="fullcomment"><div class="comment cmt"><p>Caches the underlying RDD in memory.
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>new MaRe object
-</p></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -216,7 +196,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@clone():Object" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@clone():Object" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -227,6 +207,25 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="se.uu.it.mare.WholeTextFiles#createEmptyMountPoint" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="createEmptyMountPoint(hostPath:java.io.File):Unit"></a>
+      <a id="createEmptyMountPoint(File):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">createEmptyMountPoint</span><span class="params">(<span name="hostPath">hostPath: <span class="extype" name="java.io.File">File</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@createEmptyMountPoint(hostPath:java.io.File):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates an empty mount point at the specified host path.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an empty mount point at the specified host path.
+</p></div><dl class="paramcmts block"><dt class="param">hostPath</dt><dd class="cmt"><p>host path where the mount point is created
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="se.uu.it.mare.WholeTextFiles">WholeTextFiles</a> → <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -239,28 +238,11 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(x$1:Any):Boolean"></a>
-      <a id="equals(Any):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -273,7 +255,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -296,43 +278,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="se.uu.it.mare.MaRe#getNumPartitions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getNumPartitions:Int"></a>
-      <a id="getNumPartitions:Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getNumPartitions</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@getNumPartitions:Int" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns the number of partitions of the underlying RDD.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the number of partitions of the underlying RDD.
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>number of partitions of the underlying RDD
-</p></dd></dl></div>
-    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="hashCode():Int"></a>
-      <a id="hashCode():Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -349,47 +295,11 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="se.uu.it.mare.MaRe#log" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="log:org.apache.log4j.Logger"></a>
-      <a id="log:Logger"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">lazy val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">log</span><span class="result">: <span class="extype" name="org.apache.log4j.Logger">Logger</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@log:org.apache.log4j.Logger" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
-    </li><li name="se.uu.it.mare.MaRe#map" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="map[U](inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[U],imageName:String,command:String,forcePull:Boolean)(implicitevidence$2:scala.reflect.ClassTag[U]):se.uu.it.mare.MaRe[U]"></a>
-      <a id="map[U](MountPoint[T],MountPoint[U],String,String,Boolean)(ClassTag[U]):MaRe[U]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">map</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="inputMountPoint">inputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>, <span name="outputMountPoint">outputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.map.U">U</span>]</span>, <span name="imageName">imageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="command">command: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="forcePull">forcePull: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.reflect.ClassTag">ClassTag</span>[<span class="extype" name="se.uu.it.mare.MaRe.map.U">U</span>]</span>)</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a>[<span class="extype" name="se.uu.it.mare.MaRe.map.U">U</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@map[U](inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[U],imageName:String,command:String,forcePull:Boolean)(implicitevidence$2:scala.reflect.ClassTag[U]):se.uu.it.mare.MaRe[U]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Maps each RDD partition through a Docker container command.</p><div class="fullcomment"><div class="comment cmt"><p>Maps each RDD partition through a Docker container command.
-</p></div><dl class="paramcmts block"><dt class="param">inputMountPoint</dt><dd class="cmt"><p>mount point for the partitions that is passed to the containers</p></dd><dt class="param">outputMountPoint</dt><dd class="cmt"><p>mount point where the processed partition is read back to Spark</p></dd><dt class="param">imageName</dt><dd class="cmt"><p>Docker image name</p></dd><dt class="param">command</dt><dd class="cmt"><p>Docker command</p></dd><dt class="param">forcePull</dt><dd class="cmt"><p>if set to true the Docker image will be pulled even if present locally</p></dd><dt>returns</dt><dd class="cmt"><p>new MaRe object
-</p></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -402,7 +312,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -419,7 +329,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@notify():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -436,67 +346,47 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="se.uu.it.mare.MaRe#rdd" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="rdd:org.apache.spark.rdd.RDD[T]"></a>
-      <a id="rdd:RDD[T]"></a>
+    </li><li name="se.uu.it.mare.WholeTextFiles#path" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="path:String"></a>
+      <a id="path:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">rdd</span><span class="result">: <span class="extype" name="org.apache.spark.rdd.RDD">RDD</span>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>
+        <span class="name">path</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@rdd:org.apache.spark.rdd.RDD[T]" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@path:String" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">input RDD
-</p>
-    </li><li name="se.uu.it.mare.MaRe#reduce" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="reduce(inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[T],imageName:String,command:String,depth:Int,forcePull:Boolean):se.uu.it.mare.MaRe[T]"></a>
-      <a id="reduce(MountPoint[T],MountPoint[T],String,String,Int,Boolean):MaRe[T]"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="se.uu.it.mare.WholeTextFiles">WholeTextFiles</a> → <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a></dd></dl></div>
+    </li><li name="se.uu.it.mare.WholeTextFiles#readPartitionFromHostPath" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readPartitionFromHostPath(hostPath:java.io.File):Iterator[(String,String)]"></a>
+      <a id="readPartitionFromHostPath(File):Iterator[(String,String)]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">reduce</span><span class="params">(<span name="inputMountPoint">inputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>, <span name="outputMountPoint">outputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>, <span name="imageName">imageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="command">command: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">2</span></span>, <span name="forcePull">forcePull: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>
+        <span class="name">readPartitionFromHostPath</span><span class="params">(<span name="hostPath">hostPath: <span class="extype" name="java.io.File">File</span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@reduce(inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[T],imageName:String,command:String,depth:Int,forcePull:Boolean):se.uu.it.mare.MaRe[T]" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@readPartitionFromHostPath(hostPath:java.io.File):Iterator[(String,String)]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Reduces the data to a single partition using a Docker container command.</p><div class="fullcomment"><div class="comment cmt"><p>Reduces the data to a single partition using a Docker container command. The command is applied
-using a tree reduce strategy.
-</p></div><dl class="paramcmts block"><dt class="param">inputMountPoint</dt><dd class="cmt"><p>mount point for the partitions that is passed to the containers</p></dd><dt class="param">outputMountPoint</dt><dd class="cmt"><p>mount point where the processed partition is read back to Spark</p></dd><dt class="param">imageName</dt><dd class="cmt"><p>Docker image name</p></dd><dt class="param">command</dt><dd class="cmt"><p>Docker command</p></dd><dt class="param">depth</dt><dd class="cmt"><p>depth of the reduce tree (default: 2, must be greater than or equal to 1)</p></dd><dt class="param">forcePull</dt><dd class="cmt"><p>if set to true the Docker image will be pulled even if present locally</p></dd><dt>returns</dt><dd class="cmt"><p>new MaRe object</p></dd></dl></div>
-    </li><li name="se.uu.it.mare.MaRe#repartition" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="repartition(numPartitions:Int):se.uu.it.mare.MaRe[T]"></a>
-      <a id="repartition(Int):MaRe[T]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">repartition</span><span class="params">(<span name="numPartitions">numPartitions: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@repartition(numPartitions:Int):se.uu.it.mare.MaRe[T]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Repartitions the underlying RDD to the specified number of partitions.</p><div class="fullcomment"><div class="comment cmt"><p>Repartitions the underlying RDD to the specified number of partitions.
-</p></div><dl class="paramcmts block"><dt class="param">numPartitions</dt><dd class="cmt"><p>number of partitions for the underlying RDD</p></dd><dt>returns</dt><dd class="cmt"><p>new MaRe object
-</p></dd></dl></div>
+      <p class="shortcomment cmt">Reads a partition from a host path.</p><div class="fullcomment"><div class="comment cmt"><p>Reads a partition from a host path.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>partition iterator
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="se.uu.it.mare.WholeTextFiles">WholeTextFiles</a> → <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -509,28 +399,11 @@ using a tree reduce strategy.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="toString():String"></a>
-      <a id="toString():String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@toString():String" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -543,7 +416,7 @@ using a tree reduce strategy.
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@wait():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -566,7 +439,7 @@ using a tree reduce strategy.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -589,7 +462,7 @@ using a tree reduce strategy.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -600,6 +473,25 @@ using a tree reduce strategy.
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="se.uu.it.mare.WholeTextFiles#writePartitionToHostPath" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writePartitionToHostPath(partition:Iterator[(String,String)],hostPath:java.io.File):Unit"></a>
+      <a id="writePartitionToHostPath(Iterator[(String,String)],File):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writePartitionToHostPath</span><span class="params">(<span name="partition">partition: <span class="extype" name="scala.Iterator">Iterator</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]</span>, <span name="hostPath">hostPath: <span class="extype" name="java.io.File">File</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.WholeTextFiles@writePartitionToHostPath(partition:Iterator[(String,String)],hostPath:java.io.File):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Writes a partition to a host path.</p><div class="fullcomment"><div class="comment cmt"><p>Writes a partition to a host path.
+</p></div><dl class="paramcmts block"><dt class="param">hostPath</dt><dd class="cmt"><p>host path where partition is written
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="se.uu.it.mare.WholeTextFiles">WholeTextFiles</a> → <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -609,7 +501,13 @@ using a tree reduce strategy.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.Serializable">
+        <div class="parent" name="scala.Product">
+              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="se.uu.it.mare.MountPoint">
+              <h3>Inherited from <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]</h3>
+            </div><div class="parent" name="scala.Serializable">
               <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
             </div><div class="parent" name="java.io.Serializable">
               <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
