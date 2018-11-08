@@ -17,7 +17,7 @@ import com.github.dockerjava.core.command.WaitContainerResultCallback
 import com.github.dockerjava.core.command.PullImageResultCallback
 import com.github.dockerjava.api.model.PullResponseItem
 
-private[mare] object DockerHelper {
+private object DockerHelper {
 
   // Init client
   private val configBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -36,19 +36,19 @@ private[mare] object DockerHelper {
   // Logging
   @transient private lazy val log = Logger.getLogger(getClass.getName)
   private class AttachLoggingCallback extends AttachContainerResultCallback {
-    override def onNext(item: Frame) = {
+    override def onNext(item: Frame): Unit = {
       log.info(item)
       super.onNext(item)
     }
   }
   private class PullLoggingCallback extends PullImageResultCallback {
-    override def onNext(item: PullResponseItem) = {
+    override def onNext(item: PullResponseItem): Unit = {
       log.info(item)
       super.onNext(item)
     }
   }
 
-  private def cleanImageName(imageName: String) = {
+  private def cleanImageName(imageName: String): String = {
 
     val splittedImageName = imageName.split(":")
     require(splittedImageName.length <= 2, s"imageName should be of the form '<image>:<tag>' but got: '$imageName'")
@@ -66,7 +66,7 @@ private[mare] object DockerHelper {
     command:     String,
     bindFiles:   Seq[File],
     volumeFiles: Seq[File],
-    forcePull:   Boolean) = {
+    forcePull:   Boolean): Integer = {
 
     // Clean image name
     val cleanedImageName = cleanImageName(imageName)
@@ -134,6 +134,9 @@ private[mare] object DockerHelper {
 
     // Close Docker client
     dockerClient.close
+
+    // Return status code
+    statusCode
 
   }
 

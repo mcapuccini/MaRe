@@ -1,8 +1,5 @@
 package se.uu.it.mare
 
-import java.io.File
-
-import scala.io.Source
 import scala.util.Properties
 
 import org.junit.runner.RunWith
@@ -15,10 +12,6 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class DockerHelperTest extends FunSuite {
-
-  // Test image
-  private val imageName = "ubuntu:xenial"
-  private val imageNameNoTag = "ubuntu"
 
   // Init Docker client
   private val configBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -33,82 +26,67 @@ class DockerHelperTest extends FunSuite {
     configBuilder.withDockerCertPath(System.getenv("DOCKER_CERT_PATH"))
   }
   private val config = configBuilder.build
-  val dockerClient = DockerClientBuilder.getInstance(config).build
+  private val dockerClient = DockerClientBuilder.getInstance(config).build
 
   test("Map-like Docker run, image not present") {
 
     // Remove image if present
     val localImgList = dockerClient.listImagesCmd
-      .withImageNameFilter(imageName)
+      .withImageNameFilter("busybox:1")
       .exec
     if (localImgList.size > 0) {
-      dockerClient.removeImageCmd(imageName)
+      dockerClient.removeImageCmd("busybox:1")
         .withForce(true)
         .exec
     }
 
-    // Create temporary files
-    val inputFile = FileHelper.writeToTmpFile(
-      Seq("hello world").iterator, recordDelimiter = "\n")
-    val outputFile = FileHelper.createTmpFile
-
     // Run docker
-    DockerHelper.run(
-      imageName,
-      command = "cat /input > /output",
-      bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(new File("/input"), new File("/output")),
+    val statusCode = DockerHelper.run(
+      imageName = "busybox:1",
+      command = "true",
+      bindFiles = Seq(),
+      volumeFiles = Seq(),
       forcePull = false)
 
-    val content = Source.fromFile(outputFile).mkString
-    assert(content == "hello world\n")
+    assert(statusCode == 0)
 
   }
 
   test("Map-like Docker run, image present") {
 
     // Pull image
-    dockerClient.pullImageCmd(imageName)
+    dockerClient.pullImageCmd("busybox:1")
       .exec(new PullImageResultCallback)
       .awaitSuccess()
 
-    // Create temporary files
-    val inputFile = FileHelper.writeToTmpFile(
-      Seq("hello world").iterator, recordDelimiter = "\n")
-    val outputFile = FileHelper.createTmpFile
-
     // Run docker
-    DockerHelper.run(
-      imageName,
-      command = "cat /input > /output",
-      bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(new File("/input"), new File("/output")),
+    val statusCode = DockerHelper.run(
+      imageName = "busybox:1",
+      command = "true",
+      bindFiles = Seq(),
+      volumeFiles = Seq(),
       forcePull = false)
 
-    // Test results
-    val content = Source.fromFile(outputFile).mkString
-    assert(content == "hello world\n")
+    assert(statusCode == 0)
 
   }
 
-  test("Map-like Docker run, no tag") {
+  test("Map-like Docker run, force pull") {
 
-    // Create temporary files
-    val inputFile = FileHelper.writeToTmpFile(
-      Seq("hello world").iterator, recordDelimiter = "\n")
-    val outputFile = FileHelper.createTmpFile
+    // Pull image
+    dockerClient.pullImageCmd("busybox:1")
+      .exec(new PullImageResultCallback)
+      .awaitSuccess()
 
     // Run docker
-    DockerHelper.run(
-      imageNameNoTag,
-      command = "cat /input > /output",
-      bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(new File("/input"), new File("/output")),
-      forcePull = false)
+    val statusCode = DockerHelper.run(
+      imageName = "busybox:1",
+      command = "true",
+      bindFiles = Seq(),
+      volumeFiles = Seq(),
+      forcePull = true)
 
-    // Test results
-    val content = Source.fromFile(outputFile).mkString
-    assert(content == "hello world\n")
+    assert(statusCode == 0)
 
   }
 
