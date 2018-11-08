@@ -29,7 +29,7 @@ before_script:
 
 after_success:
   - >
-    if [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
+    if [ $TRAVIS_PULL_REQUEST = 'false' ]; then
       mvn deploy --settings .travis-config.xml -DskipTests=true -B
       mvn site --settings .travis-config.xml -B
     fi
