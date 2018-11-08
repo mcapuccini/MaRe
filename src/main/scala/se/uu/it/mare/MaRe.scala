@@ -11,7 +11,7 @@ import org.apache.log4j.Logger
 import org.apache.spark.rdd.RDD
 
 /**
- * 	MaRe API.
+ * MaRe API.
  *
  * @constructor
  * @param rdd input RDD

@@ -10,7 +10,7 @@ import scala.io.Source
 import java.util.regex.Pattern
 
 /**
- * 	MountPoint defines how partitions are written to the a host path, and read back from it.
+ * MountPoint defines how partitions are written to the a host path, and read back from it.
  *
  * @constructor
  * @param path mount point inside the in the Docker container
@@ -56,7 +56,7 @@ case class TextFile(override val path: String, val recordDelimiter: String = "\n
 
   def writePartitionToHostPath(partition: Iterator[String], hostPath: File): Unit = {
     val pw = new PrintWriter(hostPath)
-    partition.foreach(r => pw.println(r))
+    partition.foreach(r => pw.write(r + recordDelimiter))
     pw.close
   }
 
