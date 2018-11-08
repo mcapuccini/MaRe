@@ -9,7 +9,6 @@ import scala.util.Properties
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.RDD
-import org.apache.spark.input.PortableDataStream
 
 /**
  * 	MaRe API.
