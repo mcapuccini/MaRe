@@ -26,19 +26,48 @@ MaRe has been developed with scientific application in mind. High-throughput met
 Scientific tools often have many dependencies and, generally speaking, it's difficult for the system administrator to maintain   software, which may be installed on each node of the cluster, in multiple version. Therefore, instead of running commands straight on the compute nodes, MaRe starts a user-provided [Docker](https://www.docker.com/) image that wraps a specific tool and all of its dependencies, and it runs the command inside the Docker container. The data goes from Spark through the Docker container, and back to Spark after being processed, via Unix files. If the `TMPDIR` environment variable in the worker nodes points to a [tmpfs](https://en.wikipedia.org/wiki/Tmpfs) very little overhead should occur. 
 
 ## Example: DNA GC count 
-DNA can be represented as a string written in a language of 4 characters: A,T,G,C. Counting how many times G and C occur in a genome is a task that is often performed in genomics. In this example we use MaRe to perform this task in parallel with POSIX commands. 
+DNA can be represented as a string written in a language of 4 characters: `a,t,g,c`. Counting how many times `g` and `c` occur in a genome is a task that is often performed in genomics. In this example we use MaRe to perform this task in parallel with POSIX commands. 
 
 ```scala
-val rdd = sc.textFile("genome.dna")
-val res = MaRe(rdd)
-    .setInputMountPoint("/input.dna")
-    .setOutputMountPoint("/output.dna")
-    .map(
-    	imageName = "ubuntu:xenial",
-      	command = "grep -o '[gc]' /input.dna | wc -l > /output.dna")
-    .reduce(
-        imageName = "ubuntu:xenial",
-        command = "awk '{s+=$1} END {print s}' /input.dna > /output.dna")
+val rdd = sc.textFile("genome.txt")
+val res = new MaRe(rdd)
+  .map(
+    inputMountPoint = TextFile("/dna"),
+    outputMountPoint = TextFile("/count"),
+    imageName = "busybox:1",
+    command = "grep -o '[gc]' /dna | wc -l > /count")
+  .reduce(
+    inputMountPoint = TextFile("/counts"),
+    outputMountPoint = TextFile("/sum"),
+    imageName = "busybox:1",
+    command = "awk '{s+=$1} END {print s}' /counts > /sum",
+    depth)
+  .rdd.collect()(0)
+println(s"The GC count is: $res")
+```
+
+In the previous example we work with single text file (`genome.txt`), which is splitted line by line and partitioned through the executors. However MaRe supports working with multiple text or binary files. An example follows.
+
+```scala
+val rdd = sc.binaryFiles(testPath, partitions)
+	.map { case (path, data) => (path, data.toArray) }
+val res = new MaRe(rdd)
+  .map(
+    inputMountPoint = BinaryFiles("/zipped"),
+    outputMountPoint = WholeTextFiles("/unzipped"),
+    imageName = "busybox:1",
+    command =
+      """
+      for filename in /zipped/*; do
+        out=$(basename "${filename}" .gz)
+        gunzip -c $filename > /unzipped/$out
+      done
+      """)
+  .reduce(
+    inputMountPoint = WholeTextFiles("/counts"),
+    outputMountPoint = WholeTextFiles("/sum"),
+    imageName = "busybox:1",
+    command = "awk '{s+=$1} END {print s}' /counts/*.sum > /sum/${RANDOM}.sum")
 println(s"The GC count is: $res")
 ```
 
