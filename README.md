@@ -46,21 +46,21 @@ val res = new MaRe(rdd)
 println(s"The GC count is: $res")
 ```
 
-In the previous example we work with single text file (`genome.txt`), which is splitted line by line and partitioned through the executors. However MaRe supports working with multiple text or binary files. An example follows.
+In the previous example we work with single text file (`genome.txt`), which is splitted line by line and partitioned through the executors. MaRe also supports working with multiple text or binary files. The following example does the GC count from a set of gzipped DNA strings. 
 
 ```scala
-val rdd = sc.binaryFiles(testPath)
+val rdd = sc.binaryFiles("genome_*.gz")
   .map { case (path, data) => (path, data.toArray) }
 val res = new MaRe(rdd)
   .map(
     inputMountPoint = BinaryFiles("/zipped"),
-    outputMountPoint = WholeTextFiles("/unzipped"),
+    outputMountPoint = WholeTextFiles("/counts"),
     imageName = "busybox:1",
     command =
       """
       for filename in /zipped/*; do
         out=$(basename "${filename}" .gz)
-        gunzip -c $filename > /unzipped/$out
+        gunzip -c $filename | grep -o '[gc]' /dna | wc -l > /counts/${out}.sum
       done
       """)
   .reduce(
