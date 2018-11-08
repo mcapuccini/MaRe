@@ -1,227 +1,151 @@
 package se.uu.it.mare
 
 import java.io.File
-import java.util.regex.Pattern
+import java.util.UUID
 
+import scala.reflect.ClassTag
+import scala.util.Properties
+
+import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.RDD
 
-private[mare] object MaRe {
-
-  // Logger
-  private lazy val log = Logger.getLogger(getClass.getName)
-
-  def mapLambda(
-    imageName:        String,
-    command:          String,
-    inputMountPoint:  String,
-    outputMountPoint: String,
-    records:          Iterator[String],
-    recordDelimiter:  String,
-    forcePull:        Boolean) = {
-
-    // Create temporary files
-    val inputFile = FileHelper.writeToTmpFile(records, recordDelimiter)
-    val outputFile = FileHelper.createTmpFile
-
-    // Run docker
-    DockerHelper.run(
-      imageName,
-      command,
-      bindFiles = Seq(inputFile, outputFile),
-      volumeFiles = Seq(new File(inputMountPoint), new File(outputMountPoint)),
-      forcePull)
-
-    // Retrieve output
-    val output = FileHelper.readFromFile(outputFile, recordDelimiter)
-
-    // Remove temporary files
-    log.info(s"Deleteing temporary file: ${inputFile.getAbsolutePath}")
-    inputFile.delete
-    log.info(s"Temporary file '${inputFile.getAbsolutePath}' deleted successfully")
-    log.info(s"Deleteing temporary file: ${outputFile.getAbsolutePath}")
-    outputFile.delete
-    log.info(s"Temporary file '${outputFile.getAbsolutePath}' deleted successfully")
-
-    // Return output
-    output
-
-  }
-
-}
-
 /**
- * MaRe leverages the power of Docker and Spark to run and scale your serial tools
- * in MapReduce fashion. The data goes from Spark through the Docker container, and back to Spark
- * after being processed, via Unix files. Please make sure that the TMPDIR environment variable
- * in the worker nodes points to a tmpfs to reduce overhead when running in production. To make sure
- * that the TMPDIR is properly set in each node you can use the "setExecutorEnv" method from the
- * SparkConf class when initializing the SparkContext.
+ * MaRe API.
  *
- *  @constructor
- *  @param rdd input RDD
- *  @param inputMountPoint mount point for the input chunk that is passed to the containers
- *  @param outputMountPoint mount point where the processed data is read back to Spark
+ * @constructor
+ * @param rdd input RDD
  */
-class MaRe(
-  private val rdd:      RDD[String],
-  val inputMountPoint:  String      = "/input",
-  val outputMountPoint: String      = "/output",
-  val forcePull:        Boolean     = false) extends Serializable {
+class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
 
-  // Logger
-  @transient private lazy val log = Logger.getLogger(getClass.getName)
-
-  val recordDelimiter =
-    Option(rdd.sparkContext.hadoopConfiguration.get("textinputformat.record.delimiter"))
-      .getOrElse("\n")
-
-  /**
-   * It returns the underlying RDD for this MaRe object.
-   */
-  def getRDD = rdd
-
-  /**
-   * It caches the underlying RDD in memory
-   */
-  def cache = {
-    new MaRe(
-      rdd.cache,
-      inputMountPoint,
-      outputMountPoint)
-  }
-
-  /**
-   * It repartitions the underlying RDD to the specified number of partitions.
-   *
-   * @param numPartitions number of partitions to use in the underlying RDD
-   */
-  def repartition(numPartitions: Int) = {
-    new MaRe(
-      rdd.repartition(numPartitions),
-      inputMountPoint,
-      outputMountPoint)
-  }
+  @transient protected lazy val log = Logger.getLogger(getClass.getName)
 
   /**
    * Returns the number of partitions of the underlying RDD.
+   *
+   * @return number of partitions of the underlying RDD
    */
-  def getNumPartitions = rdd.getNumPartitions
+  def getNumPartitions: Int = rdd.getNumPartitions
 
   /**
-   * It sets the mount point for the input chunk that is passed to the containers.
+   * Caches the underlying RDD in memory.
    *
-   * @param inputMountPoint mount point for the input chunk that is passed to the containers
+   * @return new MaRe object
    */
-  def setInputMountPoint(inputMountPoint: String) = {
-    new MaRe(
-      rdd,
-      inputMountPoint,
-      outputMountPoint)
+  def cache: MaRe[T] = {
+    new MaRe(rdd.cache)
   }
 
   /**
-   * It sets the mount point where the processed data is read back to Spark.
+   * Repartitions the underlying RDD to the specified number of partitions.
    *
-   * @param outputMountPoint mount point where the processed data is read back to Spark
+   * @param numPartitions number of partitions for the underlying RDD
+   * @return new MaRe object
    */
-  def setOutputMountPoint(outputMountPoint: String) = {
-    new MaRe(
-      rdd,
-      inputMountPoint,
-      outputMountPoint)
+  def repartition(numPartitions: Int): MaRe[T] = {
+    new MaRe(rdd.repartition(numPartitions))
   }
 
   /**
-   * If set to true it will pull the Docker image even if present locally.
+   * Maps each RDD partition through a Docker container command.
    *
-   * @param forcePull set to true to force Docker image pulling
+   * @param inputMountPoint mount point for the partitions that is passed to the containers
+   * @param outputMountPoint mount point where the processed partition is read back to Spark
+   * @param imageName Docker image name
+   * @param command Docker command
+   * @param forcePull if set to true the Docker image will be pulled even if present locally
+   * @return new MaRe object
    */
-  def forcePull(forcePull: Boolean) = {
-    new MaRe(
-      rdd,
-      inputMountPoint,
-      outputMountPoint,
-      forcePull)
-  }
+  def map[U: ClassTag](
+    inputMountPoint:  MountPoint[T],
+    outputMountPoint: MountPoint[U],
+    imageName:        String,
+    command:          String,
+    forcePull:        Boolean       = false): MaRe[U] = {
+    val resRDD = rdd.mapPartitions { partition =>
 
-  /**
-   * It maps each RDD partition through a Docker container command.
-   * Data is mounted to the specified inputMountPoint and read back
-   * from the specified outputMountPoint.
-   *
-   * @param imageName a Docker image name available in each node
-   * @param command a command to run in the Docker container, this should read from
-   * inputMountPoint and write back to outputMountPoint
-   */
-  def map(
-    imageName: String,
-    command:   String) = {
+      // Create temporary files
+      val tmpDir = new File(Properties.envOrElse("TMPDIR", "/tmp"))
+      val tmpIn = new File(tmpDir, "mare_" + UUID.randomUUID.toString)
+      val tmpOut = new File(tmpDir, "mare_" + UUID.randomUUID.toString)
+      inputMountPoint.writePartitionToHostPath(partition, tmpIn)
+      outputMountPoint.createEmptyMountPoint(tmpOut)
+      FileUtils.forceDeleteOnExit(tmpIn)
+      FileUtils.forceDeleteOnExit(tmpOut)
 
-    // Map partitions to avoid opening too many files
-    val resRDD = rdd.mapPartitions { records =>
-      MaRe.mapLambda(
+      // Run docker
+      DockerHelper.run(
         imageName,
         command,
-        inputMountPoint,
-        outputMountPoint,
-        records,
-        recordDelimiter,
+        bindFiles = Seq(tmpIn, tmpOut),
+        volumeFiles = Seq(new File(inputMountPoint.path), new File(outputMountPoint.path)),
         forcePull)
-    }
-    new MaRe(
-      resRDD,
-      inputMountPoint,
-      outputMountPoint)
 
+      // Retrieve output
+      val output = outputMountPoint.readPartitionFromHostPath(tmpOut)
+
+      // Remove temporary files
+      FileUtils.forceDelete(tmpIn)
+      FileUtils.forceDelete(tmpOut)
+
+      // Return output
+      output
+
+    }
+    new MaRe(resRDD)
   }
 
   /**
-   * It reduces a RDD to a single String using a Docker container command. The command is applied
-   * using a tree reduce strategy. Data is mounted to the specified inputMountPoint and read back
-   * from the specified outputMountPoint.
+   * Reduces the data to a single partition using a Docker container command. The command is applied
+   * using a tree reduce strategy.
    *
-   * @param imageName a Docker image name available in each node
-   * @param command a command to run in the Docker container, this should read from
-   * inputMountPoint and write back to outputMountPoint, and it should perform an
-   * associative and commutative operation (for the parallelization to work)
+   * @param inputMountPoint mount point for the partitions that is passed to the containers
+   * @param outputMountPoint mount point where the processed partition is read back to Spark
+   * @param imageName Docker image name
+   * @param command Docker command
    * @param depth depth of the reduce tree (default: 2, must be greater than or equal to 1)
+   * @param forcePull if set to true the Docker image will be pulled even if present locally
+   * @return new MaRe object
    *
    */
   def reduce(
-    imageName: String,
-    command:   String,
-    depth:     Int    = 2): String = {
+    inputMountPoint:  MountPoint[T],
+    outputMountPoint: MountPoint[T],
+    imageName:        String,
+    command:          String,
+    depth:            Int           = 2,
+    forcePull:        Boolean       = false): MaRe[T] = {
+    require(depth >= 2, s"Depth must be greater than or equal to 2 but got $depth.")
 
-    require(depth >= 1, s"Depth must be greater than or equal to 1 but got $depth.")
+    // First apply command within partition (to reduce size before repartitioning)
+    val reduced = this.map(
+      inputMountPoint,
+      outputMountPoint,
+      imageName,
+      command,
+      forcePull)
 
-    val scale = math.max(math.ceil(math.pow(this.getNumPartitions, 1 / depth)).toInt, 2)
+    val scale = math.max(math.ceil(math.pow(this.getNumPartitions, 1.0 / depth)).toInt, 2)
     if (depth > 2 && this.getNumPartitions > this.getNumPartitions / scale) {
-      // If depth greater than 2 and partitions will scale down, map and repartition
-      val reduced = this.map(imageName, command)
+      // If depth greater than 2 and partitions will scale down
       reduced.repartition(reduced.getNumPartitions / scale)
-        .reduce(imageName, command, depth - 1)
-    } else if (this.getNumPartitions > 1) {
-      // If depth is in {1,2} map, then collect and reduce locally
-      val reduced = this.map(imageName, command)
-      val records = reduced.getRDD.collect
-      MaRe.mapLambda(
-        imageName,
-        command,
+        .reduce(
+          inputMountPoint,
+          outputMountPoint,
+          imageName,
+          command,
+          depth - 1)
+    } else if (reduced.getNumPartitions > 1) {
+      // If there is more than 1 partition
+      reduced.repartition(1).map(
         inputMountPoint,
         outputMountPoint,
-        records.iterator,
-        recordDelimiter,
+        imageName,
+        command,
         forcePull)
-        .map(_ + recordDelimiter)
-        .mkString
     } else {
-      // If there is only 1 partition it's better to reduce before to collect
-      val reduced = this.map(imageName, command)
-      val records = reduced.getRDD.collect
-      records.map(_ + recordDelimiter).mkString
+      reduced
     }
-
   }
 
 }
