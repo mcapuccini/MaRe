@@ -68,6 +68,7 @@ val res = new MaRe(rdd)
     outputMountPoint = WholeTextFiles("/sum"),
     imageName = "busybox:1",
     command = "awk '{s+=$1} END {print s}' /counts/*.sum > /sum/${RANDOM}.sum")
+  .rdd.collect()(0)
 println(s"The GC count is: $res")
 ```
 
