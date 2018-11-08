@@ -50,7 +50,7 @@ In the previous example we work with single text file (`genome.txt`), which is s
 
 ```scala
 val rdd = sc.binaryFiles(testPath, partitions)
-	.map { case (path, data) => (path, data.toArray) }
+  .map { case (path, data) => (path, data.toArray) }
 val res = new MaRe(rdd)
   .map(
     inputMountPoint = BinaryFiles("/zipped"),
