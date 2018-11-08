@@ -4,10 +4,10 @@ import java.io.File
 import java.util.UUID
 
 import scala.reflect.ClassTag
-import scala.util.Properties
 
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
+import scala.util.Properties
 import org.apache.spark.rdd.RDD
 
 /**
@@ -57,11 +57,11 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
    * @return new MaRe object
    */
   def map[U: ClassTag](
-    inputMountPoint:  MountPoint[T],
+    inputMountPoint: MountPoint[T],
     outputMountPoint: MountPoint[U],
-    imageName:        String,
-    command:          String,
-    forcePull:        Boolean       = false): MaRe[U] = {
+    imageName: String,
+    command: String,
+    forcePull: Boolean = false): MaRe[U] = {
     val resRDD = rdd.mapPartitions { partition =>
 
       // Create temporary files
@@ -109,12 +109,12 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
    *
    */
   def reduce(
-    inputMountPoint:  MountPoint[T],
+    inputMountPoint: MountPoint[T],
     outputMountPoint: MountPoint[T],
-    imageName:        String,
-    command:          String,
-    depth:            Int           = 2,
-    forcePull:        Boolean       = false): MaRe[T] = {
+    imageName: String,
+    command: String,
+    depth: Int = 2,
+    forcePull: Boolean = false): MaRe[T] = {
     require(depth >= 2, s"Depth must be greater than or equal to 2 but got $depth.")
 
     // First apply command within partition (to reduce size before repartitioning)

@@ -2,20 +2,20 @@ package se.uu.it.mare
 
 import java.io.File
 
-import scala.collection.JavaConversions.seqAsJavaList
+import scala.collection.JavaConverters.seqAsJavaListConverter
 import scala.util.Properties
 
 import org.apache.log4j.Logger
 
 import com.github.dockerjava.api.model.Bind
+import com.github.dockerjava.api.model.PullResponseItem
 import com.github.dockerjava.api.model.Frame
 import com.github.dockerjava.api.model.Volume
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.core.command.AttachContainerResultCallback
-import com.github.dockerjava.core.command.WaitContainerResultCallback
 import com.github.dockerjava.core.command.PullImageResultCallback
-import com.github.dockerjava.api.model.PullResponseItem
+import com.github.dockerjava.core.command.WaitContainerResultCallback
 
 private object DockerHelper {
 
@@ -51,7 +51,9 @@ private object DockerHelper {
   private def cleanImageName(imageName: String): String = {
 
     val splittedImageName = imageName.split(":")
-    require(splittedImageName.length <= 2, s"imageName should be of the form '<image>:<tag>' but got: '$imageName'")
+    require(
+      splittedImageName.length <= 2,
+      s"imageName should be of the form '<image>:<tag>' but got: '$imageName'")
 
     if (splittedImageName.length == 1) {
       s"$imageName:latest"
@@ -62,11 +64,11 @@ private object DockerHelper {
   }
 
   def run(
-    imageName:   String,
-    command:     String,
-    bindFiles:   Seq[File],
+    imageName: String,
+    command: String,
+    bindFiles: Seq[File],
     volumeFiles: Seq[File],
-    forcePull:   Boolean): Integer = {
+    forcePull: Boolean): Integer = {
 
     // Clean image name
     val cleanedImageName = cleanImageName(imageName)
@@ -101,10 +103,11 @@ private object DockerHelper {
     val container = dockerClient.createContainerCmd(cleanedImageName)
       .withEntrypoint("sh", "-c")
       .withCmd(command)
-      .withVolumes(volumes)
-      .withBinds(binds)
+      .withVolumes(volumes.asJava)
+      .withBinds(binds.asJava)
       .exec
-    log.info(s"Running container '${container.getId}' (image: '$cleanedImageName', command: '$command'")
+    log.info(
+      s"Running container '${container.getId}' (image: '$cleanedImageName', command: '$command'")
     val t0 = System.currentTimeMillis()
     val exec = dockerClient.startContainerCmd(container.getId).exec
 

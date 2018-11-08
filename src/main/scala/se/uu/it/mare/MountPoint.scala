@@ -48,7 +48,8 @@ abstract class MountPoint[T](val path: String) extends Serializable {
  * @param path mount point inside the in the Docker container
  * @param recordDelimiter record delimiter (default: \n).
  */
-case class TextFile(override val path: String, val recordDelimiter: String = "\n") extends MountPoint[String](path) {
+case class TextFile(override val path: String, val recordDelimiter: String = "\n")
+  extends MountPoint[String](path) {
 
   def createEmptyMountPoint(hostPath: File): Unit = {
     hostPath.createNewFile

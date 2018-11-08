@@ -8,7 +8,7 @@ import org.scalatest.junit.JUnitRunner
 
 private object MaReTest {
 
-  def sparkCountGC(rdd: RDD[String]) = {
+  def sparkCountGC(rdd: RDD[String]): String = {
     rdd.map(_.count(c => c == 'g' || c == 'c').toString)
       .reduce {
         case (lineCount1, lineCount2) =>
