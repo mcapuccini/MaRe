@@ -49,7 +49,7 @@ println(s"The GC count is: $res")
 In the previous example we work with single text file (`genome.txt`), which is splitted line by line and partitioned through the executors. However MaRe supports working with multiple text or binary files. An example follows.
 
 ```scala
-val rdd = sc.binaryFiles(testPath, partitions)
+val rdd = sc.binaryFiles(testPath)
   .map { case (path, data) => (path, data.toArray) }
 val res = new MaRe(rdd)
   .map(
