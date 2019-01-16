@@ -103,7 +103,7 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
    * @param outputMountPoint mount point where the processed partition is read back to Spark
    * @param imageName Docker image name
    * @param command Docker command
-   * @param depth depth of the reduce tree (default: 2, must be greater than or equal to 1)
+   * @param depth depth of the reduce tree (default: 2, must be greater than or equal to 2)
    * @param forcePull if set to true the Docker image will be pulled even if present locally
    * @return new MaRe object
    *
