@@ -40,8 +40,7 @@ val res = new MaRe(rdd)
     inputMountPoint = TextFile("/counts"),
     outputMountPoint = TextFile("/sum"),
     imageName = "busybox:1",
-    command = "awk '{s+=$1} END {print s}' /counts > /sum",
-    depth)
+    command = "awk '{s+=$1} END {print s}' /counts > /sum")
   .rdd.collect()(0)
 println(s"The GC count is: $res")
 ```
