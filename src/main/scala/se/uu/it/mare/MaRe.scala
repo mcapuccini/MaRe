@@ -4,10 +4,10 @@ import java.io.File
 import java.util.UUID
 
 import scala.reflect.ClassTag
+import scala.util.Properties
 
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
-import scala.util.Properties
 import org.apache.spark.rdd.RDD
 
 /**
@@ -146,6 +146,59 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
     } else {
       reduced
     }
+  }
+
+  /**
+   * First collects the data locally on disk, and then reduces and writes it to a local output path
+   * using a Docker container command.
+   *
+   * @param inputMountPoint mount point for the partitions that is passed to the containers
+   * @param outputMountPoint mount point where the processed partition is read back to Spark
+   * @param imageName Docker image name
+   * @param command Docker command
+   * @param localOutPath local output path
+   * @param forcePull if set to true the Docker image will be pulled even if present locally
+   *
+   */
+  def collectReduce(
+    inputMountPoint: MountPoint[T],
+    outputMountPoint: MountPoint[T],
+    imageName: String,
+    command: String,
+    localOutPath: String,
+    forcePull: Boolean = false): Unit = {
+
+    // Create temporary directory
+    val tmpDir = new File(new File(localOutPath).getParent, ".temporary_" + UUID.randomUUID.toString)
+    tmpDir.mkdirs
+    FileUtils.forceDeleteOnExit(tmpDir)
+    // Create temporary input file
+    val tmpIn = new File(tmpDir, "mare_" + UUID.randomUUID.toString)
+    inputMountPoint.createEmptyMountPoint(tmpIn)
+    FileUtils.forceDeleteOnExit(tmpIn)
+    // Create output file
+    val outPath = new File(localOutPath)
+    outputMountPoint.createEmptyMountPoint(outPath)
+
+    // Write all partitions in the temporary input directory
+    val sc = rdd.sparkContext
+    rdd.partitions.indices.iterator.foreach { i =>
+      val p = sc.runJob(rdd, (iter: Iterator[T]) => iter.toArray, Seq(i)).head
+      inputMountPoint.appendPartitionToHostPath(p.iterator, tmpIn)
+    }
+    
+    // Run Docker
+    DockerHelper.run(
+        imageName,
+        command,
+        bindFiles = Seq(tmpIn, outPath),
+        volumeFiles = Seq(new File(inputMountPoint.path), new File(outputMountPoint.path)),
+        forcePull)
+        
+   // Remove temporary files
+   FileUtils.forceDelete(tmpIn)
+   FileUtils.forceDelete(tmpDir)
+
   }
 
 }

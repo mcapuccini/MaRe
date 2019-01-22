@@ -5,6 +5,11 @@ import org.apache.spark.rdd.RDD
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import java.io.File
+import scala.util.Properties
+import java.util.UUID
+import scala.io.Source
+import org.apache.commons.io.FileUtils
 
 private object MaReTest {
 
@@ -22,6 +27,7 @@ private object MaReTest {
 class MaReTest extends FunSuite with SharedSparkContext {
 
   private val partitions = 5
+  private val tmpDir = new File(Properties.envOrElse("TMPDIR", "/tmp"))
 
   test("GC count DNA string") {
 
@@ -175,6 +181,121 @@ class MaReTest extends FunSuite with SharedSparkContext {
     val dna = sc.textFile(testPath)
     val toMatch = MaReTest.sparkCountGC(dna)
     assert(res(0) == toMatch)
+
+  }
+
+  test("GC count with collectReduce") {
+
+    val testPath = getClass.getResource("dna/fasta/dna_1.fasta").getPath
+    val rdd = sc.textFile(testPath, partitions)
+    val localOutPath = new File(tmpDir, "mare_test_" + UUID.randomUUID.toString)
+
+    new MaRe(rdd)
+      .map(
+        inputMountPoint = TextFile("/dna"),
+        outputMountPoint = TextFile("/count"),
+        imageName = "busybox:1",
+        command = "grep -o '[gc]' /dna | wc -l > /count")
+      .collectReduce(
+        inputMountPoint = TextFile("/counts"),
+        outputMountPoint = TextFile("/sum"),
+        imageName = "busybox:1",
+        command = "awk '{s+=$1} END {print s}' /counts > /sum",
+        localOutPath.getAbsolutePath)
+    val res = Source.fromFile(localOutPath).getLines.toArray
+
+    // There should be a single element
+    assert(res.length == 1)
+
+    // Check if results matches with the one computed with the standard RDD API
+    val dna = sc.textFile(testPath)
+    val toMatch = MaReTest.sparkCountGC(dna)
+    assert(res(0) == toMatch)
+
+    // Delete temp file
+    FileUtils.forceDelete(localOutPath)
+
+  }
+
+  test("GC count on whole files with collectReduce") {
+
+    val testPath = getClass.getResource("dna/fasta").getPath
+    val rdd = sc.wholeTextFiles(testPath, partitions)
+    val localOutPath = new File(tmpDir, "mare_test_" + UUID.randomUUID.toString)
+
+    new MaRe(rdd)
+      .map(
+        inputMountPoint = WholeTextFiles("/dna"),
+        outputMountPoint = WholeTextFiles("/counts"),
+        imageName = "busybox:1",
+        command =
+          """
+          for filename in /dna/dna_*.fasta; do
+            grep -o '[gc]' $filename | wc -l > /counts/$(basename $filename).sum
+          done
+          """)
+      .collectReduce(
+        inputMountPoint = WholeTextFiles("/counts"),
+        outputMountPoint = WholeTextFiles("/sum"),
+        imageName = "busybox:1",
+        command = "awk '{s+=$1} END {print s}' /counts/*.sum > /sum/total.sum",
+        localOutPath.getAbsolutePath)
+    val res = Source.fromFile(localOutPath + "/total.sum").getLines.toArray
+
+    // There should be a single file
+    assert(localOutPath.list.length == 1)
+
+    // Check if results matches with the one computed with the standard RDD API
+    val dna = sc.textFile(testPath)
+    val toMatch = MaReTest.sparkCountGC(dna)
+    assert(res(0) == toMatch)
+
+    // Delete temp file
+    FileUtils.forceDelete(localOutPath)
+
+  }
+
+  test("GC count gzipped files with collectReduce") {
+
+    val testPath = getClass.getResource("dna/zipped").getPath
+    val rdd = sc.binaryFiles(testPath, partitions)
+      .map { case (path, data) => (path, data.toArray) }
+    val localOutPath = new File(tmpDir, "mare_test_" + UUID.randomUUID.toString)
+
+    new MaRe(rdd)
+      .map(
+        inputMountPoint = BinaryFiles("/dna"),
+        outputMountPoint = BinaryFiles("/counts"),
+        imageName = "busybox:1",
+        command =
+          """
+          for filename in /dna/dna_*.fasta.gz; do
+            gunzip -c $filename | grep -o '[gc]' | wc -l > /counts/$(basename $filename).sum
+            gzip /counts/$(basename $filename).sum
+          done
+          """)
+      .collectReduce(
+        inputMountPoint = BinaryFiles("/counts"),
+        outputMountPoint = BinaryFiles("/sum"),
+        imageName = "busybox:1",
+        command =
+          """
+          gunzip /counts/*.sum.gz
+          awk '{s+=$1} END {print s}' /counts/*.sum > /sum/total.sum
+          """,
+        localOutPath.getAbsolutePath)
+    val res = Source.fromFile(localOutPath + "/total.sum").getLines.toArray
+
+    // There should be a single file
+    assert(localOutPath.list.length == 1)
+
+    // Check if results matches with the one computed with the standard RDD API
+    val dna = sc.textFile(testPath)
+    val toMatch = MaReTest.sparkCountGC(dna)
+    assert(res(0) == toMatch)
+
+    // Delete temp file
+    FileUtils.forceDelete(localOutPath)
 
   }
 
