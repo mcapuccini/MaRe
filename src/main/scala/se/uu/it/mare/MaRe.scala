@@ -169,7 +169,8 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
     forcePull: Boolean = false): Unit = {
 
     // Create temporary directory
-    val tmpDir = new File(new File(localOutPath).getParent, ".temporary_" + UUID.randomUUID.toString)
+    val tmpDirParent = new File(localOutPath).getParent
+    val tmpDir = new File(tmpDirParent, ".temporary_" + UUID.randomUUID.toString)
     tmpDir.mkdirs
     FileUtils.forceDeleteOnExit(tmpDir)
     // Create temporary input file
@@ -186,18 +187,18 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
       val p = sc.runJob(rdd, (iter: Iterator[T]) => iter.toArray, Seq(i)).head
       inputMountPoint.appendPartitionToHostPath(p.iterator, tmpIn)
     }
-    
+
     // Run Docker
     DockerHelper.run(
-        imageName,
-        command,
-        bindFiles = Seq(tmpIn, outPath),
-        volumeFiles = Seq(new File(inputMountPoint.path), new File(outputMountPoint.path)),
-        forcePull)
-        
-   // Remove temporary files
-   FileUtils.forceDelete(tmpIn)
-   FileUtils.forceDelete(tmpDir)
+      imageName,
+      command,
+      bindFiles = Seq(tmpIn, outPath),
+      volumeFiles = Seq(new File(inputMountPoint.path), new File(outputMountPoint.path)),
+      forcePull)
+
+    // Remove temporary files
+    FileUtils.forceDelete(tmpIn)
+    FileUtils.forceDelete(tmpDir)
 
   }
 
