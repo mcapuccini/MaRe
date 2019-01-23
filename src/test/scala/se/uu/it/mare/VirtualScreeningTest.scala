@@ -12,7 +12,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 private object SDFUtils {
-  def parseIDsAndScores(sdf: String) = {
+  def parseIDsAndScores(sdf: String): Array[(String, String)] = {
     sdf.split("\\n\\$\\$\\$\\$\\n").map { mol =>
       val lines = mol.split("\\n")
       (lines(0), lines.last)
