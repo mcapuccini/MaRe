@@ -1,13 +1,13 @@
 package se.uu.it.mare
 
 import java.io.File
+import java.io.FileOutputStream
 import java.io.PrintWriter
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.regex.Pattern
 
 import scala.io.Source
-
-import java.util.regex.Pattern
 
 /**
  * MountPoint defines how partitions are written to the a host path, and read back from it.
@@ -30,6 +30,13 @@ abstract class MountPoint[T](val path: String) extends Serializable {
    * @param hostPath host path where partition is written
    */
   def writePartitionToHostPath(partition: Iterator[T], hostPath: File): Unit
+
+  /**
+   * Appends a partition to a host path.
+   *
+   * @param hostPath host path where partition is written
+   */
+  def appendPartitionToHostPath(partition: Iterator[T], hostPath: File): Unit
 
   /**
    * Reads a partition from a host path.
@@ -61,6 +68,13 @@ case class TextFile(override val path: String, val recordDelimiter: String = "\n
     pw.close
   }
 
+  def appendPartitionToHostPath(partition: Iterator[String], hostPath: File): Unit = {
+    val fos = new FileOutputStream(hostPath, true)
+    val pw = new PrintWriter(fos)
+    partition.foreach(r => pw.append(r + recordDelimiter))
+    pw.close
+  }
+
   def readPartitionFromHostPath(hostPath: File): Iterator[String] = {
     val delimiterRegex = Pattern.quote(recordDelimiter)
     val source = Source.fromFile(hostPath)
@@ -80,8 +94,13 @@ case class WholeTextFiles(override val path: String) extends MountPoint[(String,
     hostPath.mkdir
   }
 
-  def writePartitionToHostPath(partition: Iterator[(String, String)], hostPath: File): Unit = {
-    this.createEmptyMountPoint(hostPath)
+  private def writePartitionToHostPath(
+    partition: Iterator[(String, String)],
+    hostPath: File,
+    createEmptyMountPoint: Boolean): Unit = {
+    if (createEmptyMountPoint) {
+      this.createEmptyMountPoint(hostPath)
+    }
     partition.foreach {
       case (filePath, text) =>
         val fileName = new File(filePath).getName
@@ -90,6 +109,12 @@ case class WholeTextFiles(override val path: String) extends MountPoint[(String,
         pw.close
     }
   }
+
+  def writePartitionToHostPath(partition: Iterator[(String, String)], hostPath: File): Unit =
+    this.writePartitionToHostPath(partition, hostPath, true)
+
+  def appendPartitionToHostPath(partition: Iterator[(String, String)], hostPath: File): Unit =
+    this.writePartitionToHostPath(partition, hostPath, false)
 
   def readPartitionFromHostPath(hostPath: File): Iterator[(String, String)] = {
     val fileSeq = hostPath.listFiles.map { file =>
@@ -112,14 +137,25 @@ case class BinaryFiles(override val path: String) extends MountPoint[(String, Ar
     hostPath.mkdir
   }
 
-  def writePartitionToHostPath(partition: Iterator[(String, Array[Byte])], hostPath: File): Unit = {
-    this.createEmptyMountPoint(hostPath)
+  private def writePartitionToHostPath(
+    partition: Iterator[(String, Array[Byte])],
+    hostPath: File,
+    createEmptyMountPoint: Boolean): Unit = {
+    if (createEmptyMountPoint) {
+      this.createEmptyMountPoint(hostPath)
+    }
     partition.foreach {
       case (filePath, bytes) =>
         val fileName = new File(filePath).getName
         Files.write(Paths.get(hostPath.getAbsolutePath, fileName), bytes)
     }
   }
+
+  def writePartitionToHostPath(partition: Iterator[(String, Array[Byte])], hostPath: File): Unit =
+    writePartitionToHostPath(partition, hostPath, true)
+
+  def appendPartitionToHostPath(partition: Iterator[(String, Array[Byte])], hostPath: File): Unit =
+    writePartitionToHostPath(partition, hostPath, false)
 
   def readPartitionFromHostPath(hostPath: File): Iterator[(String, Array[Byte])] = {
     val bytesSeq = hostPath.listFiles.map { file =>
