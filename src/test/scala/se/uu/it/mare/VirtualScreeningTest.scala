@@ -48,7 +48,7 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
         imageName = "mcapuccini/sdsorter:latest",
         command = "sdsorter -reversesort='FRED Chemgauss4 score' " +
           "-keep-tag='FRED Chemgauss4 score' " +
-          "-nbest=3 " +
+          "-nbest=30 " +
           "/input.sdf " +
           "/output.sdf")
       .rdd.collect.mkString("\n$$$$\n")
@@ -76,7 +76,7 @@ class VirtualScreeningTest extends FunSuite with SharedSparkContext {
       imageName = "mcapuccini/sdsorter:latest",
       command = "sdsorter -reversesort='FRED Chemgauss4 score' " +
         "-keep-tag='FRED Chemgauss4 score' " +
-        "-nbest=3 " +
+        "-nbest=30 " +
         "/docked.sdf " +
         "/output.sdf",
       bindFiles = Seq(dockedFile, outputFile),
