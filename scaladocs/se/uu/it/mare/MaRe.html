@@ -228,25 +228,25 @@
               
         </dd></dl></div>
     </li><li name="se.uu.it.mare.MaRe#collectReduce" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="collectReduce(inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[T],imageName:String,command:String,localOutPath:String,forcePull:Boolean):Unit"></a>
-      <a id="collectReduce(MountPoint[T],MountPoint[T],String,String,String,Boolean):Unit"></a>
+      <a id="collectReduce(inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[T],imageName:String,command:String,localOutPath:String,forcePull:Boolean,intermediateStorageLevel:org.apache.spark.storage.StorageLevel):Unit"></a>
+      <a id="collectReduce(MountPoint[T],MountPoint[T],String,String,String,Boolean,StorageLevel):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">collectReduce</span><span class="params">(<span name="inputMountPoint">inputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>, <span name="outputMountPoint">outputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>, <span name="imageName">imageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="command">command: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="localOutPath">localOutPath: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="forcePull">forcePull: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">collectReduce</span><span class="params">(<span name="inputMountPoint">inputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>, <span name="outputMountPoint">outputMountPoint: <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>, <span name="imageName">imageName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="command">command: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="localOutPath">localOutPath: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="forcePull">forcePull: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="intermediateStorageLevel">intermediateStorageLevel: <span class="extype" name="org.apache.spark.storage.StorageLevel">StorageLevel</span> = <span class="symbol">StorageLevel.MEMORY_AND_DISK</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@collectReduce(inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[T],imageName:String,command:String,localOutPath:String,forcePull:Boolean):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@collectReduce(inputMountPoint:se.uu.it.mare.MountPoint[T],outputMountPoint:se.uu.it.mare.MountPoint[T],imageName:String,command:String,localOutPath:String,forcePull:Boolean,intermediateStorageLevel:org.apache.spark.storage.StorageLevel):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">First collects the data locally on disk, and then reduces and writes it to a local output path
 using a Docker container command.</p><div class="fullcomment"><div class="comment cmt"><p>First collects the data locally on disk, and then reduces and writes it to a local output path
 using a Docker container command.
-</p></div><dl class="paramcmts block"><dt class="param">inputMountPoint</dt><dd class="cmt"><p>mount point for the partitions that is passed to the containers</p></dd><dt class="param">outputMountPoint</dt><dd class="cmt"><p>mount point where the processed partition is read back to Spark</p></dd><dt class="param">imageName</dt><dd class="cmt"><p>Docker image name</p></dd><dt class="param">command</dt><dd class="cmt"><p>Docker command</p></dd><dt class="param">localOutPath</dt><dd class="cmt"><p>local output path</p></dd><dt class="param">forcePull</dt><dd class="cmt"><p>if set to true the Docker image will be pulled even if present locally</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">inputMountPoint</dt><dd class="cmt"><p>mount point for the partitions that is passed to the containers</p></dd><dt class="param">outputMountPoint</dt><dd class="cmt"><p>mount point where the processed partition is read back to Spark</p></dd><dt class="param">imageName</dt><dd class="cmt"><p>Docker image name</p></dd><dt class="param">command</dt><dd class="cmt"><p>Docker command</p></dd><dt class="param">localOutPath</dt><dd class="cmt"><p>local output path</p></dd><dt class="param">forcePull</dt><dd class="cmt"><p>if set to true the Docker image will be pulled even if present locally</p></dd><dt class="param">intermediateStorageLevel</dt><dd class="cmt"><p>intermediate results storage level (default: MEMORY_AND_DISK)</p></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
