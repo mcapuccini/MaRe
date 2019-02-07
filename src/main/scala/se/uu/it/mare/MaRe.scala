@@ -9,6 +9,7 @@ import scala.util.Properties
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.RDD
+import org.apache.spark.storage.StorageLevel
 
 /**
  * MaRe API.
@@ -158,6 +159,7 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
    * @param command Docker command
    * @param localOutPath local output path
    * @param forcePull if set to true the Docker image will be pulled even if present locally
+   * @param intermediateStorageLevel storage level of intermediate results (default: MEMORY_AND_DISK)
    *
    */
   def collectReduce(
@@ -166,7 +168,14 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
     imageName: String,
     command: String,
     localOutPath: String,
-    forcePull: Boolean = false): Unit = {
+    forcePull: Boolean = false,
+    intermediateStorageLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK): Unit = {
+
+    // Force computation of previous stages (barrier execution may be used instead in the future)
+    val sc = rdd.sparkContext
+    val indices = rdd.partitions.indices
+    val persistedRDD = rdd.persist(intermediateStorageLevel)
+    sc.runJob(rdd, (iter: Iterator[T]) => None, indices)
 
     // Create temporary directory
     val tmpDirParent = new File(localOutPath).getParent
@@ -182,8 +191,7 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
     outputMountPoint.createEmptyMountPoint(outPath)
 
     // Write all partitions in the temporary input directory
-    val sc = rdd.sparkContext
-    rdd.partitions.indices.iterator.foreach { i =>
+    persistedRDD.partitions.indices.iterator.foreach { i =>
       val p = sc.runJob(rdd, (iter: Iterator[T]) => iter.toArray, Seq(i)).head
       inputMountPoint.appendPartitionToHostPath(p.iterator, tmpIn)
     }
