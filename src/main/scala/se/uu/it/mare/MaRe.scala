@@ -159,7 +159,7 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
    * @param command Docker command
    * @param localOutPath local output path
    * @param forcePull if set to true the Docker image will be pulled even if present locally
-   * @param intermediateStorageLevel storage level of intermediate results (default: MEMORY_AND_DISK)
+   * @param intermediateStorageLevel intermediate results storage level (default: MEMORY_AND_DISK)
    *
    */
   def collectReduce(
