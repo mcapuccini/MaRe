@@ -149,18 +149,18 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
       reduced
     }
   }
-  
+
   /**
    * Repartitions data according to keyBy and keyToPartitions. Use for custom partitioning.
-   * 
+   *
    * @param keyBy given a record computes a key
    * @param keyToPartition given a key computes a partition number
    * @param partitions total number of partitions
    */
   def repartitionBy[K: ClassTag](
-      keyBy: T => K,
-      keyToPartition: K => Int,
-      partitions: Int): MaRe[T] = {
+    keyBy: T => K,
+    keyToPartition: K => Int,
+    partitions: Int): MaRe[T] = {
     val partitioner = new Partitioner() {
       def getPartition(k: Any): Int = keyToPartition(k.asInstanceOf[K])
       def numPartitions: Int = partitions
