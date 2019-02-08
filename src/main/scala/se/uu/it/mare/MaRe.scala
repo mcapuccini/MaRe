@@ -11,6 +11,7 @@ import org.apache.log4j.Logger
 import org.apache.spark.Partitioner
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.annotation.Experimental
 
 /**
  * MaRe API.
@@ -170,8 +171,9 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
   }
 
   /**
+   * :: Experimental ::
    * First collects the data locally on disk, and then reduces and writes it to a local output path
-   * using a Docker container command.
+   * using a Docker container command. This is an experimental feature (use at your own risk).
    *
    * @param inputMountPoint mount point for the partitions that is passed to the containers
    * @param outputMountPoint mount point where the processed partition is read back to Spark
@@ -182,6 +184,7 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
    * @param intermediateStorageLevel intermediate results storage level (default: MEMORY_AND_DISK)
    *
    */
+  @Experimental
   def collectReduce(
     inputMountPoint: MountPoint[T],
     outputMountPoint: MountPoint[T],
