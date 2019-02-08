@@ -299,4 +299,22 @@ class MaReTest extends FunSuite with SharedSparkContext {
 
   }
 
+  test("Custom partitioner") {
+
+    // Partition 1 to 100 in even and odd
+    val inRDD = sc.parallelize(1 to 100)
+    val partRDD = new MaRe(inRDD)
+      .repartitionBy(
+        keyBy = identity,
+        keyToPartition = (r: Int) => r % 2,
+        partitions = 2)
+      .rdd
+    
+    // Check partitioning
+    assert(partRDD.getNumPartitions == 2)
+    sc.runJob(partRDD, (it: Iterator[Int]) => it.toArray, Seq(0)).head.foreach(i => assert(i % 2 == 0))
+    sc.runJob(partRDD, (it: Iterator[Int]) => it.toArray, Seq(1)).head.foreach(i => assert(i % 2 > 0))
+
+  }
+
 }

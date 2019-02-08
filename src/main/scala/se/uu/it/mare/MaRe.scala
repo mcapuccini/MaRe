@@ -8,6 +8,7 @@ import scala.util.Properties
 
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
+import org.apache.spark.Partitioner
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 
@@ -147,6 +148,25 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
     } else {
       reduced
     }
+  }
+  
+  /**
+   * Repartitions data according to keyBy and keyToPartitions. Use for custom partitioning.
+   * 
+   * @param keyBy given a record computes a key
+   * @param keyToPartition given a key computes a partition number
+   * @param partitions total number of partitions
+   */
+  def repartitionBy[K: ClassTag](
+      keyBy: T => K,
+      keyToPartition: K => Int,
+      partitions: Int): MaRe[T] = {
+    val partitioner = new Partitioner() {
+      def getPartition(k: Any): Int = keyToPartition(k.asInstanceOf[K])
+      def numPartitions: Int = partitions
+    }
+    val partRDD = rdd.keyBy(keyBy).partitionBy(partitioner)
+    new MaRe(partRDD.map(_._2))
   }
 
   /**
