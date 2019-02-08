@@ -243,10 +243,15 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">First collects the data locally on disk, and then reduces and writes it to a local output path
-using a Docker container command.</p><div class="fullcomment"><div class="comment cmt"><p>First collects the data locally on disk, and then reduces and writes it to a local output path
-using a Docker container command.
-</p></div><dl class="paramcmts block"><dt class="param">inputMountPoint</dt><dd class="cmt"><p>mount point for the partitions that is passed to the containers</p></dd><dt class="param">outputMountPoint</dt><dd class="cmt"><p>mount point where the processed partition is read back to Spark</p></dd><dt class="param">imageName</dt><dd class="cmt"><p>Docker image name</p></dd><dt class="param">command</dt><dd class="cmt"><p>Docker command</p></dd><dt class="param">localOutPath</dt><dd class="cmt"><p>local output path</p></dd><dt class="param">forcePull</dt><dd class="cmt"><p>if set to true the Docker image will be pulled even if present locally</p></dd><dt class="param">intermediateStorageLevel</dt><dd class="cmt"><p>intermediate results storage level (default: MEMORY_AND_DISK)</p></dd></dl></div>
+      <p class="shortcomment cmt">:: Experimental ::
+First collects the data locally on disk, and then reduces and writes it to a local output path
+using a Docker container command.</p><div class="fullcomment"><div class="comment cmt"><p>:: Experimental ::
+First collects the data locally on disk, and then reduces and writes it to a local output path
+using a Docker container command. This is an experimental feature (use at your own risk).
+</p></div><dl class="paramcmts block"><dt class="param">inputMountPoint</dt><dd class="cmt"><p>mount point for the partitions that is passed to the containers</p></dd><dt class="param">outputMountPoint</dt><dd class="cmt"><p>mount point where the processed partition is read back to Spark</p></dd><dt class="param">imageName</dt><dd class="cmt"><p>Docker image name</p></dd><dt class="param">command</dt><dd class="cmt"><p>Docker command</p></dd><dt class="param">localOutPath</dt><dd class="cmt"><p>local output path</p></dd><dt class="param">forcePull</dt><dd class="cmt"><p>if set to true the Docker image will be pulled even if present locally</p></dd><dt class="param">intermediateStorageLevel</dt><dd class="cmt"><p>intermediate results storage level (default: MEMORY_AND_DISK)</p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@Experimental</span><span class="args">()</span>
+              
+        </dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
