@@ -9,9 +9,9 @@ import scala.util.Properties
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 import org.apache.spark.Partitioner
+import org.apache.spark.annotation.Experimental
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
-import org.apache.spark.annotation.Experimental
 
 /**
  * MaRe API.
@@ -152,20 +152,14 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
   }
 
   /**
-   * Repartitions data according to keyBy and keyToPartitions. Use for custom partitioning.
+   * Repartitions data according to a custom partitioner.
    *
    * @param keyBy given a record computes a key
-   * @param keyToPartition given a key computes a partition number
-   * @param partitions total number of partitions
+   * @param partitioner custom partitioner
    */
   def repartitionBy[K: ClassTag](
     keyBy: T => K,
-    keyToPartition: K => Int,
-    partitions: Int): MaRe[T] = {
-    val partitioner = new Partitioner() {
-      def getPartition(k: Any): Int = keyToPartition(k.asInstanceOf[K])
-      def numPartitions: Int = partitions
-    }
+    partitioner: Partitioner): MaRe[T] = {
     val partRDD = rdd.keyBy(keyBy).partitionBy(partitioner)
     new MaRe(partRDD.map(_._2))
   }
