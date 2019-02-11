@@ -1,15 +1,18 @@
 package se.uu.it.mare
 
+import java.io.File
+import java.util.UUID
+
+import scala.io.Source
+import scala.util.Properties
+
+import org.apache.commons.io.FileUtils
+import org.apache.spark.Partitioner
 import org.apache.spark.SharedSparkContext
 import org.apache.spark.rdd.RDD
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import java.io.File
-import scala.util.Properties
-import java.util.UUID
-import scala.io.Source
-import org.apache.commons.io.FileUtils
 
 private object MaReTest {
 
@@ -306,8 +309,10 @@ class MaReTest extends FunSuite with SharedSparkContext {
     val partRDD = new MaRe(inRDD)
       .repartitionBy(
         keyBy = identity,
-        keyToPartition = (r: Int) => r % 2,
-        partitions = 2)
+        partitioner = new Partitioner() {
+          def numPartitions = 2
+          def getPartition(k: Any) = k.asInstanceOf[Int] % 2
+        })
       .rdd
 
     // Check partitioning
