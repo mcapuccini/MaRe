@@ -523,23 +523,23 @@ using a tree reduce strategy.
 </p></div><dl class="paramcmts block"><dt class="param">numPartitions</dt><dd class="cmt"><p>number of partitions for the underlying RDD</p></dd><dt>returns</dt><dd class="cmt"><p>new MaRe object
 </p></dd></dl></div>
     </li><li name="se.uu.it.mare.MaRe#repartitionBy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="repartitionBy[K](keyBy:T=&gt;K,keyToPartition:K=&gt;Int,partitions:Int)(implicitevidence$3:scala.reflect.ClassTag[K]):se.uu.it.mare.MaRe[T]"></a>
-      <a id="repartitionBy[K]((T)⇒K,(K)⇒Int,Int)(ClassTag[K]):MaRe[T]"></a>
+      <a id="repartitionBy[K](keyBy:T=&gt;K,partitioner:org.apache.spark.Partitioner)(implicitevidence$3:scala.reflect.ClassTag[K]):se.uu.it.mare.MaRe[T]"></a>
+      <a id="repartitionBy[K]((T)⇒K,Partitioner)(ClassTag[K]):MaRe[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">repartitionBy</span><span class="tparams">[<span name="K">K</span>]</span><span class="params">(<span name="keyBy">keyBy: (<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>) ⇒ <span class="extype" name="se.uu.it.mare.MaRe.repartitionBy.K">K</span></span>, <span name="keyToPartition">keyToPartition: (<span class="extype" name="se.uu.it.mare.MaRe.repartitionBy.K">K</span>) ⇒ <span class="extype" name="scala.Int">Int</span></span>, <span name="partitions">partitions: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.reflect.ClassTag">ClassTag</span>[<span class="extype" name="se.uu.it.mare.MaRe.repartitionBy.K">K</span>]</span>)</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>
+        <span class="name">repartitionBy</span><span class="tparams">[<span name="K">K</span>]</span><span class="params">(<span name="keyBy">keyBy: (<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>) ⇒ <span class="extype" name="se.uu.it.mare.MaRe.repartitionBy.K">K</span></span>, <span name="partitioner">partitioner: <span class="extype" name="org.apache.spark.Partitioner">Partitioner</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.reflect.ClassTag">ClassTag</span>[<span class="extype" name="se.uu.it.mare.MaRe.repartitionBy.K">K</span>]</span>)</span><span class="result">: <a href="" class="extype" name="se.uu.it.mare.MaRe">MaRe</a>[<span class="extype" name="se.uu.it.mare.MaRe.T">T</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.MaRe@repartitionBy[K](keyBy:T=&gt;K,keyToPartition:K=&gt;Int,partitions:Int)(implicitevidence$3:scala.reflect.ClassTag[K]):se.uu.it.mare.MaRe[T]" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.MaRe@repartitionBy[K](keyBy:T=&gt;K,partitioner:org.apache.spark.Partitioner)(implicitevidence$3:scala.reflect.ClassTag[K]):se.uu.it.mare.MaRe[T]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Repartitions data according to keyBy and keyToPartitions.</p><div class="fullcomment"><div class="comment cmt"><p>Repartitions data according to keyBy and keyToPartitions. Use for custom partitioning.
-</p></div><dl class="paramcmts block"><dt class="param">keyBy</dt><dd class="cmt"><p>given a record computes a key</p></dd><dt class="param">keyToPartition</dt><dd class="cmt"><p>given a key computes a partition number</p></dd><dt class="param">partitions</dt><dd class="cmt"><p>total number of partitions
+      <p class="shortcomment cmt">Repartitions data according to a custom partitioner.</p><div class="fullcomment"><div class="comment cmt"><p>Repartitions data according to a custom partitioner.
+</p></div><dl class="paramcmts block"><dt class="param">keyBy</dt><dd class="cmt"><p>given a record computes a key</p></dd><dt class="param">partitioner</dt><dd class="cmt"><p>custom partitioner
 </p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
