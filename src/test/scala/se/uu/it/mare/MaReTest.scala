@@ -308,11 +308,8 @@ class MaReTest extends FunSuite with SharedSparkContext {
     val inRDD = sc.parallelize(1 to 100)
     val partRDD = new MaRe(inRDD)
       .repartitionBy(
-        keyBy = identity,
-        partitioner = new Partitioner() {
-          def numPartitions = 2
-          def getPartition(k: Any) = k.asInstanceOf[Int] % 2
-        })
+        keyBy = _ % 2,
+        numPartitions = 2)
       .rdd
 
     // Check partitioning

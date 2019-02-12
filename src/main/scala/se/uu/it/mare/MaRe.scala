@@ -12,6 +12,7 @@ import org.apache.spark.Partitioner
 import org.apache.spark.annotation.Experimental
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.HashPartitioner
 
 /**
  * MaRe API.
@@ -152,16 +153,28 @@ class MaRe[T: ClassTag](val rdd: RDD[T]) extends Serializable {
   }
 
   /**
-   * Repartitions data according to a custom partitioner.
+   * Repartitions data according to keyBy and a custom partitioner.
    *
    * @param keyBy given a record computes a key
    * @param partitioner custom partitioner
    */
-  def repartitionBy[K: ClassTag](
-    keyBy: T => K,
+  def repartitionBy(
+    keyBy: T => Any,
     partitioner: Partitioner): MaRe[T] = {
     val partRDD = rdd.keyBy(keyBy).partitionBy(partitioner)
     new MaRe(partRDD.map(_._2))
+  }
+
+  /**
+   * Repartitions data according to keyBy and org.apache.spark.HashPartitioner.
+   *
+   * @param keyBy given a record computes a key
+   * @param numPartitions number of partitions for the resulting RDD
+   */
+  def repartitionBy(
+    keyBy: T => Any,
+    numPartitions: Int): MaRe[T] = {
+    this.repartitionBy(keyBy, new HashPartitioner(numPartitions))
   }
 
   /**
