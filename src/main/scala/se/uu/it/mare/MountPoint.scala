@@ -2,7 +2,9 @@ package se.uu.it.mare
 
 import java.io.File
 import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.io.PrintWriter
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.regex.Pattern
@@ -53,9 +55,13 @@ abstract class MountPoint[T](val path: String) extends Serializable {
  *
  * @constructor
  * @param path mount point inside the in the Docker container
- * @param recordDelimiter record delimiter (default: \n).
+ * @param recordDelimiter record delimiter (default: \n)
+ * @param charset character encoding (default: StandardCharsets.UTF_8)
  */
-case class TextFile(override val path: String, val recordDelimiter: String = "\n")
+case class TextFile(
+  override val path: String,
+  val recordDelimiter: String = "\n",
+  val charset: String = "UTF-8")
   extends MountPoint[String](path) {
 
   def createEmptyMountPoint(hostPath: File): Unit = {
@@ -63,14 +69,17 @@ case class TextFile(override val path: String, val recordDelimiter: String = "\n
   }
 
   def writePartitionToHostPath(partition: Iterator[String], hostPath: File): Unit = {
-    val pw = new PrintWriter(hostPath)
+    val fos = new FileOutputStream(hostPath)
+    val osw = new OutputStreamWriter(fos, Charset.forName(charset))
+    val pw = new PrintWriter(osw)
     partition.foreach(r => pw.write(r + recordDelimiter))
     pw.close
   }
 
   def appendPartitionToHostPath(partition: Iterator[String], hostPath: File): Unit = {
     val fos = new FileOutputStream(hostPath, true)
-    val pw = new PrintWriter(fos)
+    val osw = new OutputStreamWriter(fos, Charset.forName(charset))
+    val pw = new PrintWriter(osw)
     partition.foreach(r => pw.append(r + recordDelimiter))
     pw.close
   }
@@ -87,8 +96,12 @@ case class TextFile(override val path: String, val recordDelimiter: String = "\n
 
 /**
  *  WholeTextFiles mount point. Use this when processing many text files.
+ *  @param charset character encoding (default: StandardCharsets.UTF_8)
  */
-case class WholeTextFiles(override val path: String) extends MountPoint[(String, String)](path) {
+case class WholeTextFiles(
+  override val path: String,
+  val charset: String = "UTF-8")
+  extends MountPoint[(String, String)](path) {
 
   def createEmptyMountPoint(hostPath: File): Unit = {
     hostPath.mkdir
@@ -104,7 +117,9 @@ case class WholeTextFiles(override val path: String) extends MountPoint[(String,
     partition.foreach {
       case (filePath, text) =>
         val fileName = new File(filePath).getName
-        val pw = new PrintWriter(new File(hostPath, fileName))
+        val fos = new FileOutputStream(new File(hostPath, fileName))
+        val osw = new OutputStreamWriter(fos, Charset.forName(charset))
+        val pw = new PrintWriter(osw)
         pw.write(text)
         pw.close
     }
