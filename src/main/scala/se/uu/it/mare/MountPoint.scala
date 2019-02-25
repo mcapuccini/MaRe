@@ -68,17 +68,17 @@ case class TextFile(
   }
 
   private def writePartitionToHostPath(
-      partition: Iterator[String], 
-      hostPath: File, 
-      append: Boolean): Unit = {
+    partition: Iterator[String],
+    hostPath: File,
+    append: Boolean): Unit = {
     val fos = new FileOutputStream(hostPath, append)
     val osw = new OutputStreamWriter(fos, Charset.forName(charset))
     val pw = new PrintWriter(osw)
     partition.foreach(r => pw.append(r + recordDelimiter))
     pw.close
   }
-  
-  def writePartitionToHostPath(partition: Iterator[String], hostPath: File): Unit = 
+
+  def writePartitionToHostPath(partition: Iterator[String], hostPath: File): Unit =
     this.writePartitionToHostPath(partition, hostPath, false)
 
   def appendPartitionToHostPath(partition: Iterator[String], hostPath: File): Unit =
