@@ -15,7 +15,7 @@ import scala.io.Source
  * MountPoint defines how partitions are written to the a host path, and read back from it.
  *
  * @constructor
- * @param path mount point inside the in the Docker container
+ * @param path mount point inside the Docker container
  */
 abstract class MountPoint[T](val path: String) extends Serializable {
 
@@ -54,9 +54,8 @@ abstract class MountPoint[T](val path: String) extends Serializable {
  *  TextFile mount point. Use this when processing large partitionable text files.
  *
  * @constructor
- * @param path mount point inside the in the Docker container
  * @param recordDelimiter record delimiter (default: \n)
- * @param charset character encoding (default: StandardCharsets.UTF_8)
+ * @param charset character encoding (default: UTF_8)
  */
 case class TextFile(
   override val path: String,
@@ -68,21 +67,22 @@ case class TextFile(
     hostPath.createNewFile
   }
 
-  def writePartitionToHostPath(partition: Iterator[String], hostPath: File): Unit = {
-    val fos = new FileOutputStream(hostPath)
-    val osw = new OutputStreamWriter(fos, Charset.forName(charset))
-    val pw = new PrintWriter(osw)
-    partition.foreach(r => pw.write(r + recordDelimiter))
-    pw.close
-  }
-
-  def appendPartitionToHostPath(partition: Iterator[String], hostPath: File): Unit = {
-    val fos = new FileOutputStream(hostPath, true)
+  private def writePartitionToHostPath(
+    partition: Iterator[String],
+    hostPath: File,
+    append: Boolean): Unit = {
+    val fos = new FileOutputStream(hostPath, append)
     val osw = new OutputStreamWriter(fos, Charset.forName(charset))
     val pw = new PrintWriter(osw)
     partition.foreach(r => pw.append(r + recordDelimiter))
     pw.close
   }
+
+  def writePartitionToHostPath(partition: Iterator[String], hostPath: File): Unit =
+    this.writePartitionToHostPath(partition, hostPath, false)
+
+  def appendPartitionToHostPath(partition: Iterator[String], hostPath: File): Unit =
+    this.writePartitionToHostPath(partition, hostPath, true)
 
   def readPartitionFromHostPath(hostPath: File): Iterator[String] = {
     val delimiterRegex = Pattern.quote(recordDelimiter)
