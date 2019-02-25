@@ -127,7 +127,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="TextFile.html"><span class="name">TextFile</span></a><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recordDelimiter">recordDelimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;\n&quot;</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="scala.Predef.String">String</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="TextFile.html"><span class="name">TextFile</span></a><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recordDelimiter">recordDelimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;\n&quot;</span></span>, <span name="charset">charset: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;UTF-8&quot;</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="scala.Predef.String">String</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#se.uu.it.mare.package@TextFileextendsMountPoint[String]withProductwithSerializable" title="Permalink" target="_top">
@@ -135,7 +135,7 @@
       </a>
     </span>
       <p class="shortcomment cmt"> TextFile mount point.</p><div class="fullcomment"><div class="comment cmt"><p> TextFile mount point. Use this when processing large partitionable text files.
-</p></div><dl class="paramcmts block"><dt class="param">path</dt><dd class="cmt"><p>mount point inside the in the Docker container</p></dd><dt class="param">recordDelimiter</dt><dd class="cmt"><p>record delimiter (default: \n).
+</p></div><dl class="paramcmts block"><dt class="param">path</dt><dd class="cmt"><p>mount point inside the in the Docker container</p></dd><dt class="param">recordDelimiter</dt><dd class="cmt"><p>record delimiter (default: \n)</p></dd><dt class="param">charset</dt><dd class="cmt"><p>character encoding (default: StandardCharsets.UTF_8)
 </p></dd></dl></div>
     </li><li name="se.uu.it.mare.WholeTextFiles" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="WholeTextFilesextendsMountPoint[(String,String)]withProductwithSerializable"></a>
@@ -146,15 +146,15 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="WholeTextFiles.html"><span class="name">WholeTextFiles</span></a><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="WholeTextFiles.html"><span class="name">WholeTextFiles</span></a><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="charset">charset: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;UTF-8&quot;</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#se.uu.it.mare.package@WholeTextFilesextendsMountPoint[(String,String)]withProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"> WholeTextFiles mount point.</p><div class="fullcomment"><div class="comment cmt"><p> WholeTextFiles mount point. Use this when processing many text files.
-</p></div></div>
+      <p class="shortcomment cmt"> WholeTextFiles mount point.</p><div class="fullcomment"><div class="comment cmt"><p> WholeTextFiles mount point. Use this when processing many text files.</p></div><dl class="paramcmts block"><dt class="param">charset</dt><dd class="cmt"><p>character encoding (default: StandardCharsets.UTF_8)
+</p></dd></dl></div>
     </li></ol>
             </div>
 

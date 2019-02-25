@@ -45,12 +45,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">TextFile</span><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recordDelimiter">recordDelimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;\n&quot;</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="scala.Predef.String">String</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">TextFile</span><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recordDelimiter">recordDelimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;\n&quot;</span></span>, <span name="charset">charset: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;UTF-8&quot;</span></span>)</span><span class="result"> extends <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="scala.Predef.String">String</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p> TextFile mount point. Use this when processing large partitionable text files.
-</p></div><dl class="paramcmts block"><dt class="param">path</dt><dd class="cmt"><p>mount point inside the in the Docker container</p></dd><dt class="param">recordDelimiter</dt><dd class="cmt"><p>record delimiter (default: \n).
+</p></div><dl class="paramcmts block"><dt class="param">path</dt><dd class="cmt"><p>mount point inside the in the Docker container</p></dd><dt class="param">recordDelimiter</dt><dd class="cmt"><p>record delimiter (default: \n)</p></dd><dt class="param">charset</dt><dd class="cmt"><p>character encoding (default: StandardCharsets.UTF_8)
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="MountPoint.html" class="extype" name="se.uu.it.mare.MountPoint">MountPoint</a>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -92,7 +92,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="se.uu.it.mare.TextFile#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(path:String,recordDelimiter:String):se.uu.it.mare.TextFile"></a>
+      <a id="&lt;init&gt;(path:String,recordDelimiter:String,charset:String):se.uu.it.mare.TextFile"></a>
       <a id="&lt;init&gt;:TextFile"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -100,14 +100,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">TextFile</span><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recordDelimiter">recordDelimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;\n&quot;</span></span>)</span>
+        <span class="name">TextFile</span><span class="params">(<span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recordDelimiter">recordDelimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;\n&quot;</span></span>, <span name="charset">charset: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;UTF-8&quot;</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#se.uu.it.mare.TextFile@&lt;init&gt;(path:String,recordDelimiter:String):se.uu.it.mare.TextFile" title="Permalink" target="_top">
+      <a href="../../../../index.html#se.uu.it.mare.TextFile@&lt;init&gt;(path:String,recordDelimiter:String,charset:String):se.uu.it.mare.TextFile" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">path</dt><dd class="cmt"><p>mount point inside the in the Docker container</p></dd><dt class="param">recordDelimiter</dt><dd class="cmt"><p>record delimiter (default: \n).
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">path</dt><dd class="cmt"><p>mount point inside the in the Docker container</p></dd><dt class="param">recordDelimiter</dt><dd class="cmt"><p>record delimiter (default: \n)</p></dd><dt class="param">charset</dt><dd class="cmt"><p>character encoding (default: StandardCharsets.UTF_8)
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -205,6 +205,24 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="se.uu.it.mare.TextFile#charset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="charset:String"></a>
+      <a id="charset:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">charset</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#se.uu.it.mare.TextFile@charset:String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">character encoding (default: StandardCharsets.UTF_8)
+</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -424,7 +442,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">record delimiter (default: \n).</p>
+      <p class="shortcomment cmt">record delimiter (default: \n)</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
