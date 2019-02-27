@@ -86,7 +86,7 @@ case class TextFile(
 
   def readPartitionFromHostPath(hostPath: File): Iterator[String] = {
     val delimiterRegex = Pattern.quote(recordDelimiter)
-    val source = Source.fromFile(hostPath)
+    val source = Source.fromFile(hostPath)(charset)
     val records = source.mkString.split(delimiterRegex)
     source.close
     records.iterator
@@ -133,7 +133,7 @@ case class WholeTextFiles(
 
   def readPartitionFromHostPath(hostPath: File): Iterator[(String, String)] = {
     val fileSeq = hostPath.listFiles.map { file =>
-      val source = Source.fromFile(file)
+      val source = Source.fromFile(file)(charset)
       val text = source.mkString
       source.close
       (file.getName, text)
