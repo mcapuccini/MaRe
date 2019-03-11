@@ -114,6 +114,12 @@
 			<version>3.2.11</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.bdgenomics.adam</groupId>
+			<artifactId>adam-core-spark2_${scala.compat.version}</artifactId>
+			<version>0.25.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -159,6 +165,7 @@
 					</includes>
 					<excludes>
 						<exclude>**/VirtualScreeningTest.*</exclude>
+						<exclude>**/HaplotypeCallTest.*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
