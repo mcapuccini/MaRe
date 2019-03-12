@@ -33,7 +33,7 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
       classOf[SingleFastqInputFormat],
       classOf[Void],
       classOf[Text]).map(_._2.toString)
-    val inputData = fr.zip(rr).map { case (fr, rr) => fr + rr.dropRight(1) }
+    val inputData = fr.zip(rr).map { case (fr, rr) => fr + rr.dropRight(1) }.repartition(4)
     // Run MaRe
     val resPar = new MaRe(inputData).map(
       inputMountPoint = TextFile("/chunk.fastq"),
@@ -49,17 +49,17 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
         keyBy = (aln: String) => {
           val chrStr = aln.split("\\s+")(2)
           if (chrStr.forall(Character.isDigit)) {
-            chrStr.toInt
+            chrStr.toInt % 4
           } else {
             chrStr match {
-              case "X" => 23
-              case "Y" => 24
-              case "MT" => 25
-              case _ => 26
+              case "X" => 23 % 4
+              case "Y" => 24 % 4
+              case "MT" => 25 % 4
+              case _ => 26 % 4
             }
           }
         },
-        numPartitions = 26)
+        numPartitions = 4)
       .map(
         inputMountPoint = TextFile("/aln.sam"),
         outputMountPoint = BinaryFiles("/results"),
@@ -79,7 +79,7 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
               --RGSM=H06HDADXX130110
             gatk BuildBamIndex --INPUT=/aln.header.sorted.rg.bam
             reference_genome=/ref/human_g1k_v37.1-16.fasta
-            gatk HaplotypeCaller -R $reference_genome \
+            gatk HaplotypeCallerSpark -R $reference_genome \
               -I /aln.header.sorted.rg.bam \
               -O /results/aln.${UUID}.g.vcf
             gzip /results/*
@@ -129,7 +129,7 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
               --RGPU=H06HDADXX130110-01 \
               --RGSM=H06HDADXX130110
             gatk BuildBamIndex --INPUT=/aln.header.sorted.rg.bam
-            gatk HaplotypeCaller -R $reference_genome \
+            gatk HaplotypeCallerSpark -R $reference_genome \
               -I /aln.header.sorted.rg.bam \
               -O /results/aln.g.vcf
             """,
@@ -155,7 +155,7 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
     val resSer = Source.fromFile(new File(resultsDir, "out.tsv")).getLines
 
     // Test
-    assert(resPar.sorted.deep == resSer.toArray.sorted.deep)
+    assert(resPar.filter(_(0) != 'G').sorted.deep == resSer.filter(_(0) != 'G').toArray.sorted.deep)
 
   }
 
