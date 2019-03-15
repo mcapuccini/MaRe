@@ -49,13 +49,20 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
         keyBy = (aln: String) => {
           val chrStr = aln.split("\\s+")(2)
           if (chrStr.forall(Character.isDigit)) {
-            chrStr.toInt
+            chrStr.toInt % 4
           } else {
             chrStr match {
+<<<<<<< HEAD
               case "X" => 23
               case "Y" => 24
               case "MT" => 25
               case _ => chrStr.hashCode
+=======
+              case "X" => 23 % 4
+              case "Y" => 24 % 4
+              case "MT" => 25 % 4
+              case _ => 26 % 4
+>>>>>>> refs/heads/master
             }
           }
         },
