@@ -12,6 +12,9 @@ services:
   
 env:
   - TMPDIR=/tmp
+
+jdk:
+  - openjdk8
   
 before_install:
 

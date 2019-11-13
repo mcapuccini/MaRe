@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -9,7 +10,8 @@
 	<url>https://github.com/mcapuccini/MaRe</url>
 
 	<description>
-	MaRe leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
+		MaRe leverages the power of Docker and Spark to run and scale your serial
+		tools in MapReduce fashion.
 	</description>
 
 	<developers>
@@ -34,7 +36,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<encoding>UTF-8</encoding>
-		<scala.version>2.11.12</scala.version>
+		<scala.version>2.11.5</scala.version>
 		<scala.compat.version>2.11</scala.compat.version>
 		<github.global.server>github</github.global.server>
 	</properties>
@@ -46,13 +48,15 @@
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/
+			</url>
 		</repository>
 	</distributionManagement>
 
 	<scm>
 		<connection>scm:git:git://github.com/mcapuccini/MaRe.git</connection>
-		<developerConnection>scm:git:git@github.com:mcapuccini/MaRe.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:mcapuccini/MaRe.git
+		</developerConnection>
 		<url>https://github.com/mcapuccini/MaRe/tree/master</url>
 	</scm>
 
@@ -151,6 +155,11 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<args>
+						<arg>-nobootcp</arg>
+					</args>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -253,7 +262,8 @@
 					<includeTestSourceDirectory>true</includeTestSourceDirectory>
 					<failOnWarning>true</failOnWarning>
 					<sourceDirectory>${basedir}/src/main/scala</sourceDirectory>
-					<testSourceDirectory>${basedir}/src/test/scala</testSourceDirectory>
+					<testSourceDirectory>${basedir}/src/test/scala
+					</testSourceDirectory>
 					<configLocation>${basedir}/.scalastyle-config.xml</configLocation>
 					<outputFile>${project.basedir}/scalastyle-output.xml</outputFile>
 					<outputEncoding>UTF-8</outputEncoding>
