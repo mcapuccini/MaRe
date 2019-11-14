@@ -9,16 +9,19 @@ branches:
 
 services:
   - docker
-  
+
 env:
   - TMPDIR=/tmp
-  
+
+jdk:
+  - openjdk8
+
 before_install:
 
   # Import decrypt and import gpg keys
   - >
     openssl aes-256-cbc
-    -K $encrypted_2a86118113a7_key  -iv $encrypted_2a86118113a7_iv
+    -K $encrypted_f1a45c049930_key  -iv $encrypted_f1a45c049930_iv
     -in .gpg-keys/secret.asc.enc -out .gpg-keys/secret.asc -d
   - gpg --import .gpg-keys/public.asc
   - gpg --import .gpg-keys/secret.asc
