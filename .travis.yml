@@ -33,8 +33,8 @@ before_script:
 after_success:
   - >
     if [ $TRAVIS_PULL_REQUEST = 'false' ]; then
-      mvn deploy --settings .maven-settings.xml -DskipTests=true -B
+      mvn deploy --settings settings.xml -DskipTests=true -B
       if [ $TRAVIS_BRANCH = 'master' ]; then
-        mvn site --settings .maven-settings.xml -B
+        mvn site --settings settings.xml -B
       fi
     fi
