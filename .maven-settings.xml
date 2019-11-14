@@ -10,5 +10,9 @@
 			<username>mcapuccini</username>
 			<password>${env.GITHUB_PASSWORD}</password>
 		</server>
+		<server>
+			<id>github</id>
+			<passphrase>${env.GPG_PASSPHRASE}</passphrase>
+		</server>
 	</servers>
 </settings>
