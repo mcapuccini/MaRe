@@ -1,16 +1,4 @@
 <settings>
-	<profiles>
-    <profile>
-      <id>gpg</id>
-      <properties>
-        <gpg.executable>gpg</gpg.executable>
-        <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
-      </properties>
-    </profile>
-  </profiles>
-	<activeProfiles>
-    <activeProfile>gpg</activeProfile>
-  </activeProfiles>
 	<servers>
 		<server>
 			<id>ossrh</id>
