@@ -11,7 +11,7 @@
 			<password>${env.GITHUB_PASSWORD}</password>
 		</server>
 		<server>
-			<id>github</id>
+			<id>gpg.passphrase</id>
 			<passphrase>${env.GPG_PASSPHRASE}</passphrase>
 		</server>
 	</servers>
