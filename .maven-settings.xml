@@ -1,0 +1,26 @@
+<settings>
+	<profiles>
+    <profile>
+      <id>gpg</id>
+      <properties>
+        <gpg.executable>gpg</gpg.executable>
+        <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+      </properties>
+    </profile>
+  </profiles>
+	<activeProfiles>
+    <activeProfile>gpg</activeProfile>
+  </activeProfiles>
+	<servers>
+		<server>
+			<id>ossrh</id>
+			<username>mcapuccini</username>
+			<password>${env.SONATYPE_PASSWORD}</password>
+		</server>
+		<server>
+			<id>github</id>
+			<username>mcapuccini</username>
+			<password>${env.GITHUB_PASSWORD}</password>
+		</server>
+	</servers>
+</settings>
