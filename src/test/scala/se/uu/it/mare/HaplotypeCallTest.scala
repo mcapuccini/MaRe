@@ -79,7 +79,7 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
               --RGSM=H06HDADXX130110
             gatk BuildBamIndex --INPUT=/aln.header.sorted.rg.bam
             reference_genome=/ref/human_g1k_v37.1-16.fasta
-            gatk HaplotypeCallerSpark -R $reference_genome \
+            gatk HaplotypeCaller -R $reference_genome \
               -I /aln.header.sorted.rg.bam \
               -O /results/aln.${UUID}.g.vcf
             gzip /results/*
@@ -129,7 +129,7 @@ class HaplotypeCallTest extends FunSuite with SharedSparkContext {
               --RGPU=H06HDADXX130110-01 \
               --RGSM=H06HDADXX130110
             gatk BuildBamIndex --INPUT=/aln.header.sorted.rg.bam
-            gatk HaplotypeCallerSpark -R $reference_genome \
+            gatk HaplotypeCaller -R $reference_genome \
               -I /aln.header.sorted.rg.bam \
               -O /results/aln.g.vcf
             """,
