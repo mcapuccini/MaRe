@@ -84,7 +84,7 @@ MaRe is packaged and distributed with Maven, all you have to do is to add its de
   <dependency>
     <groupId>se.uu.it</groupId>
     <artifactId>mare</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
   </dependency>
   ...
 </dependencies>
