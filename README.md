@@ -3,8 +3,6 @@
 > Italian, pronounced: `/ˈmare/`. Noun: `Sea`.
 
 [![Build Status](https://travis-ci.org/mcapuccini/MaRe.svg?branch=master)](https://travis-ci.org/mcapuccini/MaRe)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.uu.it/mare/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.uu.it/mare)
-
 
 MaRe (formerly EasyMapReduce) leverages the power of Docker and Spark to run and scale your serial tools in MapReduce fashion.
 
@@ -18,6 +16,7 @@ MaRe (formerly EasyMapReduce) leverages the power of Docker and Spark to run and
 - [Getting Started](#getting-started)
   - [Get MaRe](#get-mare)
   - [Documentation](#documentation)
+- [How to Cite](#how-to-cite)
 
 ## What is MaRe
 
@@ -93,3 +92,19 @@ MaRe is packaged and distributed with Maven, all you have to do is to add its de
 ### Documentation
 
 API documentation is available here: https://mcapuccini.github.io/MaRe/scaladocs/.
+
+## How to cite
+Capuccini, Marco, et al. "MaRe: Processing Big Data with application containers on Apache Spark." GigaScience 9.5 (2020): giaa042.
+
+```
+@article{capuccini2020mare,
+  title={MaRe: Processing Big Data with application containers on Apache Spark},
+  author={Capuccini, Marco and Dahl{\"o}, Martin and Toor, Salman and Spjuth, Ola},
+  journal={GigaScience},
+  volume={9},
+  number={5},
+  pages={giaa042},
+  year={2020},
+  publisher={Oxford University Press}
+}
+```
